@@ -24,182 +24,182 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $acao = trim($_POST['acao'] ?? '');
 
-// ─────────────────────────────────────────────────────────────
-// CRIAR usuário
-// ─────────────────────────────────────────────────────────────
-if ($acao === 'criar') {
+    // ─────────────────────────────────────────────────────────────
+    // CRIAR usuário
+    // ─────────────────────────────────────────────────────────────
+    if ($acao === 'criar') {
 
-    $nome   = trim($_POST['nome']   ?? '');
-    $email  = trim($_POST['email']  ?? '');
-    $senha  = $_POST['senha']       ?? '';
-    $tipo   = $_POST['tipo']        ?? 'usuario';
-    $status = $_POST['status']      ?? 'ativo';
+        $nome   = trim($_POST['nome']   ?? '');
+        $email  = trim($_POST['email']  ?? '');
+        $senha  = $_POST['senha']       ?? '';
+        $tipo   = $_POST['tipo']        ?? 'usuario';
+        $status = $_POST['status']      ?? 'ativo';
 
-    // Validações básicas
-    if (empty($nome) || empty($email) || empty($senha)) {
-        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Preencha todos os campos obrigatórios.'];
-        header('Location: /pages/usuarios.php');
-        exit;
-    }
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'E-mail inválido.'];
-        header('Location: /pages/usuarios.php');
-        exit;
-    }
-
-    if (strlen($senha) < 6) {
-        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'A senha deve ter pelo menos 6 caracteres.'];
-        header('Location: /pages/usuarios.php');
-        exit;
-    }
-
-    $tipo   = in_array($tipo,   ['admin', 'usuario']) ? $tipo   : 'usuario';
-    $status = in_array($status, ['ativo', 'inativo']) ? $status : 'ativo';
-
-    try {
-        // Verifica duplicidade
-        $stmt = $conexao->prepare("SELECT id FROM usuarios WHERE email = :email");
-        $stmt->execute([':email' => $email]);
-        if ($stmt->fetch()) {
-            $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Este e-mail já está cadastrado.'];
+        // Validações básicas
+        if (empty($nome) || empty($email) || empty($senha)) {
+            $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Preencha todos os campos obrigatórios.'];
             header('Location: /pages/usuarios.php');
             exit;
         }
 
-        $hash = password_hash($senha, PASSWORD_DEFAULT);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'E-mail inválido.'];
+            header('Location: /pages/usuarios.php');
+            exit;
+        }
 
-        // Tenta com status (coluna pode não existir)
+        if (strlen($senha) < 6) {
+            $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'A senha deve ter pelo menos 6 caracteres.'];
+            header('Location: /pages/usuarios.php');
+            exit;
+        }
+
+        $tipo   = in_array($tipo,   ['admin', 'usuario']) ? $tipo   : 'usuario';
+        $status = in_array($status, ['ativo', 'inativo']) ? $status : 'ativo';
+
         try {
-            $stmt = $conexao->prepare(
-                "INSERT INTO usuarios (nome, email, senha, tipo, status) VALUES (:nome, :email, :senha, :tipo, :status)"
-            );
-            $stmt->execute([':nome' => $nome, ':email' => $email, ':senha' => $hash, ':tipo' => $tipo, ':status' => $status]);
-        } catch (PDOException $e2) {
-            // Fallback sem status
-            $stmt = $conexao->prepare(
-                "INSERT INTO usuarios (nome, email, senha, tipo) VALUES (:nome, :email, :senha, :tipo)"
-            );
-            $stmt->execute([':nome' => $nome, ':email' => $email, ':senha' => $hash, ':tipo' => $tipo]);
-        }
-
-        $_SESSION['flash'] = ['tipo' => 'sucesso', 'msg' => "Usuário {$nome} criado com sucesso."];
-    } catch (PDOException $e) {
-        error_log("usuariosController criar: " . $e->getMessage());
-        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Erro ao criar usuário. Tente novamente.'];
-    }
-
-    header('Location: /pages/usuarios.php');
-    exit;
-}
-
-// ─────────────────────────────────────────────────────────────
-// EDITAR usuário
-// ─────────────────────────────────────────────────────────────
-if ($acao === 'editar') {
-
-    $id     = (int)($_POST['id']    ?? 0);
-    $nome   = trim($_POST['nome']   ?? '');
-    $email  = trim($_POST['email']  ?? '');
-    $tipo   = $_POST['tipo']        ?? 'usuario';
-    $status = $_POST['status']      ?? 'ativo';
-    $senha  = $_POST['senha']       ?? '';
-
-    if ($id <= 0 || empty($nome) || empty($email)) {
-        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Dados inválidos.'];
-        header('Location: /pages/usuarios.php');
-        exit;
-    }
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'E-mail inválido.'];
-        header('Location: /pages/usuarios.php');
-        exit;
-    }
-
-    $tipo   = in_array($tipo,   ['admin', 'usuario']) ? $tipo   : 'usuario';
-    $status = in_array($status, ['ativo', 'inativo']) ? $status : 'ativo';
-
-    try {
-        // Verifica duplicidade (excluindo o próprio)
-        $stmt = $conexao->prepare("SELECT id FROM usuarios WHERE email = :email AND id != :id");
-        $stmt->execute([':email' => $email, ':id' => $id]);
-        if ($stmt->fetch()) {
-            $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Este e-mail já está em uso por outro usuário.'];
-            header('Location: /pages/usuarios.php');
-            exit;
-        }
-
-        if (!empty($senha)) {
-            // Atualiza com nova senha
-            if (strlen($senha) < 6) {
-                $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'A nova senha deve ter pelo menos 6 caracteres.'];
+            // Verifica duplicidade
+            $stmt = $conexao->prepare("SELECT id FROM usuarios WHERE email = :email");
+            $stmt->execute([':email' => $email]);
+            if ($stmt->fetch()) {
+                $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Este e-mail já está cadastrado.'];
                 header('Location: /pages/usuarios.php');
                 exit;
             }
+
             $hash = password_hash($senha, PASSWORD_DEFAULT);
+
+            // Tenta com status (coluna pode não existir)
             try {
                 $stmt = $conexao->prepare(
-                    "UPDATE usuarios SET nome=:nome, email=:email, senha=:senha, tipo=:tipo, status=:status WHERE id=:id"
+                    "INSERT INTO usuarios (nome, email, senha, tipo, status) VALUES (:nome, :email, :senha, :tipo, :status)"
                 );
-                $stmt->execute([':nome' => $nome, ':email' => $email, ':senha' => $hash, ':tipo' => $tipo, ':status' => $status, ':id' => $id]);
+                $stmt->execute([':nome' => $nome, ':email' => $email, ':senha' => $hash, ':tipo' => $tipo, ':status' => $status]);
             } catch (PDOException $e2) {
+                // Fallback sem status
                 $stmt = $conexao->prepare(
-                    "UPDATE usuarios SET nome=:nome, email=:email, senha=:senha, tipo=:tipo WHERE id=:id"
+                    "INSERT INTO usuarios (nome, email, senha, tipo) VALUES (:nome, :email, :senha, :tipo)"
                 );
-                $stmt->execute([':nome' => $nome, ':email' => $email, ':senha' => $hash, ':tipo' => $tipo, ':id' => $id]);
+                $stmt->execute([':nome' => $nome, ':email' => $email, ':senha' => $hash, ':tipo' => $tipo]);
             }
-        } else {
-            // Mantém senha atual
-            try {
-                $stmt = $conexao->prepare(
-                    "UPDATE usuarios SET nome=:nome, email=:email, tipo=:tipo, status=:status WHERE id=:id"
-                );
-                $stmt->execute([':nome' => $nome, ':email' => $email, ':tipo' => $tipo, ':status' => $status, ':id' => $id]);
-            } catch (PDOException $e2) {
-                $stmt = $conexao->prepare(
-                    "UPDATE usuarios SET nome=:nome, email=:email, tipo=:tipo WHERE id=:id"
-                );
-                $stmt->execute([':nome' => $nome, ':email' => $email, ':tipo' => $tipo, ':id' => $id]);
-            }
+
+            $_SESSION['flash'] = ['tipo' => 'sucesso', 'msg' => "Usuário {$nome} criado com sucesso."];
+        } catch (PDOException $e) {
+            error_log("usuariosController criar: " . $e->getMessage());
+            $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Erro ao criar usuário. Tente novamente.'];
         }
 
-        $_SESSION['flash'] = ['tipo' => 'sucesso', 'msg' => "Usuário {$nome} atualizado com sucesso."];
-    } catch (PDOException $e) {
-        error_log("usuariosController editar: " . $e->getMessage());
-        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Erro ao atualizar usuário.'];
-    }
-
-    header('Location: /pages/usuarios.php');
-    exit;
-}
-
-// ─────────────────────────────────────────────────────────────
-// EXCLUIR usuário
-// ─────────────────────────────────────────────────────────────
-if ($acao === 'excluir') {
-
-    $id = (int)($_POST['id'] ?? 0);
-
-    // Impede auto-exclusão
-    if ($id <= 0 || $id === (int)$_SESSION['user']['id']) {
-        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Não é possível excluir este usuário.'];
         header('Location: /pages/usuarios.php');
         exit;
     }
 
-    try {
-        $stmt = $conexao->prepare("DELETE FROM usuarios WHERE id = :id");
-        $stmt->execute([':id' => $id]);
-        $_SESSION['flash'] = ['tipo' => 'sucesso', 'msg' => 'Usuário excluído com sucesso.'];
-    } catch (PDOException $e) {
-        error_log("usuariosController excluir: " . $e->getMessage());
-        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Erro ao excluir usuário.'];
+    // ─────────────────────────────────────────────────────────────
+    // EDITAR usuário
+    // ─────────────────────────────────────────────────────────────
+    if ($acao === 'editar') {
+
+        $id     = (int)($_POST['id']    ?? 0);
+        $nome   = trim($_POST['nome']   ?? '');
+        $email  = trim($_POST['email']  ?? '');
+        $tipo   = $_POST['tipo']        ?? 'usuario';
+        $status = $_POST['status']      ?? 'ativo';
+        $senha  = $_POST['senha']       ?? '';
+
+        if ($id <= 0 || empty($nome) || empty($email)) {
+            $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Dados inválidos.'];
+            header('Location: /pages/usuarios.php');
+            exit;
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'E-mail inválido.'];
+            header('Location: /pages/usuarios.php');
+            exit;
+        }
+
+        $tipo   = in_array($tipo,   ['admin', 'usuario']) ? $tipo   : 'usuario';
+        $status = in_array($status, ['ativo', 'inativo']) ? $status : 'ativo';
+
+        try {
+            // Verifica duplicidade (excluindo o próprio)
+            $stmt = $conexao->prepare("SELECT id FROM usuarios WHERE email = :email AND id != :id");
+            $stmt->execute([':email' => $email, ':id' => $id]);
+            if ($stmt->fetch()) {
+                $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Este e-mail já está em uso por outro usuário.'];
+                header('Location: /pages/usuarios.php');
+                exit;
+            }
+
+            if (!empty($senha)) {
+                // Atualiza com nova senha
+                if (strlen($senha) < 6) {
+                    $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'A nova senha deve ter pelo menos 6 caracteres.'];
+                    header('Location: /pages/usuarios.php');
+                    exit;
+                }
+                $hash = password_hash($senha, PASSWORD_DEFAULT);
+                try {
+                    $stmt = $conexao->prepare(
+                        "UPDATE usuarios SET nome=:nome, email=:email, senha=:senha, tipo=:tipo, status=:status WHERE id=:id"
+                    );
+                    $stmt->execute([':nome' => $nome, ':email' => $email, ':senha' => $hash, ':tipo' => $tipo, ':status' => $status, ':id' => $id]);
+                } catch (PDOException $e2) {
+                    $stmt = $conexao->prepare(
+                        "UPDATE usuarios SET nome=:nome, email=:email, senha=:senha, tipo=:tipo WHERE id=:id"
+                    );
+                    $stmt->execute([':nome' => $nome, ':email' => $email, ':senha' => $hash, ':tipo' => $tipo, ':id' => $id]);
+                }
+            } else {
+                // Mantém senha atual
+                try {
+                    $stmt = $conexao->prepare(
+                        "UPDATE usuarios SET nome=:nome, email=:email, tipo=:tipo, status=:status WHERE id=:id"
+                    );
+                    $stmt->execute([':nome' => $nome, ':email' => $email, ':tipo' => $tipo, ':status' => $status, ':id' => $id]);
+                } catch (PDOException $e2) {
+                    $stmt = $conexao->prepare(
+                        "UPDATE usuarios SET nome=:nome, email=:email, tipo=:tipo WHERE id=:id"
+                    );
+                    $stmt->execute([':nome' => $nome, ':email' => $email, ':tipo' => $tipo, ':id' => $id]);
+                }
+            }
+
+            $_SESSION['flash'] = ['tipo' => 'sucesso', 'msg' => "Usuário {$nome} atualizado com sucesso."];
+        } catch (PDOException $e) {
+            error_log("usuariosController editar: " . $e->getMessage());
+            $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Erro ao atualizar usuário.'];
+        }
+
+        header('Location: /pages/usuarios.php');
+        exit;
     }
 
-    header('Location: /pages/usuarios.php');
-    exit;
-}   // fim if excluir
+    // ─────────────────────────────────────────────────────────────
+    // EXCLUIR usuário
+    // ─────────────────────────────────────────────────────────────
+    if ($acao === 'excluir') {
+
+        $id = (int)($_POST['id'] ?? 0);
+
+        // Impede auto-exclusão
+        if ($id <= 0 || $id === (int)$_SESSION['user']['id']) {
+            $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Não é possível excluir este usuário.'];
+            header('Location: /pages/usuarios.php');
+            exit;
+        }
+
+        try {
+            $stmt = $conexao->prepare("DELETE FROM usuarios WHERE id = :id");
+            $stmt->execute([':id' => $id]);
+            $_SESSION['flash'] = ['tipo' => 'sucesso', 'msg' => 'Usuário excluído com sucesso.'];
+        } catch (PDOException $e) {
+            error_log("usuariosController excluir: " . $e->getMessage());
+            $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Erro ao excluir usuário.'];
+        }
+
+        header('Location: /pages/usuarios.php');
+        exit;
+    }   // fim if excluir
 
 } // fim do bloco POST
 

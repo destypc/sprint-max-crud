@@ -17,161 +17,161 @@ require_once __DIR__ . '/../app/controller/dashboardController.php';
 
 <body>
 
-<?php require_once __DIR__ . '/../app/includes/sidebar.php'; ?>
+    <?php require_once __DIR__ . '/../app/includes/sidebar.php'; ?>
 
-<div class="main-wrapper">
+    <div class="main-wrapper">
 
-    <?php require_once __DIR__ . '/../app/includes/header.php'; ?>
+        <?php require_once __DIR__ . '/../app/includes/header.php'; ?>
 
-    <main class="page-content">
+        <main class="page-content">
 
-        <!-- HERO -->
-        <div class="dash-hero">
-            <h1>Dashboard</h1>
-            <p>Bem-vindo de volta, <?= htmlspecialchars($usuario_logado['nome'] ?? 'Administrador') ?>.</p>
-        </div>
-
-        <!-- STAT CARDS -->
-        <div class="dash-cards">
-
-            <div class="dash-stat">
-                <div class="dash-stat-top">
-                    <span class="dash-stat-label">UsuÃ¡rios</span>
-                    <div class="dash-stat-icon orange"><i class="fa-solid fa-users"></i></div>
-                </div>
-                <div class="dash-stat-value"><?= $totalUsuarios ?></div>
-                <div class="dash-stat-footer">
-                    <span><a href="/pages/usuarios.php">Ver todos</a></span>
-                </div>
+            <!-- HERO -->
+            <div class="dash-hero">
+                <h1>Dashboard</h1>
+                <p>Bem-vindo de volta, <?= htmlspecialchars($usuario_logado['nome'] ?? 'Administrador') ?>.</p>
             </div>
 
-            <div class="dash-stat">
-                <div class="dash-stat-top">
-                    <span class="dash-stat-label">Produtos</span>
-                    <div class="dash-stat-icon purple"><i class="fa-solid fa-box"></i></div>
-                </div>
-                <div class="dash-stat-value"><?= $totalProdutos ?></div>
-                <div class="dash-stat-footer">
-                    <span><a href="/pages/produtos.php">Ver todos</a></span>
-                </div>
-            </div>
+            <!-- STAT CARDS -->
+            <div class="dash-cards">
 
-            <div class="dash-stat">
-                <div class="dash-stat-top">
-                    <span class="dash-stat-label">Vendas</span>
-                    <div class="dash-stat-icon green"><i class="fa-solid fa-circle-dollar-to-slot"></i></div>
+                <div class="dash-stat">
+                    <div class="dash-stat-top">
+                        <span class="dash-stat-label">UsuÃ¡rios</span>
+                        <div class="dash-stat-icon orange"><i class="fa-solid fa-users"></i></div>
+                    </div>
+                    <div class="dash-stat-value"><?= $totalUsuarios ?></div>
+                    <div class="dash-stat-footer">
+                        <span><a href="/pages/usuarios.php">Ver todos</a></span>
+                    </div>
                 </div>
-                <div class="dash-stat-value"><?= $totalVendas ?></div>
-                <div class="dash-stat-footer">
-                    <span><a href="/pages/vendas.php">Ver todas</a></span>
+
+                <div class="dash-stat">
+                    <div class="dash-stat-top">
+                        <span class="dash-stat-label">Produtos</span>
+                        <div class="dash-stat-icon purple"><i class="fa-solid fa-box"></i></div>
+                    </div>
+                    <div class="dash-stat-value"><?= $totalProdutos ?></div>
+                    <div class="dash-stat-footer">
+                        <span><a href="/pages/produtos.php">Ver todos</a></span>
+                    </div>
                 </div>
-            </div>
 
-            <div class="dash-stat">
-                <div class="dash-stat-top">
-                    <span class="dash-stat-label">Administradores</span>
-                    <div class="dash-stat-icon blue"><i class="fa-solid fa-user-shield"></i></div>
+                <div class="dash-stat">
+                    <div class="dash-stat-top">
+                        <span class="dash-stat-label">Vendas</span>
+                        <div class="dash-stat-icon green"><i class="fa-solid fa-circle-dollar-to-slot"></i></div>
+                    </div>
+                    <div class="dash-stat-value"><?= $totalVendas ?></div>
+                    <div class="dash-stat-footer">
+                        <span><a href="/pages/vendas.php">Ver todas</a></span>
+                    </div>
                 </div>
-                <div class="dash-stat-value"><?= $totalAdmins ?></div>
-                <div class="dash-stat-footer">
-                    <span><a href="/pages/usuarios.php">Gerenciar</a></span>
+
+                <div class="dash-stat">
+                    <div class="dash-stat-top">
+                        <span class="dash-stat-label">Administradores</span>
+                        <div class="dash-stat-icon blue"><i class="fa-solid fa-user-shield"></i></div>
+                    </div>
+                    <div class="dash-stat-value"><?= $totalAdmins ?></div>
+                    <div class="dash-stat-footer">
+                        <span><a href="/pages/usuarios.php">Gerenciar</a></span>
+                    </div>
                 </div>
-            </div>
 
-        </div><!-- /dash-cards -->
+            </div><!-- /dash-cards -->
 
-        <!-- GRID: VENDAS RECENTES + ATIVIDADES -->
-        <div class="dash-grid">
+            <!-- GRID: VENDAS RECENTES + ATIVIDADES -->
+            <div class="dash-grid">
 
-            <!-- Vendas Recentes -->
-            <div class="dash-panel">
-                <div class="dash-panel-head">
-                    <div>
-                        <div class="dash-panel-title">
-                            <i class="fa-solid fa-circle-dollar-to-slot"></i>
-                            Vendas Recentes
+                <!-- Vendas Recentes -->
+                <div class="dash-panel">
+                    <div class="dash-panel-head">
+                        <div>
+                            <div class="dash-panel-title">
+                                <i class="fa-solid fa-circle-dollar-to-slot"></i>
+                                Vendas Recentes
+                            </div>
+                            <div class="dash-panel-sub">Ãšltimas transaÃ§Ãµes registradas</div>
                         </div>
-                        <div class="dash-panel-sub">Ãšltimas transaÃ§Ãµes registradas</div>
                     </div>
-                </div>
-                <div class="dash-panel-body">
-                    <div class="activity-list">
+                    <div class="dash-panel-body">
+                        <div class="activity-list">
 
-                        <?php if (!empty($vendasRecentes)): ?>
-                            <?php foreach ($vendasRecentes as $i => $vr): ?>
-                            <div class="activity-item" style="justify-content:space-between;align-items:center<?= $i === count($vendasRecentes) - 1 ? ';border-bottom:none;padding-bottom:0' : '' ?>">
-                                <div class="activity-dot <?= vendaDotCor($vr['status']) ?>">
-                                    <i class="fa-solid fa-circle-dollar-to-slot"></i>
+                            <?php if (!empty($vendasRecentes)): ?>
+                                <?php foreach ($vendasRecentes as $i => $vr): ?>
+                                    <div class="activity-item" style="justify-content:space-between;align-items:center<?= $i === count($vendasRecentes) - 1 ? ';border-bottom:none;padding-bottom:0' : '' ?>">
+                                        <div class="activity-dot <?= vendaDotCor($vr['status']) ?>">
+                                            <i class="fa-solid fa-circle-dollar-to-slot"></i>
+                                        </div>
+                                        <div class="activity-text">
+                                            <div class="activity-desc"><?= htmlspecialchars($vr['produto']) ?></div>
+                                            <div class="activity-time"><?= htmlspecialchars($vr['cliente']) ?> &nbsp;Â·&nbsp; <?= timeAgo($vr['data_venda']) ?></div>
+                                        </div>
+                                        <div style="text-align:right;flex-shrink:0;margin-left:12px">
+                                            <div style="font-size:.88rem;font-weight:700;color:var(--text-main)">R$&nbsp;<?= number_format($vr['valor'], 2, ',', '.') ?></div>
+                                            <?= vendaStatusBadge($vr['status']) ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="activity-item" style="border-bottom:none;padding-bottom:0">
+                                    <div class="activity-text">
+                                        <div class="activity-desc" style="color:var(--text-dim)">Nenhuma venda registrada ainda.</div>
+                                    </div>
                                 </div>
-                                <div class="activity-text">
-                                    <div class="activity-desc"><?= htmlspecialchars($vr['produto']) ?></div>
-                                    <div class="activity-time"><?= htmlspecialchars($vr['cliente']) ?> &nbsp;Â·&nbsp; <?= timeAgo($vr['data_venda']) ?></div>
-                                </div>
-                                <div style="text-align:right;flex-shrink:0;margin-left:12px">
-                                    <div style="font-size:.88rem;font-weight:700;color:var(--text-main)">R$&nbsp;<?= number_format($vr['valor'], 2, ',', '.') ?></div>
-                                    <?= vendaStatusBadge($vr['status']) ?>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <div class="activity-item" style="border-bottom:none;padding-bottom:0">
-                                <div class="activity-text">
-                                    <div class="activity-desc" style="color:var(--text-dim)">Nenhuma venda registrada ainda.</div>
-                                </div>
-                            </div>
-                        <?php endif; ?>
+                            <?php endif; ?>
 
-                    </div>
-                </div>
-            </div>
-
-            <!-- Atividades Recentes -->
-            <div class="dash-panel">
-                <div class="dash-panel-head">
-                    <div>
-                        <div class="dash-panel-title">
-                            <i class="fa-solid fa-bell"></i>
-                            Atividades Recentes
                         </div>
-                        <div class="dash-panel-sub">Ãšltimas aÃ§Ãµes no sistema</div>
                     </div>
                 </div>
-                <div class="dash-panel-body">
-                    <div class="activity-list">
 
-                        <?php if (!empty($logsRecentes)): ?>
-                            <?php foreach ($logsRecentes as $i => $log):
-                                [$cor, $icone] = logIcone($log['acao']);
-                            ?>
-                            <div class="activity-item<?= $i === count($logsRecentes) - 1 ? ' style="border-bottom:none;padding-bottom:0"' : '' ?>">
-                                <div class="activity-dot <?= $cor ?>"><i class="fa-solid <?= $icone ?>"></i></div>
-                                <div class="activity-text">
-                                    <div class="activity-desc"><?= htmlspecialchars($log['descricao']) ?></div>
-                                    <div class="activity-time"><?= timeAgo($log['data']) ?></div>
-                                </div>
+                <!-- Atividades Recentes -->
+                <div class="dash-panel">
+                    <div class="dash-panel-head">
+                        <div>
+                            <div class="dash-panel-title">
+                                <i class="fa-solid fa-bell"></i>
+                                Atividades Recentes
                             </div>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <div class="activity-item" style="border-bottom:none;padding-bottom:0">
-                                <div class="activity-text">
-                                    <div class="activity-desc" style="color:var(--text-dim)">Nenhuma atividade registrada ainda.</div>
-                                </div>
-                            </div>
-                        <?php endif; ?>
+                            <div class="dash-panel-sub">Ãšltimas aÃ§Ãµes no sistema</div>
+                        </div>
+                    </div>
+                    <div class="dash-panel-body">
+                        <div class="activity-list">
 
+                            <?php if (!empty($logsRecentes)): ?>
+                                <?php foreach ($logsRecentes as $i => $log):
+                                    [$cor, $icone] = logIcone($log['acao']);
+                                ?>
+                                    <div class="activity-item<?= $i === count($logsRecentes) - 1 ? ' style="border-bottom:none;padding-bottom:0"' : '' ?>">
+                                        <div class="activity-dot <?= $cor ?>"><i class="fa-solid <?= $icone ?>"></i></div>
+                                        <div class="activity-text">
+                                            <div class="activity-desc"><?= htmlspecialchars($log['descricao']) ?></div>
+                                            <div class="activity-time"><?= timeAgo($log['data']) ?></div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="activity-item" style="border-bottom:none;padding-bottom:0">
+                                    <div class="activity-text">
+                                        <div class="activity-desc" style="color:var(--text-dim)">Nenhuma atividade registrada ainda.</div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
+                        </div>
                     </div>
                 </div>
-            </div>
 
-        </div><!-- /dash-grid -->
+            </div><!-- /dash-grid -->
 
-    </main><!-- /page-content -->
+        </main><!-- /page-content -->
 
-</div><!-- /main-wrapper -->
+    </div><!-- /main-wrapper -->
 
-<?php require_once __DIR__ . '/../app/includes/modal-perfil.php'; ?>
+    <?php require_once __DIR__ . '/../app/includes/modal-perfil.php'; ?>
 
-<script src="/assets/js/script.js"></script>
+    <script src="/assets/js/script.js"></script>
 </body>
 
 </html>

@@ -30,7 +30,8 @@ try {
             FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ");
-} catch (PDOException $e) { /* ignora se já existir ou não for possível */ }
+} catch (PDOException $e) { /* ignora se já existir ou não for possível */
+}
 
 // Variáveis da página
 $usuario_logado = $_SESSION['user'];
@@ -74,7 +75,8 @@ try {
         LIMIT 5
     ");
     $logsRecentes = $stmtLog->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) { /* tabela logs ainda não criada */ }
+} catch (PDOException $e) { /* tabela logs ainda não criada */
+}
 
 // ── Indicadores adicionais ────────────────────────────────────
 $totalFaturamento = (float) $pdo->query("SELECT COALESCE(SUM(valor),0) FROM vendas")->fetchColumn();
