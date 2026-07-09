@@ -1,0 +1,180 @@
+/* ============================================================
+   Sprint Max — Cadastro
+   Estilos específicos da página de cadastro.
+   Depende de login.css (deve ser carregado depois).
+   ============================================================ */
+
+/* ======================================================
+   LADO DIREITO — Cadastro (hero image + conteúdo)
+   ====================================================== */
+
+/* Variante escura para a página de cadastro */
+.login-right--dark {
+  background: #0d0d0f;
+}
+
+/* Imagem de fundo (atleta) */
+.right-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.right-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+/* Overlay gradiente: escuro à esquerda, transparente à direita */
+.right-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    108deg,
+    rgba(13, 13, 15, 0.92) 0%,
+    rgba(13, 13, 15, 0.62) 38%,
+    rgba(0, 0, 0, 0.08) 100%
+  );
+}
+
+/* Wrapper de todo o conteúdo (tagline + pills) */
+.right-content {
+  position: relative;
+  z-index: 3;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 44px 52px;
+  animation: fadeUp 0.8s ease-out 0.15s both;
+}
+
+/* Logo no topo */
+.right-logo img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+}
+
+/* Eyebrow acima do título */
+.tagline-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  color: var(--orange);
+  margin-bottom: 14px;
+}
+
+/* Tagline principal */
+.right-tagline h2 {
+  font-family: "Poppins", sans-serif;
+  font-size: 3.1rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-shadow: 0 4px 28px rgba(0, 0, 0, 0.65);
+}
+
+.right-tagline h2 span {
+  color: var(--orange);
+}
+
+/* Feature pills */
+.right-pills {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 20px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.83rem;
+  font-weight: 500;
+  width: fit-content;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition:
+    background 0.25s,
+    border-color 0.25s,
+    transform 0.2s;
+  cursor: default;
+}
+
+.pill:hover {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(249, 115, 22, 0.35);
+  transform: translateX(4px);
+}
+
+.pill i {
+  color: var(--orange);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+/* Geo circles e speed lines sobre fundo escuro */
+.login-right--dark .geo-circle {
+  border-color: rgba(249, 115, 22, 0.1);
+  z-index: 2;
+}
+
+.login-right--dark::before,
+.login-right--dark::after {
+  display: none;
+}
+
+.login-right--dark .speed-line {
+  z-index: 2;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(249, 115, 22, 0.18),
+    transparent
+  );
+}
+
+/* ---------- Logo full (logo-name.png) ---------- */
+.brand-full {
+  margin-bottom: 2.2rem;
+}
+
+.brand-full img {
+  height: 72px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 0 12px rgba(249, 115, 22, 0.18));
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 1200px) {
+  .right-content {
+    padding: 36px 38px;
+  }
+  .right-tagline h2 {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .login-right--dark {
+    display: none;
+  }
+}
