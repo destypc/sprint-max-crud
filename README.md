@@ -125,7 +125,7 @@ Pode apenas:
 ### 1 Clone o repositório
 
 ```bash
-git clone https://github.com/SEU-USUARIO/sprint-max.git
+git clone https://github.com/destypc/sprint-max.git
 ```
 
 ### 2 Abra o projeto
@@ -177,18 +177,17 @@ http://localhost/sprint-max
 
 ## 📌 Funcionalidades futuras
 
-- [ ] Carrinho de compras
-- [ ] Favoritos
-- [ ] Upload de imagens
-- [ ] Dashboard do usuário
-- [ ] Dashboard administrativo
-- [ ] Histórico de pedidos
-- [ ] Controle de estoque
-- [ ] Tema claro/escuro
+- [x] Carrinho de compras
+- [x] Favoritos
+- [x] Upload de imagens
+- [x] Dashboard administrativo
+- [x] Histórico de pedidos
+- [x] Controle de estoque
+- [x] Tema claro/escuro
+- [x] Responsividade completa
+- [x] Sistema de notificações
 - [ ] Relatórios
-- [ ] Gráficos
-- [ ] Responsividade completa
-- [ ] Sistema de notificações
+- [ ] Dashboard do usuário
 
 ---
 
@@ -213,7 +212,7 @@ Este projeto foi desenvolvido com o objetivo de praticar conceitos de:
 Desenvolvido por **Enzo**.
 
 GitHub:
-https://github.com/SEU-USUARIO
+https://github.com/destypc
 
 ---
 
