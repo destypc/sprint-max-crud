@@ -735,6 +735,24 @@ tbody td {
   background: var(--red);
 }
 
+.badge-blue {
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.18);
+}
+.badge-blue::before {
+  background: #60a5fa;
+}
+
+.badge-purple {
+  background: rgba(139, 92, 246, 0.1);
+  color: var(--purple);
+  border: 1px solid rgba(139, 92, 246, 0.18);
+}
+.badge-purple::before {
+  background: var(--purple);
+}
+
 /* Action buttons */
 .actions-cell {
   display: flex;
@@ -767,6 +785,32 @@ tbody td {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--text-main);
+}
+
+/* Produto thumbnail (imagem real na tabela admin) */
+.product-thumb-img {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-xs);
+  object-fit: cover;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* Badge de contagem no carrinho (sidebar) */
+.cart-badge {
+  background: linear-gradient(135deg, var(--orange), var(--orange-light));
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  margin-left: auto;
 }
 
 /* ============================================================
@@ -1766,6 +1810,401 @@ textarea.form-input {
   border-radius: 50%;
   background: var(--text-dim);
   flex-shrink: 0;
+}
+
+/* ============================================================
+   UPLOAD DE IMAGEM (área de upload customizada)
+   ============================================================ */
+.upload-area {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    background var(--transition);
+  overflow: hidden;
+}
+
+.upload-area:hover,
+.upload-area.drag-over {
+  border-color: var(--orange);
+  background: var(--orange-subtle);
+}
+
+.upload-area.tem-arquivo {
+  border-style: solid;
+  cursor: default;
+}
+
+/* Placeholder (sem imagem) */
+#criarUploadVazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 22px 16px;
+  text-align: center;
+}
+
+.upload-icon {
+  font-size: 2rem;
+  color: var(--text-dim);
+  display: block;
+  transition: color var(--transition);
+  margin-bottom: 2px;
+}
+
+.upload-area:hover .upload-icon {
+  color: var(--orange);
+}
+
+.upload-titulo {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-sub);
+}
+
+.upload-dica {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+/* Preview (com imagem selecionada) */
+#criarUploadPreview {
+  padding: 12px;
+}
+
+#criarImgPreview {
+  width: 100%;
+  max-height: 150px;
+  object-fit: contain;
+  border-radius: var(--radius-xs);
+  display: block;
+  margin-bottom: 10px;
+}
+
+.upload-arquivo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: var(--radius-xs);
+  padding: 7px 10px;
+}
+
+.upload-arquivo span {
+  flex: 1;
+  font-size: 0.76rem;
+  color: var(--text-sub);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-arquivo button {
+  background: none;
+  border: none;
+  color: var(--red);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0;
+  flex-shrink: 0;
+  line-height: 1;
+  transition: opacity var(--transition);
+}
+
+.upload-arquivo button:hover {
+  opacity: 0.7;
+}
+
+/* Light theme */
+:root[data-theme="light"] .upload-area {
+  background: #f9fafb;
+}
+
+:root[data-theme="light"] .upload-area:hover,
+:root[data-theme="light"] .upload-area.drag-over {
+  background: rgba(249, 115, 22, 0.06);
+}
+
+/* ============================================================
+   TAG PICKER (seletor de tags nos produtos)
+   ============================================================ */
+.tag-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-chip {
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-sub);
+  font-size: 0.74rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.tag-chip:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.tag-chip.ativo {
+  background: linear-gradient(135deg, var(--orange), var(--orange-light));
+  border-color: var(--orange);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Badges de tags na tabela de produtos */
+.prod-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 4px;
+}
+
+.prod-tag {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 0.63rem;
+  font-weight: 700;
+  background: rgba(249, 115, 22, 0.12);
+  color: var(--orange-light);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   NOTIFICAÇÕES
+   ============================================================ */
+.notif-wrap {
+  position: relative;
+}
+
+.notif-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-sub);
+  font-size: 0.9rem;
+  position: relative;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+
+.notif-btn:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--text-main);
+}
+
+.notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--orange);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid var(--bg-main);
+  line-height: 1;
+}
+
+.notif-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 320px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  opacity: 0;
+  transform: translateY(-6px) scale(0.97);
+  pointer-events: none;
+  transition: all 0.18s ease;
+  z-index: 200;
+  max-height: 420px;
+  display: flex;
+  flex-direction: column;
+}
+
+.notif-dropdown.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+.notif-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-main);
+  flex-shrink: 0;
+}
+
+.notif-mark-all {
+  background: none;
+  border: none;
+  color: var(--orange);
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  padding: 0;
+}
+
+.notif-mark-all:hover {
+  opacity: 0.75;
+}
+
+.notif-list {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.notif-empty {
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.84rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.notif-empty i {
+  font-size: 2rem;
+}
+
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+  position: relative;
+}
+
+.notif-item:last-child {
+  border-bottom: none;
+}
+
+.notif-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.notif-item.unread {
+  background: rgba(249, 115, 22, 0.04);
+}
+
+.notif-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+}
+
+.notif-icon.sucesso,
+.notif-icon.info {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--green);
+}
+
+.notif-icon.aviso {
+  background: rgba(250, 204, 21, 0.12);
+  color: var(--yellow);
+}
+
+.notif-icon.erro {
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--red);
+}
+
+.notif-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-titulo {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.notif-msg {
+  font-size: 0.76rem;
+  color: var(--text-sub);
+  margin-top: 2px;
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.notif-time {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-top: 3px;
+}
+
+.notif-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--orange);
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+/* Light theme overrides para notificações */
+:root[data-theme="light"] .notif-btn {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+:root[data-theme="light"] .notif-badge {
+  border-color: var(--bg-main);
+}
+
+:root[data-theme="light"] .notif-item:hover {
+  background: rgba(0, 0, 0, 0.025);
+}
+
+:root[data-theme="light"] .notif-item.unread {
+  background: rgba(249, 115, 22, 0.05);
 }
 
 /* ============================================================

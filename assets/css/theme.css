@@ -1,0 +1,241 @@
+/* ============================================================
+   Sprint Max — Theme System (Dark / Light)
+   Carregado APÓS dashboard.css para sobrescrever variáveis.
+   Aplica classe via data-theme no elemento <html>.
+   ============================================================ */
+
+/* ── Logo: troca entre versão escura e clara ─────────────── */
+.sidebar-brand .logo-dark {
+  display: block;
+}
+.sidebar-brand .logo-light {
+  display: none;
+}
+
+:root[data-theme="light"] .sidebar-brand .logo-dark {
+  display: none;
+}
+:root[data-theme="light"] .sidebar-brand .logo-light {
+  display: block;
+}
+
+/* ── Light Theme: sobrescreve as variáveis do :root ──────── */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg-main: #f5f7fa;
+  --bg-card: #ffffff;
+  --bg-sidebar: #ffffff;
+  --bg-input: #f3f4f6;
+
+  --border: rgba(0, 0, 0, 0.1);
+  --border-hover: rgba(0, 0, 0, 0.2);
+
+  --text-main: #1f2937;
+  --text-sub: #4b5563;
+  --text-dim: #6b7280;
+
+  --shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  --shadow-orange: 0 4px 20px rgba(249, 115, 22, 0.22);
+
+  --orange-glow: rgba(249, 115, 22, 0.12);
+  --orange-subtle: rgba(249, 115, 22, 0.07);
+}
+
+/* ── Transição suave durante a troca de tema ─────────────── */
+/* Classe adicionada por 300ms pelo theme.js ao alternar       */
+:root.theme-transition,
+:root.theme-transition *,
+:root.theme-transition *::before,
+:root.theme-transition *::after {
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease !important;
+}
+
+/* ── Overrides de elementos para Light Theme ─────────────── */
+/* Topbar — background fixo no dark; precisa de override      */
+:root[data-theme="light"] .topbar {
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Logo: mix-blend-mode screen fica invisível no fundo claro  */
+:root[data-theme="light"] .sidebar-brand img {
+  mix-blend-mode: normal;
+  filter: none;
+}
+
+/* Sidebar nav hover */
+:root[data-theme="light"] .nav-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* Botões toggle e fechar */
+:root[data-theme="light"] .btn-toggle:hover,
+:root[data-theme="light"] .btn-close-drawer:hover,
+:root[data-theme="light"] .btn-close-modal:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Profile button */
+:root[data-theme="light"] .profile-btn {
+  background: rgba(0, 0, 0, 0.04);
+}
+:root[data-theme="light"] .profile-btn:hover {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+/* Profile dropdown shadow */
+:root[data-theme="light"] .profile-dropdown {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+}
+:root[data-theme="light"] .dd-item:hover {
+  background: rgba(0, 0, 0, 0.045);
+}
+
+/* Ghost button */
+:root[data-theme="light"] .btn-ghost {
+  background: rgba(0, 0, 0, 0.04);
+}
+:root[data-theme="light"] .btn-ghost:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--text-main);
+}
+
+/* Icon buttons */
+:root[data-theme="light"] .btn-icon {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* Drawer cancel */
+:root[data-theme="light"] .btn-cancel-drawer {
+  background: rgba(0, 0, 0, 0.04);
+}
+:root[data-theme="light"] .btn-cancel-drawer:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* Table header & row hover */
+:root[data-theme="light"] thead th {
+  background: rgba(0, 0, 0, 0.025);
+}
+:root[data-theme="light"] tbody tr:hover,
+:root[data-theme="light"] .access-table tbody tr:hover {
+  background: rgba(0, 0, 0, 0.025);
+}
+:root[data-theme="light"] .access-table thead th {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+/* Overlays mais suaves na luz */
+:root[data-theme="light"] .modal-backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+:root[data-theme="light"] .drawer-overlay {
+  background: rgba(0, 0, 0, 0.32);
+}
+:root[data-theme="light"] .sidebar-overlay {
+  background: rgba(0, 0, 0, 0.32);
+}
+
+/* Sprint toast (criado dinamicamente pelo script.js) */
+:root[data-theme="light"] .sprint-toast {
+  background: #ffffff;
+  color: var(--text-main);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+:root[data-theme="light"] .toast-close:hover {
+  color: var(--text-main);
+}
+
+/* Toast estático (sp-toast) */
+:root[data-theme="light"] .sp-toast {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Scrollbar */
+:root[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+}
+:root[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* Form select options */
+:root[data-theme="light"] .form-select option {
+  background: #ffffff;
+  color: #1f2937;
+}
+
+/* Sidebar footer card */
+:root[data-theme="light"] .sidebar-footer {
+  background: rgba(249, 115, 22, 0.05);
+  border-color: rgba(249, 115, 22, 0.12);
+}
+
+/* ── Botão Toggle de Tema ─────────────────────────────────── */
+.theme-toggle {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-sub);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  transition:
+    background 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    transform 0.22s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--orange-subtle);
+  border-color: rgba(249, 115, 22, 0.3);
+  color: var(--orange);
+  transform: scale(1.08);
+}
+
+:root[data-theme="light"] .theme-toggle {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* Ícones sobrepostos com animação de troca */
+.theme-toggle .icon-dark,
+.theme-toggle .icon-light {
+  position: absolute;
+  line-height: 1;
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease;
+}
+
+/* Dark theme: mostra lua, esconde sol */
+.theme-toggle .icon-dark {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+.theme-toggle .icon-light {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+
+/* Light theme: mostra sol, esconde lua */
+:root[data-theme="light"] .theme-toggle .icon-dark {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+:root[data-theme="light"] .theme-toggle .icon-light {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}

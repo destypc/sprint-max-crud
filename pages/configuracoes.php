@@ -14,6 +14,8 @@ $breadcrumb     = [['label' => 'Configurações']];
 
 <head>
     <meta charset="UTF-8">
+    <!-- Anti-flash: aplica tema antes da primeira renderizacao -->
+    <script>(function(){var t=localStorage.getItem('sprint-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sprint Max — Configurações</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,6 +23,7 @@ $breadcrumb     = [['label' => 'Configurações']];
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/dashboard.css">
+    <link rel="stylesheet" href="/assets/css/theme.css">
 </head>
 
 <body>

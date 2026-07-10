@@ -20,6 +20,7 @@ if (empty($email) || empty($senha)) {
     exit;
 }
 
+// Busca apenas as colunas que sempre existem
 $stmt = $conexao->prepare("SELECT id, nome, email, senha, tipo FROM usuarios WHERE email = :email");
 $stmt->execute([':email' => $email]);
 $usuario = $stmt->fetch();
@@ -32,17 +33,26 @@ if (!$usuario || !password_verify($senha, $usuario['senha'])) {
 session_regenerate_id(true);
 
 $_SESSION['user'] = [
-    'id'    => $usuario['id'],
-    'nome'  => $usuario['nome'],
-    'email' => $usuario['email'],
-    'tipo'  => $usuario['tipo']
+    'id'          => $usuario['id'],
+    'nome'        => $usuario['nome'],
+    'email'       => $usuario['email'],
+    'tipo'        => $usuario['tipo'],
+    'foto_perfil' => null,
 ];
+
+// Tenta carregar foto_perfil — disponível somente após executar banco-migration.sql
+try {
+    $fp = $conexao->prepare("SELECT foto_perfil FROM usuarios WHERE id = ?");
+    $fp->execute([$usuario['id']]);
+    $_SESSION['user']['foto_perfil'] = $fp->fetchColumn() ?: null;
+} catch (PDOException $e) { /* coluna ainda não existe — ok */
+}
 
 registrarLog($conexao, 'login', "Login realizado por \"{$usuario['nome']}\"", $usuario['id']);
 
 if ($usuario['tipo'] === 'admin') {
     header("Location: /pages/dashboard.php");
 } else {
-    header("Location: /pages/vendas.php");
+    header("Location: /pages/home.php");
 }
 exit;

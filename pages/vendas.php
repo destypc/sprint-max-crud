@@ -14,6 +14,8 @@ $breadcrumb     = [['label' => 'Vendas']];
 
 <head>
     <meta charset="UTF-8">
+    <!-- Anti-flash: aplica tema antes da primeira renderizacao -->
+    <script>(function(){var t=localStorage.getItem('sprint-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sprint Max — Vendas</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,6 +23,7 @@ $breadcrumb     = [['label' => 'Vendas']];
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/dashboard.css">
+    <link rel="stylesheet" href="/assets/css/theme.css">
 </head>
 
 <body>
@@ -33,252 +36,252 @@ $breadcrumb     = [['label' => 'Vendas']];
 
         <main class="page-content">
 
-            <!-- HERO -->
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:32px">
-                <div class="dash-hero" style="margin-bottom:0">
-                    <h1>Vendas</h1>
-                    <p>Gerencie todas as vendas do sistema.</p>
-                </div>
-                <button class="btn-primary" style="align-self:center" onclick="openVendaModal()">
-                    <i class="fa-solid fa-plus"></i>
-                    Nova Venda
-                </button>
+    <!-- HERO -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:32px">
+        <div class="dash-hero" style="margin-bottom:0">
+            <h1>Vendas</h1>
+            <p>Gerencie todas as vendas do sistema.</p>
+        </div>
+        <button class="btn-primary" style="align-self:center" onclick="openVendaModal()">
+            <i class="fa-solid fa-plus"></i>
+            Nova Venda
+        </button>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="dash-cards">
+
+        <div class="dash-stat">
+            <div class="dash-stat-top">
+                <span class="dash-stat-label">Total de Vendas</span>
+                <div class="dash-stat-icon green"><i class="fa-solid fa-circle-dollar-to-slot"></i></div>
             </div>
+            <div class="dash-stat-value"><?= $totalVendas ?></div>
+            <div class="dash-stat-footer"><span><?= $totalVendas > 0 ? 'venda(s) registrada(s)' : 'Sem vendas' ?></span></div>
+        </div>
 
-            <!-- STAT CARDS -->
-            <div class="dash-cards">
+        <div class="dash-stat">
+            <div class="dash-stat-top">
+                <span class="dash-stat-label">Faturamento Total</span>
+                <div class="dash-stat-icon orange"><i class="fa-solid fa-sack-dollar"></i></div>
+            </div>
+            <div class="dash-stat-value" style="font-size:1.55rem">R$&nbsp;<?= number_format($faturamento, 2, ',', '.') ?></div>
+            <div class="dash-stat-footer"><span><?= $faturamento > 0 ? 'acumulado total' : 'Sem faturamento' ?></span></div>
+        </div>
 
-                <div class="dash-stat">
-                    <div class="dash-stat-top">
-                        <span class="dash-stat-label">Total de Vendas</span>
-                        <div class="dash-stat-icon green"><i class="fa-solid fa-circle-dollar-to-slot"></i></div>
+        <div class="dash-stat">
+            <div class="dash-stat-top">
+                <span class="dash-stat-label">Ticket Médio</span>
+                <div class="dash-stat-icon purple"><i class="fa-solid fa-receipt"></i></div>
+            </div>
+            <div class="dash-stat-value" style="font-size:1.55rem">R$&nbsp;<?= number_format($ticketMedio, 2, ',', '.') ?></div>
+            <div class="dash-stat-footer"><span><?= $ticketMedio > 0 ? 'média por venda' : 'Sem dados' ?></span></div>
+        </div>
+
+        <div class="dash-stat">
+            <div class="dash-stat-top">
+                <span class="dash-stat-label">Vendas Hoje</span>
+                <div class="dash-stat-icon blue"><i class="fa-solid fa-calendar-day"></i></div>
+            </div>
+            <div class="dash-stat-value"><?= $vendasHoje ?></div>
+            <div class="dash-stat-footer"><span><?= $vendasHoje > 0 ? 'hoje' : 'Nenhuma hoje' ?></span></div>
+        </div>
+
+    </div><!-- /dash-cards -->
+
+    <!-- GRID: TABELA + RESUMO -->
+    <div class="dash-grid">
+
+        <!-- Tabela de Vendas -->
+        <div class="dash-panel">
+            <div class="dash-panel-head">
+                <div>
+                    <div class="dash-panel-title">
+                        <i class="fa-solid fa-table-list"></i>
+                        Tabela de Vendas
                     </div>
-                    <div class="dash-stat-value"><?= $totalVendas ?></div>
-                    <div class="dash-stat-footer"><span><?= $totalVendas > 0 ? 'venda(s) registrada(s)' : 'Sem vendas' ?></span></div>
+                    <div class="dash-panel-sub">Todas as transações do período</div>
+                </div>
+            </div>
+            <div class="dash-panel-body">
+
+                <!-- Filtros -->
+                <div class="toolbar" style="margin-bottom:18px">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="search-input" placeholder="Buscar por cliente ou produto..." autocomplete="off">
+                    </div>
+                    <select class="form-select" style="width:auto;min-width:130px;padding:9px 13px;border-radius:50px">
+                        <option>Todos status</option>
+                        <option>Concluída</option>
+                        <option>Pendente</option>
+                        <option>Cancelada</option>
+                    </select>
+                    <select class="form-select" style="width:auto;min-width:130px;padding:9px 13px;border-radius:50px">
+                        <option>Hoje</option>
+                        <option>Esta semana</option>
+                        <option>Este mês</option>
+                    </select>
+                    <button class="btn-ghost">
+                        <i class="fa-solid fa-sliders"></i>
+                        Filtrar
+                    </button>
                 </div>
 
-                <div class="dash-stat">
-                    <div class="dash-stat-top">
-                        <span class="dash-stat-label">Faturamento Total</span>
-                        <div class="dash-stat-icon orange"><i class="fa-solid fa-sack-dollar"></i></div>
-                    </div>
-                    <div class="dash-stat-value" style="font-size:1.55rem">R$&nbsp;<?= number_format($faturamento, 2, ',', '.') ?></div>
-                    <div class="dash-stat-footer"><span><?= $faturamento > 0 ? 'acumulado total' : 'Sem faturamento' ?></span></div>
-                </div>
-
-                <div class="dash-stat">
-                    <div class="dash-stat-top">
-                        <span class="dash-stat-label">Ticket Médio</span>
-                        <div class="dash-stat-icon purple"><i class="fa-solid fa-receipt"></i></div>
-                    </div>
-                    <div class="dash-stat-value" style="font-size:1.55rem">R$&nbsp;<?= number_format($ticketMedio, 2, ',', '.') ?></div>
-                    <div class="dash-stat-footer"><span><?= $ticketMedio > 0 ? 'média por venda' : 'Sem dados' ?></span></div>
-                </div>
-
-                <div class="dash-stat">
-                    <div class="dash-stat-top">
-                        <span class="dash-stat-label">Vendas Hoje</span>
-                        <div class="dash-stat-icon blue"><i class="fa-solid fa-calendar-day"></i></div>
-                    </div>
-                    <div class="dash-stat-value"><?= $vendasHoje ?></div>
-                    <div class="dash-stat-footer"><span><?= $vendasHoje > 0 ? 'hoje' : 'Nenhuma hoje' ?></span></div>
-                </div>
-
-            </div><!-- /dash-cards -->
-
-            <!-- GRID: TABELA + RESUMO -->
-            <div class="dash-grid">
-
-                <!-- Tabela de Vendas -->
-                <div class="dash-panel">
-                    <div class="dash-panel-head">
-                        <div>
-                            <div class="dash-panel-title">
-                                <i class="fa-solid fa-table-list"></i>
-                                Tabela de Vendas
-                            </div>
-                            <div class="dash-panel-sub">Todas as transações do período</div>
-                        </div>
-                    </div>
-                    <div class="dash-panel-body">
-
-                        <!-- Filtros -->
-                        <div class="toolbar" style="margin-bottom:18px">
-                            <div class="search-box">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                                <input type="text" class="search-input" placeholder="Buscar por cliente ou produto..." autocomplete="off">
-                            </div>
-                            <select class="form-select" style="width:auto;min-width:130px;padding:9px 13px;border-radius:50px">
-                                <option>Todos status</option>
-                                <option>Concluída</option>
-                                <option>Pendente</option>
-                                <option>Cancelada</option>
-                            </select>
-                            <select class="form-select" style="width:auto;min-width:130px;padding:9px 13px;border-radius:50px">
-                                <option>Hoje</option>
-                                <option>Esta semana</option>
-                                <option>Este mês</option>
-                            </select>
-                            <button class="btn-ghost">
-                                <i class="fa-solid fa-sliders"></i>
-                                Filtrar
-                            </button>
-                        </div>
-
-                        <!-- Tabela -->
-                        <div class="table-wrap">
-                            <table>
-                                <thead>
+                <!-- Tabela -->
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Produto</th>
+                                <th>Qtd.</th>
+                                <th>Valor</th>
+                                <th>Data</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($vendas)): ?>
+                                <?php foreach ($vendas as $venda):
+                                    $vJson = htmlspecialchars(json_encode([
+                                        'id'         => (int)$venda['id'],
+                                        'quantidade' => (int)$venda['quantidade'],
+                                        'valor'      => (float)$venda['valor'],
+                                        'status'     => $venda['status'],
+                                        'cliente'    => $venda['cliente'],
+                                        'produto'    => $venda['produto'],
+                                    ]), ENT_QUOTES);
+                                ?>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Cliente</th>
-                                        <th>Produto</th>
-                                        <th>Qtd.</th>
-                                        <th>Valor</th>
-                                        <th>Data</th>
-                                        <th>Status</th>
-                                        <th>Ações</th>
+                                        <td><?= (int)$venda['id'] ?></td>
+                                        <td><?= htmlspecialchars($venda['cliente']) ?></td>
+                                        <td><?= htmlspecialchars($venda['produto']) ?></td>
+                                        <td><?= (int)$venda['quantidade'] ?></td>
+                                        <td>R$ <?= number_format($venda['valor'], 2, ',', '.') ?></td>
+                                        <td><?= date('d/m/Y H:i', strtotime($venda['data_venda'])) ?></td>
+                                        <td>
+                                            <?php
+                                            $badgeMap = [
+                                                'concluida' => '<span class="badge badge-green">Concluída</span>',
+                                                'pendente'  => '<span class="badge badge-yellow">Pendente</span>',
+                                                'cancelada' => '<span class="badge badge-red">Cancelada</span>',
+                                            ];
+                                            echo $badgeMap[$venda['status']] ?? '<span class="badge">' . htmlspecialchars($venda['status']) . '</span>';
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <div class="actions-cell">
+                                                <button class="btn-icon edit" title="Editar"
+                                                    onclick='openEditVendaDrawer(<?= $vJson ?>)'>
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </button>
+                                                <form method="POST" style="display:inline">
+                                                    <input type="hidden" name="acao" value="excluir_venda">
+                                                    <input type="hidden" name="id" value="<?= (int)$venda['id'] ?>">
+                                                    <button class="btn-icon del" type="button" title="Excluir"
+                                                        onclick="confirmDeleteVenda(this.closest('form'))">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (!empty($vendas)): ?>
-                                        <?php foreach ($vendas as $venda):
-                                            $vJson = htmlspecialchars(json_encode([
-                                                'id'         => (int)$venda['id'],
-                                                'quantidade' => (int)$venda['quantidade'],
-                                                'valor'      => (float)$venda['valor'],
-                                                'status'     => $venda['status'],
-                                                'cliente'    => $venda['cliente'],
-                                                'produto'    => $venda['produto'],
-                                            ]), ENT_QUOTES);
-                                        ?>
-                                            <tr>
-                                                <td><?= (int)$venda['id'] ?></td>
-                                                <td><?= htmlspecialchars($venda['cliente']) ?></td>
-                                                <td><?= htmlspecialchars($venda['produto']) ?></td>
-                                                <td><?= (int)$venda['quantidade'] ?></td>
-                                                <td>R$ <?= number_format($venda['valor'], 2, ',', '.') ?></td>
-                                                <td><?= date('d/m/Y H:i', strtotime($venda['data_venda'])) ?></td>
-                                                <td>
-                                                    <?php
-                                                    $badgeMap = [
-                                                        'concluida' => '<span class="badge badge-green">Concluída</span>',
-                                                        'pendente'  => '<span class="badge badge-yellow">Pendente</span>',
-                                                        'cancelada' => '<span class="badge badge-red">Cancelada</span>',
-                                                    ];
-                                                    echo $badgeMap[$venda['status']] ?? '<span class="badge">' . htmlspecialchars($venda['status']) . '</span>';
-                                                    ?>
-                                                </td>
-                                                <td>
-                                                    <div class="actions-cell">
-                                                        <button class="btn-icon edit" title="Editar"
-                                                            onclick='openEditVendaDrawer(<?= $vJson ?>)'>
-                                                            <i class="fa-solid fa-pen"></i>
-                                                        </button>
-                                                        <form method="POST" style="display:inline">
-                                                            <input type="hidden" name="acao" value="excluir_venda">
-                                                            <input type="hidden" name="id" value="<?= (int)$venda['id'] ?>">
-                                                            <button class="btn-icon del" type="button" title="Excluir"
-                                                                onclick="confirmDeleteVenda(this.closest('form'))">
-                                                                <i class="fa-solid fa-trash"></i>
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <tr>
-                                            <td colspan="8">
-                                                <div class="empty-state">
-                                                    <i class="fa-solid fa-circle-dollar-to-slot"></i>
-                                                    <h4>Nenhuma venda registrada</h4>
-                                                    <p>Clique em "Nova Venda" para registrar a primeira.</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="8">
+                                        <div class="empty-state">
+                                            <i class="fa-solid fa-circle-dollar-to-slot"></i>
+                                            <h4>Nenhuma venda registrada</h4>
+                                            <p>Clique em "Nova Venda" para registrar a primeira.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
 
+            </div>
+        </div><!-- /tabela -->
+
+        <!-- Resumo das Vendas -->
+        <div class="dash-panel">
+            <div class="dash-panel-head">
+                <div>
+                    <div class="dash-panel-title">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        Resumo das Vendas
                     </div>
-                </div><!-- /tabela -->
+                    <div class="dash-panel-sub">Informações do período</div>
+                </div>
+            </div>
+            <div class="dash-panel-body">
+                <div class="activity-list">
 
-                <!-- Resumo das Vendas -->
-                <div class="dash-panel">
-                    <div class="dash-panel-head">
-                        <div>
-                            <div class="dash-panel-title">
-                                <i class="fa-solid fa-chart-pie"></i>
-                                Resumo das Vendas
+                    <div class="activity-item" style="align-items:center">
+                        <div class="activity-dot orange"><i class="fa-solid fa-coins"></i></div>
+                        <div class="activity-text">
+                            <div style="font-size:.72rem;color:var(--text-dim);margin-bottom:2px">Total vendido hoje</div>
+                            <div style="font-size:.95rem;font-weight:700;color:var(--text-main)">
+                                R$&nbsp;<?= number_format($totalHoje, 2, ',', '.') ?>
                             </div>
-                            <div class="dash-panel-sub">Informações do período</div>
                         </div>
                     </div>
-                    <div class="dash-panel-body">
-                        <div class="activity-list">
 
-                            <div class="activity-item" style="align-items:center">
-                                <div class="activity-dot orange"><i class="fa-solid fa-coins"></i></div>
-                                <div class="activity-text">
-                                    <div style="font-size:.72rem;color:var(--text-dim);margin-bottom:2px">Total vendido hoje</div>
-                                    <div style="font-size:.95rem;font-weight:700;color:var(--text-main)">
-                                        R$&nbsp;<?= number_format($totalHoje, 2, ',', '.') ?>
-                                    </div>
-                                </div>
+                    <div class="activity-item" style="align-items:center">
+                        <div class="activity-dot purple"><i class="fa-solid fa-box"></i></div>
+                        <div class="activity-text">
+                            <div style="font-size:.72rem;color:var(--text-dim);margin-bottom:2px">Produto mais vendido</div>
+                            <div style="font-size:.88rem;font-weight:600;color:var(--text-main)">
+                                <?= htmlspecialchars($produtoMaisVendido['produto'] ?? '—') ?>
                             </div>
-
-                            <div class="activity-item" style="align-items:center">
-                                <div class="activity-dot purple"><i class="fa-solid fa-box"></i></div>
-                                <div class="activity-text">
-                                    <div style="font-size:.72rem;color:var(--text-dim);margin-bottom:2px">Produto mais vendido</div>
-                                    <div style="font-size:.88rem;font-weight:600;color:var(--text-main)">
-                                        <?= htmlspecialchars($produtoMaisVendido['produto'] ?? '—') ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="activity-item" style="align-items:center">
-                                <div class="activity-dot blue"><i class="fa-solid fa-clock"></i></div>
-                                <div class="activity-text">
-                                    <div style="font-size:.72rem;color:var(--text-dim);margin-bottom:2px">Última venda realizada</div>
-                                    <div style="font-size:.88rem;font-weight:600;color:var(--text-main)">
-                                        <?= $ultimaVenda ? date('d/m/Y H:i', strtotime($ultimaVenda['data_venda'])) : '—' ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="activity-item" style="align-items:center">
-                                <div class="activity-dot green"><i class="fa-solid fa-user-check"></i></div>
-                                <div class="activity-text">
-                                    <div style="font-size:.72rem;color:var(--text-dim);margin-bottom:2px">Cliente que mais comprou</div>
-                                    <div style="font-size:.88rem;font-weight:600;color:var(--text-main)">
-                                        <?= htmlspecialchars($clienteMaisComprou['cliente'] ?? '—') ?>
-                                        <?php if ($clienteMaisComprou): ?>
-                                            <span style="font-size:.72rem;color:var(--text-dim);font-weight:400">
-                                                (<?= $clienteMaisComprou['total_compras'] ?> compra<?= $clienteMaisComprou['total_compras'] != 1 ? 's' : '' ?>)
-                                            </span>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="activity-item" style="align-items:center;border-bottom:none;padding-bottom:0">
-                                <div class="activity-dot" style="background:rgba(255,255,255,0.05);color:var(--text-dim)">
-                                    <i class="fa-solid fa-rotate"></i>
-                                </div>
-                                <div class="activity-text">
-                                    <div style="font-size:.72rem;color:var(--text-dim);margin-bottom:2px">Última atualização</div>
-                                    <div style="font-size:.82rem;color:var(--text-sub)"><?= date('d/m/Y, H:i') ?></div>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
-                </div><!-- /resumo -->
 
-            </div><!-- /dash-grid -->
+                    <div class="activity-item" style="align-items:center">
+                        <div class="activity-dot blue"><i class="fa-solid fa-clock"></i></div>
+                        <div class="activity-text">
+                            <div style="font-size:.72rem;color:var(--text-dim);margin-bottom:2px">Última venda realizada</div>
+                            <div style="font-size:.88rem;font-weight:600;color:var(--text-main)">
+                                <?= $ultimaVenda ? date('d/m/Y H:i', strtotime($ultimaVenda['data_venda'])) : '—' ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item" style="align-items:center">
+                        <div class="activity-dot green"><i class="fa-solid fa-user-check"></i></div>
+                        <div class="activity-text">
+                            <div style="font-size:.72rem;color:var(--text-dim);margin-bottom:2px">Cliente que mais comprou</div>
+                            <div style="font-size:.88rem;font-weight:600;color:var(--text-main)">
+                                <?= htmlspecialchars($clienteMaisComprou['cliente'] ?? '—') ?>
+                                <?php if ($clienteMaisComprou): ?>
+                                    <span style="font-size:.72rem;color:var(--text-dim);font-weight:400">
+                                        (<?= $clienteMaisComprou['total_compras'] ?> compra<?= $clienteMaisComprou['total_compras'] != 1 ? 's' : '' ?>)
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item" style="align-items:center;border-bottom:none;padding-bottom:0">
+                        <div class="activity-dot" style="background:rgba(255,255,255,0.05);color:var(--text-dim)">
+                            <i class="fa-solid fa-rotate"></i>
+                        </div>
+                        <div class="activity-text">
+                            <div style="font-size:.72rem;color:var(--text-dim);margin-bottom:2px">Última atualização</div>
+                            <div style="font-size:.82rem;color:var(--text-sub)"><?= date('d/m/Y, H:i') ?></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div><!-- /resumo -->
+
+    </div><!-- /dash-grid -->
 
         </main><!-- /page-content -->
 

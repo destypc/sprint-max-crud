@@ -13,84 +13,82 @@ require_once __DIR__ . '/../config/helpers.php';
 
 $pdo = Connection::getConnection();
 
-// ── POST ─────────────────────────────────────────────────────────
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'excluir_venda') {
+
+    $id = (int) ($_POST['id'] ?? 0);
+    if ($id > 0) {
+        try {
+            $stmtV = $pdo->prepare("SELECT produto_id, quantidade FROM vendas WHERE id = ?");
+            $stmtV->execute([$id]);
+            $v = $stmtV->fetch(PDO::FETCH_ASSOC);
+            if ($v) {
+                $stmtQtd = $pdo->prepare("SELECT quantidade FROM produtos WHERE id = ?");
+                $stmtQtd->execute([$v['produto_id']]);
+                $qtdFinal = (int)$stmtQtd->fetchColumn() + $v['quantidade'];
+                $pdo->prepare("UPDATE produtos SET quantidade = ?, status = ? WHERE id = ?")
+                    ->execute([$qtdFinal, resolverStatusProduto($qtdFinal), $v['produto_id']]);
+            }
+            $pdo->prepare("DELETE FROM vendas WHERE id = ?")->execute([$id]);
+            registrarLog($pdo, 'venda_excluida', "Venda #{$id} excluída", $_SESSION['user']['id'] ?? null);
+            $_SESSION['flash'] = ['type' => 'success', 'message' => 'Venda excluída com sucesso!'];
+        } catch (PDOException $e) {
+            $_SESSION['flash'] = ['type' => 'error', 'message' => 'Erro ao excluir venda.'];
+        }
+    }
+    header('Location: /pages/vendas.php');
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'editar_venda') {
+
+    $id      = (int)   ($_POST['id']        ?? 0);
+    $novaQtd = (int)   ($_POST['quantidade'] ?? 0);
+    $novoVal = (float) ($_POST['valor']      ?? 0);
+    $novoSt  = $_POST['status'] ?? 'pendente';
+
+    if ($id <= 0 || $novaQtd <= 0) {
+        $_SESSION['flash'] = ['type' => 'error', 'message' => 'Dados inválidos.'];
+        header('Location: /pages/vendas.php');
+        exit;
+    }
+
+    $stmtOld = $pdo->prepare("SELECT produto_id, quantidade FROM vendas WHERE id = ?");
+    $stmtOld->execute([$id]);
+    $vendaOld = $stmtOld->fetch(PDO::FETCH_ASSOC);
+
+    if (!$vendaOld) {
+        $_SESSION['flash'] = ['type' => 'error', 'message' => 'Venda não encontrada.'];
+        header('Location: /pages/vendas.php');
+        exit;
+    }
+
+    $stmtEst = $pdo->prepare("SELECT quantidade FROM produtos WHERE id = ?");
+    $stmtEst->execute([$vendaOld['produto_id']]);
+    $estoqueRestaurado = (int)$stmtEst->fetchColumn() + $vendaOld['quantidade'];
+
+    if ($novaQtd > $estoqueRestaurado) {
+        $_SESSION['flash'] = ['type' => 'error', 'message' => "Estoque insuficiente. Disponível: {$estoqueRestaurado} unidade(s)."];
+        header('Location: /pages/vendas.php');
+        exit;
+    }
+
+    try {
+        $qtdFinal = $estoqueRestaurado - $novaQtd;
+        $pdo->prepare("UPDATE produtos SET quantidade = ?, status = ? WHERE id = ?")
+            ->execute([$qtdFinal, resolverStatusProduto($qtdFinal), $vendaOld['produto_id']]);
+        $pdo->prepare("UPDATE vendas SET quantidade = ?, valor = ?, status = ? WHERE id = ?")
+            ->execute([$novaQtd, $novoVal, $novoSt, $id]);
+        registrarLog($pdo, 'venda_editada', "Venda #{$id} atualizada", $_SESSION['user']['id'] ?? null);
+        $_SESSION['flash'] = ['type' => 'success', 'message' => 'Venda atualizada com sucesso!'];
+    } catch (PDOException $e) {
+        $_SESSION['flash'] = ['type' => 'error', 'message' => 'Erro ao atualizar venda.'];
+    }
+    header('Location: /pages/vendas.php');
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $acao = $_POST['acao'] ?? 'cadastrar';
-
-    /* Excluir venda */
-    if ($acao === 'excluir_venda') {
-        $id = (int) ($_POST['id'] ?? 0);
-        if ($id > 0) {
-            try {
-                // Restaurar estoque antes de excluir
-                $stmtV = $pdo->prepare("SELECT produto_id, quantidade FROM vendas WHERE id = ?");
-                $stmtV->execute([$id]);
-                $v = $stmtV->fetch(PDO::FETCH_ASSOC);
-                if ($v) {
-                    $qtdFinal = (int)$pdo->query("SELECT quantidade FROM produtos WHERE id = {$v['produto_id']}")->fetchColumn() + $v['quantidade'];
-                    $st = $qtdFinal === 0 ? 'sem_estoque' : ($qtdFinal <= 5 ? 'baixo_estoque' : 'ativo');
-                    $pdo->prepare("UPDATE produtos SET quantidade = ?, status = ? WHERE id = ?")->execute([$qtdFinal, $st, $v['produto_id']]);
-                }
-                $pdo->prepare("DELETE FROM vendas WHERE id = ?")->execute([$id]);
-                registrarLog($pdo, 'venda_excluida', "Venda #{$id} excluída", $_SESSION['user']['id'] ?? null);
-                $_SESSION['flash'] = ['type' => 'success', 'message' => 'Venda excluída com sucesso!'];
-            } catch (PDOException $e) {
-                $_SESSION['flash'] = ['type' => 'error', 'message' => 'Erro ao excluir venda.'];
-            }
-        }
-        header('Location: /pages/vendas.php');
-        exit;
-    }
-
-    /* Editar venda */
-    if ($acao === 'editar_venda') {
-        $id      = (int)   ($_POST['id']         ?? 0);
-        $novaQtd = (int)   ($_POST['quantidade']  ?? 0);
-        $novoVal = (float) ($_POST['valor']       ?? 0);
-        $novoSt  = $_POST['status'] ?? 'pendente';
-
-        if ($id <= 0 || $novaQtd <= 0) {
-            $_SESSION['flash'] = ['type' => 'error', 'message' => 'Dados inválidos.'];
-            header('Location: /pages/vendas.php');
-            exit;
-        }
-
-        $stmtOld = $pdo->prepare("SELECT produto_id, quantidade FROM vendas WHERE id = ?");
-        $stmtOld->execute([$id]);
-        $vendaOld = $stmtOld->fetch(PDO::FETCH_ASSOC);
-
-        if (!$vendaOld) {
-            $_SESSION['flash'] = ['type' => 'error', 'message' => 'Venda não encontrada.'];
-            header('Location: /pages/vendas.php');
-            exit;
-        }
-
-        // Restaurar estoque antigo
-        $estoqueAtual = (int)$pdo->query("SELECT quantidade FROM produtos WHERE id = {$vendaOld['produto_id']}")->fetchColumn();
-        $estoqueRestaurado = $estoqueAtual + $vendaOld['quantidade'];
-
-        if ($novaQtd > $estoqueRestaurado) {
-            $_SESSION['flash'] = ['type' => 'error', 'message' => "Estoque insuficiente. Disponível: {$estoqueRestaurado} unidade(s)."];
-            header('Location: /pages/vendas.php');
-            exit;
-        }
-
-        try {
-            $qtdFinal = $estoqueRestaurado - $novaQtd;
-            $prodSt   = $qtdFinal === 0 ? 'sem_estoque' : ($qtdFinal <= 5 ? 'baixo_estoque' : 'ativo');
-            $pdo->prepare("UPDATE produtos SET quantidade = ?, status = ? WHERE id = ?")->execute([$qtdFinal, $prodSt, $vendaOld['produto_id']]);
-            $pdo->prepare("UPDATE vendas SET quantidade = ?, valor = ?, status = ? WHERE id = ?")->execute([$novaQtd, $novoVal, $novoSt, $id]);
-            registrarLog($pdo, 'venda_editada', "Venda #{$id} atualizada", $_SESSION['user']['id'] ?? null);
-            $_SESSION['flash'] = ['type' => 'success', 'message' => 'Venda atualizada com sucesso!'];
-        } catch (PDOException $e) {
-            $_SESSION['flash'] = ['type' => 'error', 'message' => 'Erro ao atualizar venda.'];
-        }
-        header('Location: /pages/vendas.php');
-        exit;
-    }
-
-    /* Cadastrar venda */
     $cliente    = trim($_POST['cliente']    ?? '');
     $produto    = trim($_POST['produto']    ?? '');
     $quantidade = (int)   ($_POST['quantidade'] ?? 0);
@@ -103,7 +101,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Buscar usuário pelo nome
     $stmtU = $pdo->prepare("SELECT id FROM usuarios WHERE nome = ?");
     $stmtU->execute([$cliente]);
     $usuario = $stmtU->fetch(PDO::FETCH_ASSOC);
@@ -114,7 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Buscar produto pelo nome
     $stmtP = $pdo->prepare("SELECT id FROM produtos WHERE nome = ?");
     $stmtP->execute([$produto]);
     $produtoBanco = $stmtP->fetch(PDO::FETCH_ASSOC);
@@ -125,8 +121,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Verificar estoque disponível
-    $estoqueAtual = (int) $pdo->query("SELECT quantidade FROM produtos WHERE id = {$produtoBanco['id']}")->fetchColumn();
+    $stmtEst = $pdo->prepare("SELECT quantidade FROM produtos WHERE id = ?");
+    $stmtEst->execute([$produtoBanco['id']]);
+    $estoqueAtual = (int)$stmtEst->fetchColumn();
 
     if ($quantidade <= 0) {
         $_SESSION['flash'] = ['type' => 'error', 'message' => 'A quantidade deve ser maior que zero.'];
@@ -146,10 +143,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             VALUES (?, ?, ?, ?, ?, NOW())
         ")->execute([$usuario['id'], $produtoBanco['id'], $quantidade, $valor, $status]);
 
-        // Deduzir estoque e recalcular status do produto
-        $qtdFinal   = $estoqueAtual - $quantidade;
-        $prodStatus = $qtdFinal === 0 ? 'sem_estoque' : ($qtdFinal <= 5 ? 'baixo_estoque' : 'ativo');
-        $pdo->prepare("UPDATE produtos SET quantidade = ?, status = ? WHERE id = ?")->execute([$qtdFinal, $prodStatus, $produtoBanco['id']]);
+        $qtdFinal = $estoqueAtual - $quantidade;
+        $pdo->prepare("UPDATE produtos SET quantidade = ?, status = ? WHERE id = ?")
+            ->execute([$qtdFinal, resolverStatusProduto($qtdFinal), $produtoBanco['id']]);
 
         registrarLog($pdo, 'venda_cadastrada', "Venda de \"{$produto}\" para \"{$cliente}\" — R$ " . number_format($valor, 2, ',', '.'), $_SESSION['user']['id'] ?? null);
         $_SESSION['flash'] = ['type' => 'success', 'message' => 'Venda cadastrada com sucesso!'];
@@ -161,9 +157,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-// ── GET: buscar dados para a view ─────────────────────────────────
-
-// Lista completa de vendas
 $stmt = $pdo->query("
     SELECT
         vendas.id,
@@ -180,12 +173,10 @@ $stmt = $pdo->query("
 ");
 $vendas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Totais gerais
 $totalVendas = count($vendas);
 $faturamento = array_sum(array_column($vendas, 'valor'));
 $ticketMedio = $totalVendas > 0 ? $faturamento / $totalVendas : 0;
 
-// Vendas realizadas hoje (contagem)
 $hoje = date('Y-m-d');
 $vendasHoje = 0;
 foreach ($vendas as $v) {
@@ -194,11 +185,9 @@ foreach ($vendas as $v) {
     }
 }
 
-// Total em valor vendido hoje
 $stmtHoje = $pdo->query("SELECT SUM(valor) AS total FROM vendas WHERE DATE(data_venda) = CURDATE()");
 $totalHoje = (float) ($stmtHoje->fetch(PDO::FETCH_ASSOC)['total'] ?? 0);
 
-// Produto mais vendido
 $stmtProd = $pdo->query("
     SELECT produtos.nome AS produto, SUM(vendas.quantidade) AS qtd
     FROM vendas
@@ -209,7 +198,6 @@ $stmtProd = $pdo->query("
 ");
 $produtoMaisVendido = $stmtProd->fetch(PDO::FETCH_ASSOC) ?: null;
 
-// Última venda realizada
 $stmtUltima = $pdo->query("
     SELECT usuarios.nome AS cliente, vendas.data_venda
     FROM vendas
@@ -219,7 +207,6 @@ $stmtUltima = $pdo->query("
 ");
 $ultimaVenda = $stmtUltima->fetch(PDO::FETCH_ASSOC) ?: null;
 
-// Cliente que mais comprou
 $stmtCliente = $pdo->query("
     SELECT usuarios.nome AS cliente, COUNT(vendas.id) AS total_compras
     FROM vendas
@@ -230,11 +217,9 @@ $stmtCliente = $pdo->query("
 ");
 $clienteMaisComprou = $stmtCliente->fetch(PDO::FETCH_ASSOC) ?: null;
 
-// Flash
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
-// Listas para os selects do modal
 $stmtCL = $pdo->query("SELECT id, nome FROM usuarios ORDER BY nome ASC");
 $clientesLista = $stmtCL->fetchAll(PDO::FETCH_ASSOC);
 
