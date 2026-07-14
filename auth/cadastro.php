@@ -22,6 +22,9 @@ unset($_SESSION['flash']);
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/assets/img/favicon.png" type="image/png">
+
     <!-- CSS Personalizado -->
     <link rel="stylesheet" href="/assets/css/login.css">
     <link rel="stylesheet" href="/assets/css/cadastro.css">
@@ -29,27 +32,23 @@ unset($_SESSION['flash']);
 
 <body>
 
-    <div class="login-wrapper">
+    <div class="login-conteiner">
 
         <!-- ====== LADO ESQUERDO — Formulário ====== -->
-        <div class="login-left">
+        <div class="login-esquerda">
 
             <!-- Bolhas animadas de fundo -->
-            <div class="bubble bubble--1"></div>
-            <div class="bubble bubble--2"></div>
-            <div class="bubble bubble--3"></div>
-            <div class="bubble bubble--4"></div>
+            <div class="bolha bolha--1"></div>
+            <div class="bolha bolha--2"></div>
+            <div class="bolha bolha--3"></div>
+            <div class="bolha bolha--4"></div>
 
-            <div class="login-form-container">
+            <div class="login-formulario-conteiner">
 
-                <!-- Logo -->
-                <div class="brand-full">
-                    <img src="/assets/img/logo-name.png" alt="Sprint Max">
-                </div>
 
                 <!-- Título -->
-                <h1 class="login-title">Criar <span class="accent">conta</span></h1>
-                <p class="login-subtitle">Preencha os dados para se cadastrar.</p>
+                <h1 class="login-titulo">Criar <span class="destaque">conta</span></h1>
+                <p class="login-subtitulo">Preencha os dados para se cadastrar.</p>
 
                 <?php if ($flash): ?>
                     <div class="alert alert-<?= $flash['tipo'] === 'erro' ? 'danger' : 'success' ?> py-2" role="alert">
@@ -62,75 +61,75 @@ unset($_SESSION['flash']);
                 <form id="cadastroForm" novalidate method="POST" action="/app/controller/cadastroController.php">
 
                     <!-- Nome -->
-                    <div class="form-group">
+                    <div class="grupo-formulario">
                         <label for="cadNome">Nome completo</label>
-                        <div class="input-wrapper">
-                            <i class="fa-regular fa-user input-icon"></i>
+                        <div class="entrada-conteiner">
+                            <i class="fa-regular fa-user icone-entrada"></i>
                             <input type="text" id="cadNome" name="nome" placeholder="Seu nome completo" autocomplete="name">
                         </div>
                     </div>
 
                     <!-- Email -->
-                    <div class="form-group">
+                    <div class="grupo-formulario">
                         <label for="cadEmail">E-mail</label>
-                        <div class="input-wrapper">
-                            <i class="fa-regular fa-envelope input-icon"></i>
+                        <div class="entrada-conteiner">
+                            <i class="fa-regular fa-envelope icone-entrada"></i>
                             <input type="email" id="cadEmail" name="email" placeholder="Seu melhor e-mail" autocomplete="email">
                         </div>
                     </div>
 
                     <!-- Senha -->
-                    <div class="form-group">
+                    <div class="grupo-formulario">
                         <label for="cadSenha">Senha</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-lock input-icon"></i>
+                        <div class="entrada-conteiner">
+                            <i class="fa-solid fa-lock icone-entrada"></i>
                             <input type="password" id="cadSenha" name="senha" placeholder="Crie uma senha" autocomplete="new-password">
-                            <button type="button" class="toggle-password" aria-label="Mostrar senha">
+                            <button type="button" class="alternar-senha" aria-label="Mostrar senha">
                                 <i class="fa-regular fa-eye"></i>
                             </button>
                         </div>
                         <!-- Indicador de força de senha -->
-                        <div id="cadSenhaStrength" class="strength-wrapper">
-                            <div class="password-strength">
-                                <div class="strength-bar"></div>
-                                <div class="strength-bar"></div>
-                                <div class="strength-bar"></div>
+                        <div id="cadSenhaStrength" class="forca-conteiner">
+                            <div class="forca-senha">
+                                <div class="forca-barra"></div>
+                                <div class="forca-barra"></div>
+                                <div class="forca-barra"></div>
                             </div>
-                            <p class="strength-label"></p>
+                            <p class="forca-rotulo"></p>
                         </div>
                     </div>
 
                     <!-- Confirmar Senha -->
-                    <div class="form-group">
+                    <div class="grupo-formulario">
                         <label for="cadConfirmar">Confirmar senha</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-lock input-icon"></i>
+                        <div class="entrada-conteiner">
+                            <i class="fa-solid fa-lock icone-entrada"></i>
                             <input
                                 type="password"
                                 id="cadConfirmar"
                                 name="confirmar_senha"
                                 placeholder="Repita a senha"
                                 autocomplete="new-password">
-                            <button type="button" class="toggle-password" aria-label="Mostrar senha">
+                            <button type="button" class="alternar-senha" aria-label="Mostrar senha">
                                 <i class="fa-regular fa-eye"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- Botão Cadastrar -->
-                    <button type="submit" class="btn-sprint">
+                    <button type="submit" class="botao-sprint">
                         <i class="fa-solid fa-user-check"></i>
                         Cadastrar
                     </button>
                 </form>
 
                 <!-- Divider -->
-                <div class="divider">
+                <div class="divisor">
                     <span>Já possui uma conta?</span>
                 </div>
 
                 <!-- Botão Voltar ao Login -->
-                <a href="/auth/login.php" class="btn-outline-sprint">
+                <a href="/auth/login.php" class="botao-contorno-sprint">
                     <i class="fa-solid fa-right-to-bracket"></i>
                     Fazer login
                 </a>
@@ -139,43 +138,43 @@ unset($_SESSION['flash']);
         </div>
 
         <!-- ====== LADO DIREITO — Visual ====== -->
-        <div class="login-right login-right--dark">
+        <div class="login-direita login-direita--escura">
 
             <!-- Imagem hero (atleta) -->
-            <div class="right-bg">
+            <div class="direita-fundo">
                 <img src="/assets/img/sprint-max2.png" alt="">
             </div>
 
             <!-- Overlay gradiente para legibilidade -->
-            <div class="right-overlay"></div>
+            <div class="direita-sobreposicao"></div>
 
             <!-- Decorações geométricas sutis -->
-            <div class="geo-circle geo-circle--1"></div>
-            <div class="speed-line speed-line--1"></div>
-            <div class="speed-line speed-line--3"></div>
+            <div class="circulo-geometrico circulo-geometrico--1"></div>
+            <div class="linha-velocidade linha-velocidade--1"></div>
+            <div class="linha-velocidade linha-velocidade--3"></div>
 
             <!-- Conteúdo principal -->
-            <div class="right-content">
+            <div class="direita-conteudo">
 
                 <div></div>
 
                 <!-- Tagline central -->
-                <div class="right-tagline">
-                    <p class="tagline-eyebrow">Sistema de gestão</p>
+                <div class="direita-slogan">
+                    <p class="slogan-sobrancelha">Sistema de gestão</p>
                     <h2>Desempenho.<br>Velocidade.<br><span>Resultado.</span></h2>
                 </div>
 
-                <!-- Feature pills no rodapé -->
-                <div class="right-pills">
-                    <span class="pill">
+                <!-- Feature items no rodapé -->
+                <div class="direita-itens">
+                    <span class="item">
                         <i class="fa-solid fa-chart-line"></i>
                         Vendas em tempo real
                     </span>
-                    <span class="pill">
+                    <span class="item">
                         <i class="fa-solid fa-box"></i>
                         Controle de estoque
                     </span>
-                    <span class="pill">
+                    <span class="item">
                         <i class="fa-solid fa-users"></i>
                         Gestão de equipe
                     </span>

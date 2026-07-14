@@ -9,7 +9,6 @@ if (empty($_SESSION['user']) || $_SESSION['user']['tipo'] !== 'admin') {
 }
 
 require_once __DIR__ . '/../config/conexao.php';
-require_once __DIR__ . '/../config/helpers.php';
 
 $pdo = Connection::getConnection();
 
@@ -29,7 +28,6 @@ try {
 }
 
 $usuario_logado = $_SESSION['user'];
-$flash          = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 $current_page   = 'dashboard';
 $page_title     = 'Dashboard';
@@ -40,15 +38,8 @@ $totalProdutos = (int) $pdo->query("SELECT COUNT(*) FROM produtos")->fetchColumn
 $totalAdmins   = (int) $pdo->query("SELECT COUNT(*) FROM usuarios WHERE tipo = 'admin'")->fetchColumn();
 
 // Queries que dependem das tabelas criadas pela migração
-$totalPedidos       = 0;
-$pedidosRecentes    = [];
-$totalFaturamento   = 0.0;
-$ticketMedio        = 0.0;
-$pedidosHoje        = 0;
-$valorHoje          = 0.0;
-$produtoMaisVendido = null;
-$clienteMaisComprou = null;
-$ultimoPedido       = null;
+$totalPedidos    = 0;
+$pedidosRecentes = [];
 
 try {
     $totalPedidos = (int) $pdo->query("SELECT COUNT(*) FROM pedidos")->fetchColumn();
@@ -66,32 +57,6 @@ try {
         LIMIT 5
     ");
     $pedidosRecentes = $stmtPR->fetchAll(PDO::FETCH_ASSOC);
-
-    $totalFaturamento = (float) $pdo->query("SELECT COALESCE(SUM(total),0) FROM pedidos")->fetchColumn();
-    $ticketMedio      = $totalPedidos > 0 ? $totalFaturamento / $totalPedidos : 0;
-    $pedidosHoje      = (int)   $pdo->query("SELECT COUNT(*) FROM pedidos WHERE DATE(created_at) = CURDATE()")->fetchColumn();
-    $valorHoje        = (float) $pdo->query("SELECT COALESCE(SUM(total),0) FROM pedidos WHERE DATE(created_at) = CURDATE()")->fetchColumn();
-
-    $stmtPMV = $pdo->query("
-        SELECT produtos.nome AS nome, SUM(pedido_itens.quantidade) AS total
-        FROM pedido_itens INNER JOIN produtos ON produtos.id = pedido_itens.produto_id
-        GROUP BY produtos.id, produtos.nome ORDER BY total DESC LIMIT 1
-    ");
-    $produtoMaisVendido = $stmtPMV->fetch(PDO::FETCH_ASSOC) ?: null;
-
-    $stmtCMC = $pdo->query("
-        SELECT usuarios.nome AS nome, COUNT(pedidos.id) AS total
-        FROM pedidos INNER JOIN usuarios ON usuarios.id = pedidos.usuario_id
-        GROUP BY usuarios.id, usuarios.nome ORDER BY total DESC LIMIT 1
-    ");
-    $clienteMaisComprou = $stmtCMC->fetch(PDO::FETCH_ASSOC) ?: null;
-
-    $stmtUV = $pdo->query("
-        SELECT usuarios.nome AS cliente, pedidos.created_at AS data_pedido, pedidos.total
-        FROM pedidos INNER JOIN usuarios ON usuarios.id = pedidos.usuario_id
-        ORDER BY pedidos.created_at DESC LIMIT 1
-    ");
-    $ultimoPedido = $stmtUV->fetch(PDO::FETCH_ASSOC) ?: null;
 } catch (PDOException $e) {
     // Tabelas de pedidos ainda não existem — rodar banco-migration.sql
     error_log('dashboardController: tabela pedidos não encontrada. ' . $e->getMessage());

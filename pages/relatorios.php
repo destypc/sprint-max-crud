@@ -6,7 +6,6 @@ if (empty($_SESSION['user']) || $_SESSION['user']['tipo'] !== 'admin') {
 }
 
 require_once __DIR__ . '/../app/config/conexao.php';
-require_once __DIR__ . '/../app/config/helpers.php';
 
 $pdo = Connection::getConnection();
 
@@ -17,10 +16,18 @@ $breadcrumb     = [['label' => 'Logs']];
 $flash          = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
+// Paginação
+$por_pagina = 15;
+$pagina     = max(1, (int)($_GET['pagina'] ?? 1));
+$offset     = ($pagina - 1) * $por_pagina;
+$total_logs = 0;
+
 // Logs do sistema (todas as ações)
 $logs = [];
 try {
-    $stmtL = $pdo->query("
+    $total_logs = (int) $pdo->query("SELECT COUNT(*) FROM logs")->fetchColumn();
+
+    $stmtL = $pdo->prepare("
         SELECT l.acao, l.descricao, l.data,
                COALESCE(u.nome,  'Sistema') AS nome,
                COALESCE(u.email, '—')      AS email,
@@ -28,20 +35,19 @@ try {
         FROM logs l
         LEFT JOIN usuarios u ON u.id = l.usuario_id
         ORDER BY l.data DESC
-        LIMIT 50
+        LIMIT :lim OFFSET :off
     ");
+    $stmtL->bindValue(':lim', $por_pagina, PDO::PARAM_INT);
+    $stmtL->bindValue(':off', $offset,     PDO::PARAM_INT);
+    $stmtL->execute();
     $logs = $stmtL->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) { /* tabela logs pode não existir */
 }
 
-// Contações rápidas
-$totalLogs     = count($logs);
-$loginsTotal   = count(array_filter($logs, fn($l) => $l['acao'] === 'login'));
-$pedidosTotais = 0;
-try {
-    $pedidosTotais = (int) $pdo->query("SELECT COUNT(*) FROM pedidos")->fetchColumn();
-} catch (PDOException $e) { /* tabela pedidos ainda não criada — rodar banco-migration.sql */
-}
+$total_paginas = $total_logs > 0 ? (int) ceil($total_logs / $por_pagina) : 1;
+$pagina        = min($pagina, $total_paginas);
+$inicio        = $total_logs > 0 ? $offset + 1 : 0;
+$fim           = min($offset + $por_pagina, $total_logs);
 
 function logIconeRelatorio(string $acao): string
 {
@@ -76,6 +82,7 @@ function logIconeRelatorio(string $acao): string
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="icon" href="/assets/img/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="/assets/css/dashboard.css">
     <link rel="stylesheet" href="/assets/css/theme.css">
 </head>
@@ -84,32 +91,32 @@ function logIconeRelatorio(string $acao): string
 
     <?php require_once __DIR__ . '/../app/includes/sidebar.php'; ?>
 
-    <div class="main-wrapper">
+    <div class="conteiner-principal">
 
         <?php require_once __DIR__ . '/../app/includes/header.php'; ?>
 
-        <main class="page-content">
+        <main class="conteudo-pagina">
 
             <!-- ── HERO ─────────────────────────────────────────── -->
-            <div class="dash-hero">
+            <div class="painel-destaque">
                 <h1>Logs</h1>
                 <p>Visualize o histórico de acessos e atividades do sistema.</p>
             </div>
 
             <!-- ── ÚLTIMOS ACESSOS ───────────────────────────────── -->
             <div class="dash-access">
-                <div class="dash-panel-head">
+                <div class="painel-cabecalho">
                     <div>
-                        <div class="dash-panel-title">
+                        <div class="painel-titulo">
                             <i class="fa-solid fa-clock-rotate-left"></i>
                             Log de Atividades
                         </div>
-                        <div class="dash-panel-sub">
-                            <?= $totalLogs ?> registro<?= $totalLogs !== 1 ? 's' : '' ?> recentes
+                        <div class="painel-subtitulo">
+                            Mostrando <strong><?= $inicio ?>–<?= $fim ?></strong> de <strong><?= $total_logs ?></strong> registro<?= $total_logs !== 1 ? 's' : '' ?>
                         </div>
                     </div>
                 </div>
-                <div class="access-table-wrap">
+                <div class="access-envoltorio-tabela">
                     <table class="access-table">
                         <thead>
                             <tr>
@@ -124,7 +131,7 @@ function logIconeRelatorio(string $acao): string
                             <?php if (empty($logs)): ?>
                                 <tr>
                                     <td colspan="5">
-                                        <div class="empty-state">
+                                        <div class="estado-vazio">
                                             <i class="fa-solid fa-list"></i>
                                             <h4>Nenhum log registrado ainda</h4>
                                             <p>As atividades do sistema aparecerão aqui.</p>
@@ -174,13 +181,52 @@ function logIconeRelatorio(string $acao): string
                 </div>
             </div><!-- /dash-access -->
 
+            <?php if ($total_paginas > 1): ?>
+                <div class="pagination" style="margin-top:16px">
+                    <div class="pagination-info">
+                        Página <strong><?= $pagina ?></strong> de <strong><?= $total_paginas ?></strong>
+                    </div>
+                    <div class="pagination-btns">
+                        <?php
+                        $prevDisabled = $pagina <= 1 ? 'disabled' : '';
+                        $prevHref     = '?pagina=' . ($pagina - 1);
+                        ?>
+                        <button class="page-btn" <?= $prevDisabled ?>
+                            <?= !$prevDisabled ? "onclick=\"location.href='{$prevHref}'\"" : '' ?>>
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+
+                        <?php
+                        $start = max(1, min($pagina - 2, $total_paginas - 4));
+                        $end   = min($total_paginas, $start + 4);
+                        for ($p = $start; $p <= $end; $p++):
+                            $href   = '?pagina=' . $p;
+                            $active = $p === $pagina ? 'active' : '';
+                        ?>
+                            <button class="page-btn <?= $active ?>"
+                                <?= !$active ? "onclick=\"location.href='{$href}'\"" : '' ?>>
+                                <?= $p ?>
+                            </button>
+                        <?php endfor; ?>
+
+                        <?php
+                        $nextDisabled = $pagina >= $total_paginas ? 'disabled' : '';
+                        $nextHref     = '?pagina=' . ($pagina + 1);
+                        ?>
+                        <button class="page-btn" <?= $nextDisabled ?>
+                            <?= !$nextDisabled ? "onclick=\"location.href='{$nextHref}'\"" : '' ?>>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            <?php endif; ?>
+
         </main>
 
     </div>
 
     <?php require_once __DIR__ . '/../app/includes/modal-perfil.php'; ?>
 
-    <script src="/assets/js/script.js"></script>
 </body>
 
 </html>

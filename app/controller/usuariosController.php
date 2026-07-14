@@ -9,7 +9,6 @@ if (empty($_SESSION['user']) || $_SESSION['user']['tipo'] !== 'admin') {
 }
 
 require_once __DIR__ . '/../../app/config/conexao.php';
-require_once __DIR__ . '/../../app/config/helpers.php';
 
 $conexao = Connection::getConnection();
 

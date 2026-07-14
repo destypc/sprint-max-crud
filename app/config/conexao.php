@@ -2,14 +2,14 @@
 
 class Connection
 {
-    private static $conn = null;
+    private static $conexao = null;
 
     private function __construct() {}
 
     public static function getConnection()
     {
-        if (self::$conn === null) {
-            self::$conn = new PDO(
+        if (self::$conexao === null) {
+            self::$conexao = new PDO(
                 "mysql:host=localhost;port=3306;dbname=crud-sistema;charset=utf8mb4",
                 "root",
                 "",
@@ -21,6 +21,6 @@ class Connection
             );
         }
 
-        return self::$conn;
+        return self::$conexao;
     }
 }

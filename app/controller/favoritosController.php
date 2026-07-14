@@ -10,23 +10,23 @@ if (empty($_SESSION['user'])) {
 require_once __DIR__ . '/../config/conexao.php';
 
 $pdo = Connection::getConnection();
-$uid = (int) $_SESSION['user']['id'];
+$id_usuario = (int) $_SESSION['user']['id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'toggle') {
 
-    $produto_id = (int) ($_POST['produto_id'] ?? 0);
+    $id_produto = (int) ($_POST['produto_id'] ?? 0);
 
-    if ($produto_id > 0) {
+    if ($id_produto > 0) {
         $stmt = $pdo->prepare("SELECT id FROM favoritos WHERE usuario_id = ? AND produto_id = ?");
-        $stmt->execute([$uid, $produto_id]);
+        $stmt->execute([$id_usuario, $id_produto]);
 
         if ($stmt->fetchColumn()) {
             $pdo->prepare("DELETE FROM favoritos WHERE usuario_id = ? AND produto_id = ?")
-                ->execute([$uid, $produto_id]);
+                ->execute([$id_usuario, $id_produto]);
             $_SESSION['flash'] = ['type' => 'success', 'message' => 'Removido dos favoritos.'];
         } else {
             $pdo->prepare("INSERT INTO favoritos (usuario_id, produto_id) VALUES (?, ?)")
-                ->execute([$uid, $produto_id]);
+                ->execute([$id_usuario, $id_produto]);
             $_SESSION['flash'] = ['type' => 'success', 'message' => 'Adicionado aos favoritos!'];
         }
     }

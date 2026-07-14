@@ -22,6 +22,9 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
+    <!-- Favicon -->
+    <link rel="icon" href="/assets/img/favicon.png" type="image/x-icon">
+
     <!-- Dashboard CSS -->
     <link rel="stylesheet" href="/assets/css/dashboard.css">
     <link rel="stylesheet" href="/assets/css/theme.css">
@@ -31,12 +34,12 @@
 
     <?php require_once __DIR__ . '/../app/includes/sidebar.php'; ?>
 
-    <div class="main-wrapper">
+    <div class="conteiner-principal">
 
         <!-- TOPBAR -->
         <?php require_once __DIR__ . '/../app/includes/header.php'; ?>
 
-        <main class="page-content">
+        <main class="conteudo-pagina">
 
             <div class="card">
 
@@ -51,22 +54,22 @@
 
                     <!-- Toolbar -->
                     <div class="toolbar">
-                        <div class="search-box">
+                        <div class="caixa-busca">
                             <i class="fa-solid fa-magnifying-glass"></i>
                             <input type="text"
                                 id="searchInput"
-                                class="search-input"
+                                class="entrada-busca"
                                 placeholder="Pesquisar por nome ou categoria..."
                                 autocomplete="off">
                         </div>
-                        <button class="btn-primary" onclick="openProductModal()">
+                        <button class="botao-primario" onclick="openProductModal()">
                             <i class="fa-solid fa-plus"></i>
                             Novo Produto
                         </button>
                     </div>
 
                     <!-- Table -->
-                    <div class="table-wrap">
+                    <div class="envoltorio-tabela">
                         <table>
                             <thead>
                                 <tr>
@@ -145,16 +148,10 @@
                                                     onclick='openEditDrawer(<?= $pJson ?>)'>
                                                     <i class="fa-solid fa-pen"></i>
                                                 </button>
-                                                <form method="POST" style="display:inline;" onsubmit="return confirm('Deseja realmente excluir este produto?')">
-
-                                                    <input type="hidden" name="acao" value="excluir">
-                                                    <input type="hidden" name="id" value="<?= $p['id'] ?>">
-
-                                                    <button class="btn-icon del" type="submit" title="Excluir">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-
-                                                </form>
+                                                <button class="btn-icon del" title="Excluir"
+                                                    onclick="openDeleteModal(<?= (int)$p['id'] ?>, <?= htmlspecialchars(json_encode($p['nome']), ENT_QUOTES) ?>)">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -162,7 +159,7 @@
                                 <!-- Estado vazio (exibido pelo JS quando busca não encontra nada) -->
                                 <tr id="emptyRow" style="display:none">
                                     <td colspan="6">
-                                        <div class="empty-state">
+                                        <div class="estado-vazio">
                                             <i class="fa-solid fa-box-open"></i>
                                             <h4>Nenhum produto encontrado</h4>
                                             <p>Tente outro termo de pesquisa.</p>
@@ -194,9 +191,9 @@
 
             </div><!-- /card -->
 
-        </main><!-- /page-content -->
+        </main><!-- /conteudo-pagina -->
 
-    </div><!-- /main-wrapper -->
+    </div><!-- /conteiner-principal -->
 
 
     <div class="drawer-overlay" id="drawerOverlay" onclick="closeEditDrawer()"></div>
@@ -210,31 +207,32 @@
             </button>
         </div>
 
-        <form id="editForm" method="POST" action="/pages/produtos.php" enctype="multipart/form-data" novalidate>
+        <form id="editForm" method="POST" action="/pages/produtos.php" enctype="multipart/form-data" novalidate
+            style="flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden">
             <input type="hidden" id="editId" name="id" value="">
             <input type="hidden" name="acao" value="editar">
 
             <div class="drawer-body">
-                <div class="form-group">
-                    <label class="form-label" for="editNome">Nome do produto</label>
-                    <input type="text" id="editNome" name="nome" class="form-input" placeholder="Nome do produto" maxlength="70">
+                <div class="grupo-formulario">
+                    <label class="rotulo-formulario" for="editNome">Nome do produto</label>
+                    <input type="text" id="editNome" name="nome" class="entrada-formulario" placeholder="Nome do produto" maxlength="70">
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="editMarca">Marca</label>
-                    <input type="text" id="editMarca" name="marca" class="form-input"
+                <div class="grupo-formulario">
+                    <label class="rotulo-formulario" for="editMarca">Marca</label>
+                    <input type="text" id="editMarca" name="marca" class="entrada-formulario"
                         placeholder="Ex: Nike, Adidas, Puma..." maxlength="100">
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="editCor">Cor</label>
-                    <input type="text" id="editCor" name="cor" class="form-input"
+                <div class="grupo-formulario">
+                    <label class="rotulo-formulario" for="editCor">Cor</label>
+                    <input type="text" id="editCor" name="cor" class="entrada-formulario"
                         placeholder="Ex: Preto, Branco, Azul..." maxlength="60">
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="editCategoria">Categoria</label>
-                    <select id="editCategoria" name="categoria" class="form-select">
+                <div class="grupo-formulario">
+                    <label class="rotulo-formulario" for="editCategoria">Categoria</label>
+                    <select id="editCategoria" name="categoria" class="selecao-formulario">
                         <option value="" selected disabled>Selecione uma categoria</option>
                         <option value="Tênis Esportivo">Tênis Esportivo</option>
                         <option value="Chuteira">Chuteira</option>
@@ -253,18 +251,18 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="editPreco">Preço (R$)</label>
-                    <input type="number" id="editPreco" name="preco" class="form-input" placeholder="0.00" step="0.01" min="0.01" max="999999.99">
+                <div class="grupo-formulario">
+                    <label class="rotulo-formulario" for="editPreco">Preço (R$)</label>
+                    <input type="number" id="editPreco" name="preco" class="entrada-formulario" placeholder="0.00" step="0.01" min="0.01" max="999999.99">
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="editEstoque">Quantidade em estoque</label>
-                    <input type="number" id="editEstoque" name="quantidade" class="form-input" placeholder="0" min="0" max="99999">
+                <div class="grupo-formulario">
+                    <label class="rotulo-formulario" for="editEstoque">Quantidade em estoque</label>
+                    <input type="number" id="editEstoque" name="quantidade" class="entrada-formulario" placeholder="0" min="0" max="99999">
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Imagem do produto</label>
+                <div class="grupo-formulario">
+                    <label class="rotulo-formulario">Imagem do produto</label>
                     <div class="upload-area" id="editUploadArea">
                         <input type="file" id="editImagem" name="imagem"
                             accept="image/jpeg,image/png,image/webp"
@@ -291,8 +289,8 @@
                 </div>
 
                 <!-- Tags do produto -->
-                <div class="form-group">
-                    <label class="form-label">Tags</label>
+                <div class="grupo-formulario">
+                    <label class="rotulo-formulario">Tags</label>
                     <div class="tag-picker" id="editTagPicker">
                         <button type="button" class="tag-chip" data-tag="Promoção">Promoção</button>
                         <button type="button" class="tag-chip" data-tag="Lançamento">Lançamento</button>
@@ -307,42 +305,45 @@
                 </div>
 
                 <!-- Visibilidade -->
-                <div class="form-group">
-                    <label class="form-label" for="editVisivel">Visibilidade na loja</label>
-                    <select id="editVisivel" name="visivel" class="form-select">
+                <div class="grupo-formulario">
+                    <label class="rotulo-formulario" for="editVisivel">Visibilidade na loja</label>
+                    <select id="editVisivel" name="visivel" class="selecao-formulario">
                         <option value="1">Visível — aparece na loja</option>
                         <option value="0">Oculto — não aparece na loja</option>
                     </select>
                     <span class="form-hint">Produtos ocultos só o admin pode ver.</span>
                 </div>
 
-                <div class="drawer-foot">
-                    <button type="button" class="btn-cancel-drawer" onclick="closeEditDrawer()">Cancelar</button>
-                    <button type="button" class="btn-save-drawer">
-                        <i class="fa-solid fa-floppy-disk" style="margin-right:6px"></i>Salvar Alterações
-                    </button>
-                </div>
+            </div><!-- /drawer-body -->
+
+            <div class="drawer-foot">
+                <button type="button" class="btn-cancel-drawer" onclick="closeEditDrawer()">Cancelar</button>
+                <button type="button" class="btn-save-drawer">
+                    <i class="fa-solid fa-floppy-disk" style="margin-right:6px"></i>Salvar Alterações
+                </button>
+            </div>
+
         </form>
 
-    </div>
+    </div><!-- /drawer -->
 
 
-    <div class="modal-backdrop" id="productModalBackdrop" onclick="handleProductModalClick(event)">
-        <div class="modal modal-scroll" role="dialog" aria-modal="true" aria-label="Novo produto">
+    <div class="fundo-modal" id="productModalBackdrop" onclick="handleProductModalClick(event)">
+        <div class="modal modal-rolavel" role="dialog" aria-modal="true" aria-label="Novo produto">
 
-            <div class="modal-head">
+            <div class="cabecalho-modal">
                 <h3><i class="fa-solid fa-plus" style="color:var(--orange);margin-right:8px;font-size:.85rem"></i>Novo Produto</h3>
-                <button class="btn-close-modal" onclick="closeProductModal()" aria-label="Fechar">
+                <button class="botao-fechar-modal" onclick="closeProductModal()" aria-label="Fechar">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
             <form id="novoProdutoForm" method="POST" action="" enctype="multipart/form-data" novalidate>
-                <div class="modal-body">
+                <div class="corpo-modal">
 
                     <!-- IMAGEM (primeiro campo) -->
-                    <div class="form-group">
-                        <label class="form-label">Imagem do produto</label>
+                    <div class="grupo-formulario">
+                        <label class="rotulo-formulario">Imagem do produto</label>
                         <div class="upload-area" id="criarUploadArea">
                             <input type="file" id="criarImagem" name="imagem"
                                 accept="image/jpeg,image/png,image/webp"
@@ -352,6 +353,7 @@
                                 <i class="fa-regular fa-image upload-icon"></i>
                                 <span class="upload-titulo">Clique ou arraste uma imagem</span>
                                 <span class="upload-dica">JPG, PNG ou WEBP — máx. 5 MB (opcional)</span>
+                                <span class="upload-dica">Mínimo 300px — Máximo 4000px</span>
                             </div>
                             <!-- preview -->
                             <div id="criarUploadPreview" style="display:none">
@@ -368,35 +370,35 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="criarNome">Nome *</label>
+                    <div class="grupo-formulario">
+                        <label class="rotulo-formulario" for="criarNome">Nome *</label>
                         <input
                             type="text"
                             id="criarNome"
                             name="nome"
-                            class="form-input"
+                            class="entrada-formulario"
                             placeholder="Nome do produto"
                             maxlength="70"
                             autocomplete="off">
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="criarMarca">Marca</label>
-                        <input type="text" id="criarMarca" name="marca" class="form-input"
+                    <div class="grupo-formulario">
+                        <label class="rotulo-formulario" for="criarMarca">Marca</label>
+                        <input type="text" id="criarMarca" name="marca" class="entrada-formulario"
                             placeholder="Ex: Nike, Adidas, Puma..." maxlength="100" autocomplete="off">
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="criarCor">Cor</label>
-                        <input type="text" id="criarCor" name="cor" class="form-input"
+                    <div class="grupo-formulario">
+                        <label class="rotulo-formulario" for="criarCor">Cor</label>
+                        <input type="text" id="criarCor" name="cor" class="entrada-formulario"
                             placeholder="Ex: Preto, Branco, Azul..." maxlength="60" autocomplete="off">
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="criarCategoria">Categoria</label>
+                    <div class="grupo-formulario">
+                        <label class="rotulo-formulario" for="criarCategoria">Categoria</label>
                         <select id="criarCategoria"
                             name="categoria"
-                            class="form-select"
+                            class="selecao-formulario"
                             required>
                             <option value="">Selecione uma categoria</option>
                             <option value="Tênis Esportivo">Tênis Esportivo</option>
@@ -416,13 +418,13 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="criarPreco">Preço (R$) *</label>
+                    <div class="grupo-formulario">
+                        <label class="rotulo-formulario" for="criarPreco">Preço (R$) *</label>
                         <input
                             type="number"
                             id="criarPreco"
                             name="preco"
-                            class="form-input"
+                            class="entrada-formulario"
                             placeholder="0.00"
                             step="0.01"
                             min="1"
@@ -431,13 +433,13 @@
                             autocomplete="off">
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="criarEstoque">Quantidade em estoque</label>
+                    <div class="grupo-formulario">
+                        <label class="rotulo-formulario" for="criarEstoque">Quantidade em estoque</label>
                         <input
                             type="number"
                             id="criarEstoque"
                             name="quantidade"
-                            class="form-input"
+                            class="entrada-formulario"
                             placeholder="0"
                             min="0"
                             max="9999"
@@ -446,15 +448,15 @@
                             autocomplete="off">
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="criarDescricao">Descrição</label>
-                        <textarea id="criarDescricao" name="descricao" class="form-input"
+                    <div class="grupo-formulario">
+                        <label class="rotulo-formulario" for="criarDescricao">Descrição</label>
+                        <textarea id="criarDescricao" name="descricao" class="entrada-formulario"
                             placeholder="Descrição do produto..." rows="3"></textarea>
                     </div>
 
                     <!-- Tags do produto -->
-                    <div class="form-group">
-                        <label class="form-label">Tags</label>
+                    <div class="grupo-formulario">
+                        <label class="rotulo-formulario">Tags</label>
                         <div class="tag-picker" id="criarTagPicker">
                             <button type="button" class="tag-chip" data-tag="Promoção">Promoção</button>
                             <button type="button" class="tag-chip" data-tag="Lançamento">Lançamento</button>
@@ -469,9 +471,9 @@
                     </div>
 
                     <!-- Visibilidade -->
-                    <div class="form-group">
-                        <label class="form-label" for="criarVisivel">Visibilidade na loja</label>
-                        <select id="criarVisivel" name="visivel" class="form-select">
+                    <div class="grupo-formulario">
+                        <label class="rotulo-formulario" for="criarVisivel">Visibilidade na loja</label>
+                        <select id="criarVisivel" name="visivel" class="selecao-formulario">
                             <option value="1">Visível — aparece na loja</option>
                             <option value="0">Oculto — não aparece na loja</option>
                         </select>
@@ -480,9 +482,9 @@
 
                 </div>
 
-                <div class="modal-foot">
-                    <button type="button" class="btn-ghost" onclick="closeProductModal()">Cancelar</button>
-                    <button type="submit" class="btn-primary">
+                <div class="rodape-modal">
+                    <button type="button" class="botao-secundario" onclick="closeProductModal()">Cancelar</button>
+                    <button type="submit" class="botao-primario">
                         <i class="fa-solid fa-plus"></i>
                         Salvar Produto
                     </button>
@@ -493,523 +495,66 @@
     </div>
 
 
-    <div class="sp-toast" id="spToast">
+    <!-- Form oculto para excluir produto -->
+    <form id="deleteProductForm" method="POST" action="/pages/produtos.php" style="display:none">
+        <input type="hidden" name="acao" value="excluir">
+        <input type="hidden" name="id" id="deleteProductId">
+    </form>
+
+    <!-- Modal de confirmação de exclusão -->
+    <div class="fundo-modal" id="deleteModalBackdrop" onclick="handleDeleteModalClick(event)">
+        <div class="modal" style="max-width:400px" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Confirmar exclusão">
+
+            <div class="cabecalho-modal" style="border-bottom:none;padding-bottom:8px">
+                <div style="flex:1"></div>
+                <button class="botao-fechar-modal" onclick="closeDeleteModal()" aria-label="Fechar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="corpo-modal" style="align-items:center;text-align:center;gap:14px;padding-top:0">
+                <div style="width:64px;height:64px;border-radius:50%;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);display:flex;align-items:center;justify-content:center;margin:0 auto">
+                    <i class="fa-solid fa-trash" style="font-size:1.4rem;color:var(--red)"></i>
+                </div>
+                <div>
+                    <h3 style="font-size:1.05rem;font-weight:700;color:var(--text-main);margin-bottom:8px">Excluir produto?</h3>
+                    <p style="font-size:.85rem;color:var(--text-sub);line-height:1.65">
+                        Você está prestes a excluir<br>
+                        <strong id="deleteProductNome" style="color:var(--text-main)"></strong>.<br>
+                        <span style="color:var(--red);font-size:.78rem;font-weight:500">
+                            <i class="fa-solid fa-triangle-exclamation" style="margin-right:3px"></i>
+                            Esta ação não pode ser desfeita.
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="rodape-modal">
+                <button type="button" class="botao-secundario" style="flex:1" onclick="closeDeleteModal()">
+                    Cancelar
+                </button>
+                <button type="button" id="btnConfirmarDelete" onclick="confirmDeleteProduct()"
+                    style="flex:1;padding:10px;background:var(--red);border:none;border-radius:var(--radius-sm);color:#fff;font-size:.875rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all var(--transition)">
+                    <i class="fa-solid fa-trash" style="margin-right:6px"></i>
+                    Excluir
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="sp-toast" id="spToast"
+        <?php if ($flash): ?> data-flash-msg="<?= htmlspecialchars($flash['message']) ?>" data-flash-type="<?= $flash['type'] === 'success' ? 'success' : 'error' ?>" <?php endif; ?>>
         <i class="fa-solid fa-circle-check" id="toastIcon"></i>
         <span id="toastMsg"></span>
     </div>
-
-    <!-- PHP flash → JS toast -->
-    <?php if ($flash): ?>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                showToast(
-                    <?= json_encode($flash['message']) ?>,
-                    <?= json_encode($flash['type'] === 'success' ? 'success' : 'error') ?>
-                );
-            });
-        </script>
-    <?php endif; ?>
 
 
     <!-- Modal Editar Perfil -->
     <?php require_once __DIR__ . '/../app/includes/modal-perfil.php'; ?>
 
 
-    <script>
-        /* ── Sidebar toggle (mobile) ─────────────────────────────── */
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const toggleBtn = document.getElementById('sidebarToggle');
-
-        function openSidebar() {
-            sidebar.classList.add('open');
-            sidebarOverlay.classList.add('open');
-        }
-
-        function closeSidebar() {
-            sidebar.classList.remove('open');
-            sidebarOverlay.classList.remove('open');
-        }
-
-        if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
-        if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
-
-        /* ── Profile dropdown ────────────────────────────────────── */
-        const profileBtn = document.getElementById('profileBtn');
-        const profileDropdown = document.getElementById('profileDropdown');
-
-        profileBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const isOpen = profileDropdown.classList.toggle('open');
-            profileBtn.classList.toggle('open', isOpen);
-            profileBtn.setAttribute('aria-expanded', isOpen);
-        });
-
-        document.addEventListener('click', function() {
-            profileDropdown.classList.remove('open');
-            profileBtn.classList.remove('open');
-            profileBtn.setAttribute('aria-expanded', false);
-        });
-
-        /* search (client-side) */
-        const searchInput = document.getElementById('searchInput');
-        const tableBody = document.getElementById('tableBody');
-        const emptyRow = document.getElementById('emptyRow');
-        const countEl = document.getElementById('countVisible');
-        let searchTimer;
-
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimer);
-            searchTimer = setTimeout(function() {
-                const query = searchInput.value.toLowerCase().trim();
-                const rows = tableBody.querySelectorAll('tr[data-searchable]');
-                let visible = 0;
-                rows.forEach(function(row) {
-                    const match = !query || row.getAttribute('data-searchable').includes(query);
-                    row.style.display = match ? '' : 'none';
-                    if (match) visible++;
-                });
-                emptyRow.style.display = visible === 0 ? '' : 'none';
-                countEl.textContent = visible;
-            }, 300);
-        });
-
-        /* drawer (editar produto) */
-        const drawerOverlay = document.getElementById('drawerOverlay');
-        const editDrawer = document.getElementById('editDrawer');
-
-        function openEditDrawer(produto) {
-            document.getElementById('editId').value = produto.id;
-            document.getElementById('editNome').value = produto.nome;
-            document.getElementById('editMarca').value = produto.marca || '';
-            document.getElementById('editCor').value = produto.cor || '';
-            document.getElementById('editCategoria').value = produto.categoria;
-            document.getElementById('editPreco').value = produto.preco;
-            document.getElementById('editEstoque').value = produto.quantidade;
-
-            // Tags e visibilidade
-            setTagPicker('editTagPicker', 'editTagsInput', produto.tags || '');
-            var editVis = document.getElementById('editVisivel');
-            if (editVis) editVis.value = produto.visivel === 0 ? '0' : '1';
-
-            // Upload area do drawer — mostra imagem atual se houver
-            var editArea = document.getElementById('editUploadArea');
-            var editVazio = document.getElementById('editUploadVazio');
-            var editPrev = document.getElementById('editUploadPreview');
-            var editImg = document.getElementById('editImgPreview');
-            var editNome = document.getElementById('editUploadNome');
-            var editFile = document.getElementById('editImagem');
-
-            if (editFile) editFile.value = '';
-
-            if (produto.imagem) {
-                editImg.src = produto.imagem;
-                editNome.textContent = 'Imagem atual';
-                editVazio.style.display = 'none';
-                editPrev.style.display = 'block';
-                editArea.classList.add('tem-arquivo');
-            } else {
-                editImg.src = '';
-                editVazio.style.display = 'flex';
-                editPrev.style.display = 'none';
-                editArea.classList.remove('tem-arquivo');
-            }
-
-            // Limpar erros anteriores
-            var f = document.getElementById('editForm');
-            f.querySelectorAll('.field-inline-error').forEach(function(el) {
-                el.remove();
-            });
-            f.querySelectorAll('.form-input, .form-select').forEach(function(el) {
-                el.style.borderColor = '';
-                el.style.boxShadow = '';
-            });
-
-            drawerOverlay.classList.add('open');
-            editDrawer.classList.add('open');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeEditDrawer() {
-            drawerOverlay.classList.remove('open');
-            editDrawer.classList.remove('open');
-            document.body.style.overflow = '';
-        }
-
-        /* modal (novo produto) */
-        const productModalBackdrop = document.getElementById('productModalBackdrop');
-
-        function openProductModal() {
-            var f = productModalBackdrop.querySelector('form');
-            if (f) {
-                f.reset();
-                f.querySelectorAll('.field-inline-error').forEach(function(el) {
-                    el.remove();
-                });
-                f.querySelectorAll('.form-input, .form-select').forEach(function(el) {
-                    el.style.borderColor = '';
-                    el.style.boxShadow = '';
-                });
-                // Limpar área de upload
-                var area = document.getElementById('criarUploadArea');
-                if (area) {
-                    area.classList.remove('tem-arquivo');
-                    document.getElementById('criarUploadVazio').style.display = 'flex';
-                    document.getElementById('criarUploadPreview').style.display = 'none';
-                    document.getElementById('criarImgPreview').src = '';
-                    document.getElementById('criarUploadNome').textContent = '';
-                }
-                // Reset tags e visibilidade
-                if (typeof setTagPicker === 'function') {
-                    setTagPicker('criarTagPicker', 'criarTagsInput', '');
-                }
-                var vis = document.getElementById('criarVisivel');
-                if (vis) vis.value = '1';
-            }
-            productModalBackdrop.classList.add('open');
-            document.body.style.overflow = 'hidden';
-            setTimeout(function() {
-                document.getElementById('criarNome').focus();
-            }, 120);
-        }
-
-        function closeProductModal() {
-            productModalBackdrop.classList.remove('open');
-            document.body.style.overflow = '';
-        }
-
-        function handleProductModalClick(e) {
-            if (e.target === productModalBackdrop) closeProductModal();
-        }
-
-
-        /* fechar com ESC */
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeEditDrawer();
-                closeProductModal();
-                if (typeof closeProfileModal === 'function') closeProfileModal();
-            }
-        });
-
-        /* ── Toast ───────────────────────────────────────────────── */
-        function showToast(msg, type) {
-            const toast = document.getElementById('spToast');
-            const iconEl = document.getElementById('toastIcon');
-            const msgEl = document.getElementById('toastMsg');
-
-            toast.className = 'sp-toast ' + type;
-            iconEl.className = type === 'success' ?
-                'fa-solid fa-circle-check' :
-                'fa-solid fa-circle-exclamation';
-            msgEl.textContent = msg;
-
-            toast.classList.add('show');
-            setTimeout(function() {
-                toast.classList.remove('show');
-            }, 3800);
-        }
-
-        /* validação — novo produto */
-        (function() {
-            var form = document.getElementById('novoProdutoForm');
-            var nomeFld = document.getElementById('criarNome');
-            var catFld = document.getElementById('criarCategoria');
-            var precoFld = document.getElementById('criarPreco');
-            var qtdFld = document.getElementById('criarEstoque');
-
-            function showErr(el, msg) {
-                clearErr(el);
-                el.style.borderColor = '#ef4444';
-                el.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.18)';
-                var span = document.createElement('span');
-                span.className = 'field-inline-error';
-                span.style.cssText = 'display:flex;align-items:center;gap:5px;' +
-                    'color:#ef4444;font-size:0.74rem;margin-top:6px;font-weight:500;';
-                span.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="font-size:0.7rem"></i> ' + msg;
-                el.insertAdjacentElement('afterend', span);
-            }
-
-            function clearErr(el) {
-                var next = el.nextElementSibling;
-                if (next && next.classList.contains('field-inline-error')) next.remove();
-                el.style.borderColor = '';
-                el.style.boxShadow = '';
-            }
-
-            nomeFld.addEventListener('input', function() {
-                this.value = this.value.replace(/[^a-zA-ZÀ-ÿ0-9\s\-.'()&\/]/g, '');
-                clearErr(this);
-            });
-
-            precoFld.addEventListener('input', function() {
-                if (parseFloat(this.value) > 999999.99) this.value = '999999.99';
-                clearErr(this);
-            });
-
-            qtdFld.addEventListener('input', function() {
-                if (parseInt(this.value, 10) > 99999) this.value = '99999';
-                clearErr(this);
-            });
-
-            catFld.addEventListener('change', function() {
-                clearErr(this);
-            });
-
-            form.addEventListener('submit', function(e) {
-                var ok = true;
-
-                if (!nomeFld.value.trim()) {
-                    showErr(nomeFld, 'Nome é obrigatório.');
-                    ok = false;
-                }
-
-                if (!catFld.value) {
-                    showErr(catFld, 'Selecione uma categoria.');
-                    ok = false;
-                }
-
-                var pv = parseFloat(precoFld.value);
-                if (precoFld.value === '' || isNaN(pv) || pv < 0.01) {
-                    showErr(precoFld, 'Informe um preço válido (mínimo R$ 0,01).');
-                    ok = false;
-                }
-
-                var ev = parseInt(qtdFld.value, 10);
-                if (qtdFld.value === '' || isNaN(ev) || ev < 0) {
-                    showErr(qtdFld, 'Informe uma quantidade válida.');
-                    ok = false;
-                }
-
-                if (!ok) e.preventDefault();
-            });
-        })();
-
-        /* validação — editar produto (drawer) */
-        (function() {
-            var editNomeFld = document.getElementById('editNome');
-            var editPrecoFld = document.getElementById('editPreco');
-            var editQtdFld = document.getElementById('editEstoque');
-            var saveBtn = document.querySelector('.btn-save-drawer');
-
-            function showErr(el, msg) {
-                clearErr(el);
-                el.style.borderColor = '#ef4444';
-                el.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.18)';
-                var span = document.createElement('span');
-                span.className = 'field-inline-error';
-                span.style.cssText = 'display:flex;align-items:center;gap:5px;' +
-                    'color:#ef4444;font-size:0.74rem;margin-top:6px;font-weight:500;';
-                span.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="font-size:0.7rem"></i> ' + msg;
-                el.insertAdjacentElement('afterend', span);
-            }
-
-            function clearErr(el) {
-                var next = el.nextElementSibling;
-                if (next && next.classList.contains('field-inline-error')) next.remove();
-                el.style.borderColor = '';
-                el.style.boxShadow = '';
-            }
-
-            editNomeFld.addEventListener('input', function() {
-                this.value = this.value.replace(/[^a-zA-ZÀ-ÿ0-9\s\-.'()&\/]/g, '');
-                clearErr(this);
-            });
-
-            editPrecoFld.addEventListener('input', function() {
-                if (parseFloat(this.value) > 999999.99) this.value = '999999.99';
-                clearErr(this);
-            });
-
-            editQtdFld.addEventListener('input', function() {
-                if (parseInt(this.value, 10) > 99999) this.value = '99999';
-                clearErr(this);
-            });
-
-            saveBtn.addEventListener('click', function() {
-                [editNomeFld, editPrecoFld, editQtdFld].forEach(clearErr);
-                var ok = true;
-
-                if (!editNomeFld.value.trim()) {
-                    showErr(editNomeFld, 'Nome é obrigatório.');
-                    ok = false;
-                }
-
-                var pv = parseFloat(editPrecoFld.value);
-                if (editPrecoFld.value === '' || isNaN(pv) || pv < 0.01) {
-                    showErr(editPrecoFld, 'Informe um preço válido (mínimo R$ 0,01).');
-                    ok = false;
-                }
-
-                var ev = parseInt(editQtdFld.value, 10);
-                if (editQtdFld.value === '' || isNaN(ev) || ev < 0) {
-                    showErr(editQtdFld, 'Informe uma quantidade válida.');
-                    ok = false;
-                }
-
-                if (ok) document.getElementById('editForm').submit();
-            });
-        })();
-
-        /* ── Upload de imagem — Novo Produto ──────────────── */
-        (function() {
-            var area = document.getElementById('criarUploadArea');
-            var input = document.getElementById('criarImagem');
-            var vazio = document.getElementById('criarUploadVazio');
-            var prev = document.getElementById('criarUploadPreview');
-            var img = document.getElementById('criarImgPreview');
-            var nome = document.getElementById('criarUploadNome');
-            var btnRem = document.getElementById('criarUploadRemover');
-
-            // Clique na área abre o seletor
-            area.addEventListener('click', function() {
-                if (!area.classList.contains('tem-arquivo')) input.click();
-            });
-
-            // Drag & drop
-            area.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                if (!area.classList.contains('tem-arquivo')) area.classList.add('drag-over');
-            });
-            area.addEventListener('dragleave', function() {
-                area.classList.remove('drag-over');
-            });
-            area.addEventListener('drop', function(e) {
-                e.preventDefault();
-                area.classList.remove('drag-over');
-                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                    var dt = new DataTransfer();
-                    dt.items.add(e.dataTransfer.files[0]);
-                    input.files = dt.files;
-                    mostrarPreview(e.dataTransfer.files[0]);
-                }
-            });
-
-            // Arquivo selecionado
-            input.addEventListener('change', function() {
-                if (this.files && this.files[0]) mostrarPreview(this.files[0]);
-            });
-
-            function mostrarPreview(arquivo) {
-                var r = new FileReader();
-                r.onload = function(e) {
-                    img.src = e.target.result;
-                    nome.textContent = arquivo.name;
-                    vazio.style.display = 'none';
-                    prev.style.display = 'block';
-                    area.classList.add('tem-arquivo');
-                };
-                r.readAsDataURL(arquivo);
-            }
-
-            // Remover imagem
-            btnRem.addEventListener('click', function(e) {
-                e.stopPropagation();
-                input.value = '';
-                img.src = '';
-                nome.textContent = '';
-                prev.style.display = 'none';
-                vazio.style.display = 'flex';
-                area.classList.remove('tem-arquivo');
-            });
-        })();
-
-        /* upload imagem — editar produto (drawer) */
-        (function() {
-            var area = document.getElementById('editUploadArea');
-            var input = document.getElementById('editImagem');
-            var vazio = document.getElementById('editUploadVazio');
-            var prev = document.getElementById('editUploadPreview');
-            var img = document.getElementById('editImgPreview');
-            var nome = document.getElementById('editUploadNome');
-            var btnRem = document.getElementById('editUploadRemover');
-
-            area.addEventListener('click', function() {
-                if (!area.classList.contains('tem-arquivo')) input.click();
-            });
-
-            area.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                if (!area.classList.contains('tem-arquivo')) area.classList.add('drag-over');
-            });
-            area.addEventListener('dragleave', function() {
-                area.classList.remove('drag-over');
-            });
-            area.addEventListener('drop', function(e) {
-                e.preventDefault();
-                area.classList.remove('drag-over');
-                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                    var dt = new DataTransfer();
-                    dt.items.add(e.dataTransfer.files[0]);
-                    input.files = dt.files;
-                    mostrarPreviewEdit(e.dataTransfer.files[0]);
-                }
-            });
-
-            input.addEventListener('change', function() {
-                if (this.files && this.files[0]) mostrarPreviewEdit(this.files[0]);
-            });
-
-            function mostrarPreviewEdit(arquivo) {
-                var r = new FileReader();
-                r.onload = function(e) {
-                    img.src = e.target.result;
-                    nome.textContent = arquivo.name;
-                    vazio.style.display = 'none';
-                    prev.style.display = 'block';
-                    area.classList.add('tem-arquivo');
-                };
-                r.readAsDataURL(arquivo);
-            }
-
-            btnRem.addEventListener('click', function(e) {
-                e.stopPropagation();
-                input.value = '';
-                img.src = '';
-                nome.textContent = '';
-                prev.style.display = 'none';
-                vazio.style.display = 'flex';
-                area.classList.remove('tem-arquivo');
-            });
-        })();
-
-        /* ── Tag Picker ─────────────────────────────────── */
-        function initTagPicker(pickerId, inputId) {
-            var picker = document.getElementById(pickerId);
-            if (!picker) return;
-            picker.querySelectorAll('.tag-chip').forEach(function(chip) {
-                chip.addEventListener('click', function() {
-                    this.classList.toggle('ativo');
-                    syncTagInput(pickerId, inputId);
-                });
-            });
-        }
-
-        function setTagPicker(pickerId, inputId, tagsStr) {
-            var picker = document.getElementById(pickerId);
-            if (!picker) return;
-            var tags = tagsStr ? tagsStr.split(',').map(function(t) {
-                return t.trim();
-            }) : [];
-            picker.querySelectorAll('.tag-chip').forEach(function(chip) {
-                chip.classList.toggle('ativo', tags.indexOf(chip.dataset.tag) !== -1);
-            });
-            syncTagInput(pickerId, inputId);
-        }
-
-        function syncTagInput(pickerId, inputId) {
-            var selected = [];
-            document.querySelectorAll('#' + pickerId + ' .tag-chip.ativo').forEach(function(c) {
-                selected.push(c.dataset.tag);
-            });
-            var inp = document.getElementById(inputId);
-            if (inp) inp.value = selected.join(',');
-        }
-
-        // Inicializa pickers
-        initTagPicker('criarTagPicker', 'criarTagsInput');
-        initTagPicker('editTagPicker', 'editTagsInput');
-    </script>
+    <script src="/assets/js/produtos.js"></script>
 
 </body>
 

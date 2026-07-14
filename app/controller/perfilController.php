@@ -11,7 +11,8 @@ require_once __DIR__ . '/../config/conexao.php';
 require_once __DIR__ . '/../config/helpers.php';
 
 $pdo = Connection::getConnection();
-$uid = (int) $_SESSION['user']['id'];
+$id_usuario = (int) $_SESSION['user']['id'];
+$redirect = filter_var($_POST['redirect'] ?? '/pages/perfil.php', FILTER_SANITIZE_URL);
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || ($_POST['acao'] ?? '') !== 'atualizar') {
     header('Location: ' . $redirect);
@@ -44,7 +45,7 @@ if (!empty($_FILES['foto_perfil']['name'])) {
     // Tenta remover foto antiga (coluna pode não existir antes da migração)
     try {
         $stmtOld = $pdo->prepare("SELECT foto_perfil FROM usuarios WHERE id = ?");
-        $stmtOld->execute([$uid]);
+        $stmtOld->execute([$id_usuario]);
         excluirImagem($stmtOld->fetchColumn() ?: null);
     } catch (PDOException $e) { /* coluna não existe ainda */
     }
@@ -58,10 +59,10 @@ $confirmarSenha = $_POST['confirmar_senha'] ?? '';
 
 if (!empty($novaSenha)) {
     $stmtSenha = $pdo->prepare("SELECT senha FROM usuarios WHERE id = ?");
-    $stmtSenha->execute([$uid]);
-    $senhaDB = $stmtSenha->fetchColumn();
+    $stmtSenha->execute([$id_usuario]);
+    $senha_banco = $stmtSenha->fetchColumn();
 
-    if (!password_verify($senhaAtual, $senhaDB)) {
+    if (!password_verify($senhaAtual, $senha_banco)) {
         $_SESSION['flash'] = ['type' => 'error', 'message' => 'Senha atual incorreta.'];
         header('Location: ' . $redirect);
         exit;
@@ -86,22 +87,22 @@ try {
         // Tenta com foto_perfil; se coluna não existir, salva sem ela
         try {
             $pdo->prepare("UPDATE usuarios SET nome=?, senha=?, foto_perfil=? WHERE id=?")
-                ->execute([$nome, $hash, $fotoPerfil, $uid]);
+                ->execute([$nome, $hash, $fotoPerfil, $id_usuario]);
         } catch (PDOException $e2) {
             $pdo->prepare("UPDATE usuarios SET nome=?, senha=? WHERE id=?")
-                ->execute([$nome, $hash, $uid]);
+                ->execute([$nome, $hash, $id_usuario]);
         }
     } elseif (!empty($novaSenha)) {
         $hash = password_hash($novaSenha, PASSWORD_DEFAULT);
-        $pdo->prepare("UPDATE usuarios SET nome=?, senha=? WHERE id=?")->execute([$nome, $hash, $uid]);
+        $pdo->prepare("UPDATE usuarios SET nome=?, senha=? WHERE id=?")->execute([$nome, $hash, $id_usuario]);
     } elseif ($fotoPerfil !== null) {
         try {
-            $pdo->prepare("UPDATE usuarios SET nome=?, foto_perfil=? WHERE id=?")->execute([$nome, $fotoPerfil, $uid]);
+            $pdo->prepare("UPDATE usuarios SET nome=?, foto_perfil=? WHERE id=?")->execute([$nome, $fotoPerfil, $id_usuario]);
         } catch (PDOException $e2) {
-            $pdo->prepare("UPDATE usuarios SET nome=? WHERE id=?")->execute([$nome, $uid]);
+            $pdo->prepare("UPDATE usuarios SET nome=? WHERE id=?")->execute([$nome, $id_usuario]);
         }
     } else {
-        $pdo->prepare("UPDATE usuarios SET nome=? WHERE id=?")->execute([$nome, $uid]);
+        $pdo->prepare("UPDATE usuarios SET nome=? WHERE id=?")->execute([$nome, $id_usuario]);
     }
 
     // Atualiza sessão
@@ -110,7 +111,7 @@ try {
         $_SESSION['user']['foto_perfil'] = $fotoPerfil;
     }
 
-    registrarLog($pdo, 'edicao_usuario', "Perfil atualizado", $uid);
+    registrarLog($pdo, 'edicao_usuario', "Perfil atualizado", $id_usuario);
     $_SESSION['flash'] = ['type' => 'success', 'message' => 'Perfil atualizado com sucesso!'];
 } catch (PDOException $e) {
     error_log('perfilController: ' . $e->getMessage());

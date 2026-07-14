@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $email = trim($_POST['email'] ?? '');
-$senha = $_POST['senha']       ?? '';
+$senha = trim($_POST['senha'] ?? '');
 
 if (empty($email) || empty($senha)) {
     header("Location: /auth/login.php?erro=Preencha todos os campos.");
@@ -42,9 +42,9 @@ $_SESSION['user'] = [
 
 // Tenta carregar foto_perfil — disponível somente após executar banco-migration.sql
 try {
-    $fp = $conexao->prepare("SELECT foto_perfil FROM usuarios WHERE id = ?");
-    $fp->execute([$usuario['id']]);
-    $_SESSION['user']['foto_perfil'] = $fp->fetchColumn() ?: null;
+    $stmtFotoPerfil = $conexao->prepare("SELECT foto_perfil FROM usuarios WHERE id = ?");
+    $stmtFotoPerfil->execute([$usuario['id']]);
+    $_SESSION['user']['foto_perfil'] = $stmtFotoPerfil->fetchColumn() ?: null;
 } catch (PDOException $e) { /* coluna ainda não existe — ok */
 }
 

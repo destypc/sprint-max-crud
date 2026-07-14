@@ -2,13 +2,15 @@
 
 Um sistema de gerenciamento de loja desenvolvido com **PHP Puro**, **MySQL**, **HTML**, **CSS** e **JavaScript**.
 
-O projeto começou como um CRUD simples e está evoluindo para um **mini e-commerce**, onde administradores gerenciam a loja e clientes podem visualizar produtos, adicionar ao carrinho e realizar pedidos.
+O projeto começou como um CRUD simples e está evoluindo para um **mini e-commerce funcional**, onde administradores gerenciam a loja e clientes podem visualizar produtos, adicionar ao carrinho e realizar pedidos.
 
 ---
 
 ## 📸 Preview
 
-> Em breve...
+<p align="center">
+    <img src=".github/preview.png" width="900">
+</p>
 
 ---
 
@@ -70,11 +72,35 @@ Sprint-Max/
 │   ├── img/
 │   └── uploads/
 │
+├── auth/
+│   ├── cadastro/
+│   ├── login/
+│   ├── logout/
+│   └── session/
+│
 ├── pages/
+│   ├── carrinho/
+│   ├── dashboard-usuario/
+│   ├── dashboard/
+│   ├── favoritos/
+│   ├── home/
+│   ├── pedidos/
+│   ├── perfil/
+│   ├── produtos/
+│   ├── relatorios/
+│   ├── usuarios/
+│   └── vendas/
+│    
+├── uploads/
+│   └── imagens/    
 │
-├── database/
+├── .htaccess
 │
-└── index.php
+├── banco-migration.sql
+│
+├── index.php
+│
+└── routes.php
 ```
 
 ---
@@ -145,7 +171,7 @@ Crie um banco MySQL.
 Importe o arquivo SQL localizado em:
 
 ```text
-database/database.sql
+banco-migration.sql
 ```
 
 ### 4 Configure a conexão
@@ -167,15 +193,15 @@ $senha
 
 ### 5 Execute
 
-Abra:
+Inicie o Apache e o MySQL pelo XAMPP e acesse:
 
 ```text
-http://localhost/sprint-max
+http://localhost:8080
 ```
 
 ---
 
-## 📌 Funcionalidades futuras
+## 📌 Funcionalidades implementadas
 
 - [x] Carrinho de compras
 - [x] Favoritos
@@ -186,8 +212,8 @@ http://localhost/sprint-max
 - [x] Tema claro/escuro
 - [x] Responsividade completa
 - [x] Sistema de notificações
-- [ ] Relatórios
-- [ ] Dashboard do usuário
+- [x] Relatórios
+- [x] Dashboard do usuário
 
 ---
 
@@ -209,10 +235,9 @@ Este projeto foi desenvolvido com o objetivo de praticar conceitos de:
 
 ## 👨‍💻 Autor
 
-Desenvolvido por **Enzo**.
+**Enzo**
 
-GitHub:
-https://github.com/destypc
+- GitHub: https://github.com/destypc
 
 ---
 

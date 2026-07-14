@@ -8,28 +8,27 @@ if (empty($_SESSION['user'])) {
 }
 
 require_once __DIR__ . '/../config/conexao.php';
-require_once __DIR__ . '/../config/helpers.php';
 
 $pdo = Connection::getConnection();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'adicionar') {
 
-    $produto_id = (int) ($_POST['produto_id'] ?? 0);
+    $id_produto = (int) ($_POST['produto_id'] ?? 0);
     $quantidade = max(1, (int) ($_POST['quantidade'] ?? 1));
 
-    if ($produto_id > 0) {
+    if ($id_produto > 0) {
         $stmt = $pdo->prepare("SELECT id, quantidade FROM produtos WHERE id = ? AND status != 'sem_estoque'");
-        $stmt->execute([$produto_id]);
+        $stmt->execute([$id_produto]);
         $produto = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($produto) {
             if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];
 
-            $qtdAtual = (int) ($_SESSION['cart'][$produto_id] ?? 0);
-            $novaQtd  = min($qtdAtual + $quantidade, (int) $produto['quantidade']);
+            $quantidade_atual = (int) ($_SESSION['cart'][$id_produto] ?? 0);
+            $nova_quantidade  = min($quantidade_atual + $quantidade, (int) $produto['quantidade']);
 
-            if ($novaQtd > $qtdAtual) {
-                $_SESSION['cart'][$produto_id] = $novaQtd;
+            if ($nova_quantidade > $quantidade_atual) {
+                $_SESSION['cart'][$id_produto] = $nova_quantidade;
                 $_SESSION['flash'] = ['type' => 'success', 'message' => 'Produto adicionado ao carrinho!'];
             } else {
                 $_SESSION['flash'] = ['type' => 'error', 'message' => 'Estoque insuficiente.'];
@@ -47,9 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'adicion
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'remover') {
 
-    $produto_id = (int) ($_POST['produto_id'] ?? 0);
-    if ($produto_id > 0 && isset($_SESSION['cart'][$produto_id])) {
-        unset($_SESSION['cart'][$produto_id]);
+    $id_produto = (int) ($_POST['produto_id'] ?? 0);
+    if ($id_produto > 0 && isset($_SESSION['cart'][$id_produto])) {
+        unset($_SESSION['cart'][$id_produto]);
     }
     header('Location: ' . filter_var($_POST['redirect'] ?? '/pages/carrinho.php', FILTER_SANITIZE_URL));
     exit;
@@ -57,14 +56,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'remover
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'atualizar') {
 
-    $produto_id = (int) ($_POST['produto_id'] ?? 0);
+    $id_produto = (int) ($_POST['produto_id'] ?? 0);
     $quantidade = (int) ($_POST['quantidade'] ?? 0);
 
-    if ($produto_id > 0) {
+    if ($id_produto > 0) {
         if ($quantidade <= 0) {
-            unset($_SESSION['cart'][$produto_id]);
+            unset($_SESSION['cart'][$id_produto]);
         } else {
-            $_SESSION['cart'][$produto_id] = $quantidade;
+            $_SESSION['cart'][$id_produto] = $quantidade;
         }
     }
     header('Location: /pages/carrinho.php');

@@ -7,7 +7,6 @@ if (empty($_SESSION['user'])) {
 }
 
 require_once __DIR__ . '/../app/config/conexao.php';
-require_once __DIR__ . '/../app/config/helpers.php';
 
 $pdo = Connection::getConnection();
 
@@ -18,7 +17,6 @@ $page_title     = $isAdmin ? 'Pedidos' : 'Meus Pedidos';
 $breadcrumb     = [['label' => $page_title]];
 $flash          = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
-$cartCount = !empty($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0;
 
 // Carregar pedidos (tabela existe após banco-migration.sql)
 $pedidos      = [];
@@ -100,6 +98,7 @@ function statusBadgePedido(string $status): string
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="icon" href="/assets/img/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="/assets/css/dashboard.css">
     <link rel="stylesheet" href="/assets/css/theme.css">
     <link rel="stylesheet" href="/assets/css/loja.css">
@@ -109,11 +108,11 @@ function statusBadgePedido(string $status): string
 
     <?php require_once __DIR__ . '/../app/includes/sidebar.php'; ?>
 
-    <div class="main-wrapper">
+    <div class="conteiner-principal">
 
         <?php require_once __DIR__ . '/../app/includes/header.php'; ?>
 
-        <main class="page-content">
+        <main class="conteudo-pagina">
 
             <?php if ($erroMigracao): ?>
                 <div class="card" style="padding:40px;text-align:center">
@@ -123,7 +122,7 @@ function statusBadgePedido(string $status): string
                         A tabela de pedidos ainda não foi criada.<br>
                         Execute o arquivo <strong>banco-migration.sql</strong> no phpMyAdmin.
                     </p>
-                    <a href="/pages/dashboard.php" class="btn-primary" style="display:inline-flex">
+                    <a href="/pages/dashboard.php" class="botao-primario" style="display:inline-flex">
                         <i class="fa-solid fa-house"></i> Voltar ao Dashboard
                     </a>
                 </div>
@@ -146,14 +145,14 @@ function statusBadgePedido(string $status): string
                     <div class="card-body" style="padding-bottom:0">
 
                         <?php if (empty($pedidos)): ?>
-                            <div class="empty-state">
+                            <div class="estado-vazio">
                                 <i class="fa-solid fa-bag-shopping"></i>
                                 <h4>Nenhum pedido registrado</h4>
                                 <p>Os pedidos dos clientes aparecerão aqui.</p>
                             </div>
                         <?php else: ?>
 
-                            <div class="table-wrap">
+                            <div class="envoltorio-tabela">
                                 <table>
                                     <thead>
                                         <tr>
@@ -193,7 +192,7 @@ function statusBadgePedido(string $status): string
                                                         style="display:flex;gap:6px;align-items:center">
                                                         <input type="hidden" name="acao" value="atualizar_status">
                                                         <input type="hidden" name="pedido_id" value="<?= (int)$p['id'] ?>">
-                                                        <select name="status" class="form-select"
+                                                        <select name="status" class="selecao-formulario"
                                                             style="width:auto;padding:6px 10px;font-size:.8rem">
                                                             <option value="pendente" <?= $p['status'] === 'pendente'   ? 'selected' : '' ?>>Pendente</option>
                                                             <option value="preparando" <?= $p['status'] === 'preparando' ? 'selected' : '' ?>>Preparando</option>
@@ -223,7 +222,7 @@ function statusBadgePedido(string $status): string
                 <!-- VISÃO USUÁRIO: cards com detalhes dos pedidos   -->
                 <!-- ═══════════════════════════════════════════════ -->
 
-                <div class="dash-hero">
+                <div class="painel-destaque">
                     <h1>Meus Pedidos</h1>
                     <p>Acompanhe o status das suas compras.</p>
                 </div>
@@ -231,11 +230,11 @@ function statusBadgePedido(string $status): string
                 <?php if (empty($pedidos)): ?>
 
                     <div class="card">
-                        <div class="cart-empty-state">
+                        <div class="estado-vazio">
                             <i class="fa-solid fa-bag-shopping"></i>
                             <h3>Você ainda não fez nenhum pedido</h3>
                             <p style="margin-bottom:20px">Explore a loja e faça seu primeiro pedido!</p>
-                            <a href="/pages/home.php" class="btn-primary" style="display:inline-flex">
+                            <a href="/pages/home.php" class="botao-primario" style="display:inline-flex">
                                 <i class="fa-solid fa-store"></i>
                                 Ir para a loja
                             </a>
@@ -307,82 +306,17 @@ function statusBadgePedido(string $status): string
 
         </main>
 
-    </div><!-- /main-wrapper -->
+    </div><!-- /conteiner-principal -->
 
 
     <!-- ── Toast ──────────────────────────────────────────────── -->
-    <div class="sp-toast" id="spToast">
+    <div class="sp-toast" id="spToast"
+        <?php if ($flash): ?> data-flash-msg="<?= htmlspecialchars($flash['message']) ?>" data-flash-type="<?= $flash['type'] === 'success' ? 'success' : 'error' ?>" <?php endif; ?>>
         <i class="fa-solid fa-circle-check" id="toastIcon"></i>
         <span id="toastMsg"></span>
     </div>
 
-    <?php if ($flash): ?>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                showToast(
-                    <?= json_encode($flash['message']) ?>,
-                    <?= json_encode($flash['type'] === 'success' ? 'success' : 'error') ?>
-                );
-            });
-        </script>
-    <?php endif; ?>
-
     <?php require_once __DIR__ . '/../app/includes/modal-perfil.php'; ?>
-
-    <script>
-        /* sidebar toggle */
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const toggleBtn = document.getElementById('sidebarToggle');
-
-        function openSidebar() {
-            sidebar.classList.add('open');
-            sidebarOverlay.classList.add('open');
-        }
-
-        function closeSidebar() {
-            sidebar.classList.remove('open');
-            sidebarOverlay.classList.remove('open');
-        }
-
-        if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
-        if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
-
-        /* profile dropdown */
-        const profileBtn = document.getElementById('profileBtn');
-        const profileDropdown = document.getElementById('profileDropdown');
-
-        profileBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const isOpen = profileDropdown.classList.toggle('open');
-            profileBtn.classList.toggle('open', isOpen);
-            profileBtn.setAttribute('aria-expanded', isOpen);
-        });
-
-        document.addEventListener('click', function() {
-            profileDropdown.classList.remove('open');
-            profileBtn.classList.remove('open');
-            profileBtn.setAttribute('aria-expanded', false);
-        });
-
-        /* toast */
-        function showToast(msg, type) {
-            const toast = document.getElementById('spToast');
-            const icon = document.getElementById('toastIcon');
-            const msgEl = document.getElementById('toastMsg');
-            toast.className = 'sp-toast ' + type;
-            icon.className = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation';
-            msgEl.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(function() {
-                toast.classList.remove('show');
-            }, 3800);
-        }
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && typeof closeProfileModal === 'function') closeProfileModal();
-        });
-    </script>
 
 </body>
 

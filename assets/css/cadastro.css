@@ -9,18 +9,18 @@
    ====================================================== */
 
 /* Variante escura para a página de cadastro */
-.login-right--dark {
+.login-direita--escura {
   background: #0d0d0f;
 }
 
 /* Imagem de fundo (atleta) */
-.right-bg {
+.direita-fundo {
   position: absolute;
   inset: 0;
   z-index: 0;
 }
 
-.right-bg img {
+.direita-fundo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -29,7 +29,7 @@
 }
 
 /* Overlay gradiente: escuro à esquerda, transparente à direita */
-.right-overlay {
+.direita-sobreposicao {
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -41,8 +41,8 @@
   );
 }
 
-/* Wrapper de todo o conteúdo (tagline + pills) */
-.right-content {
+/* Wrapper de todo o conteúdo (tagline + items) */
+.direita-conteudo {
   position: relative;
   z-index: 3;
   height: 100%;
@@ -64,7 +64,7 @@
 }
 
 /* Eyebrow acima do título */
-.tagline-eyebrow {
+.slogan-sobrancelha {
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -74,7 +74,7 @@
 }
 
 /* Tagline principal */
-.right-tagline h2 {
+.direita-slogan h2 {
   font-family: "Poppins", sans-serif;
   font-size: 3.1rem;
   font-weight: 800;
@@ -84,18 +84,18 @@
   text-shadow: 0 4px 28px rgba(0, 0, 0, 0.65);
 }
 
-.right-tagline h2 span {
+.direita-slogan h2 span {
   color: var(--orange);
 }
 
-/* Feature pills */
-.right-pills {
+/* Feature items */
+.direita-itens {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.pill {
+.item {
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -116,30 +116,30 @@
   cursor: default;
 }
 
-.pill:hover {
+.item:hover {
   background: rgba(255, 255, 255, 0.13);
   border-color: rgba(249, 115, 22, 0.35);
   transform: translateX(4px);
 }
 
-.pill i {
+.item i {
   color: var(--orange);
   font-size: 0.8rem;
   flex-shrink: 0;
 }
 
 /* Geo circles e speed lines sobre fundo escuro */
-.login-right--dark .geo-circle {
+.login-direita--escura .circulo-geometrico {
   border-color: rgba(249, 115, 22, 0.1);
   z-index: 2;
 }
 
-.login-right--dark::before,
-.login-right--dark::after {
+.login-direita--escura::before,
+.login-direita--escura::after {
   display: none;
 }
 
-.login-right--dark .speed-line {
+.login-direita--escura .linha-velocidade {
   z-index: 2;
   background: linear-gradient(
     90deg,
@@ -150,11 +150,11 @@
 }
 
 /* ---------- Logo full (logo-name.png) ---------- */
-.brand-full {
+.marca-completa {
   margin-bottom: 2.2rem;
 }
 
-.brand-full img {
+.marca-completa img {
   height: 72px;
   width: auto;
   display: block;
@@ -165,16 +165,16 @@
 
 /* ---------- Responsivo ---------- */
 @media (max-width: 1200px) {
-  .right-content {
+  .direita-conteudo {
     padding: 36px 38px;
   }
-  .right-tagline h2 {
+  .direita-slogan h2 {
     font-size: 2.5rem;
   }
 }
 
 @media (max-width: 991.98px) {
-  .login-right--dark {
+  .login-direita--escura {
     display: none;
   }
 }

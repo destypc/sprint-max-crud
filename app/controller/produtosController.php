@@ -44,6 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'excluir
             } catch (PDOException $e) { /* coluna imagem não existe ainda */
             }
 
+            // Remove referências em pedido_itens antes de excluir o produto
+            // (FK ON DELETE RESTRICT impede exclusão se o produto tiver sido pedido)
+            try {
+                $conexao->prepare("DELETE FROM pedido_itens WHERE produto_id = ?")->execute([$id]);
+            } catch (PDOException $e) { /* tabela pedido_itens pode não existir */
+            }
+
             $conexao->prepare("DELETE FROM produtos WHERE id = ?")->execute([$id]);
             registrarLog($conexao, 'exclusao_produto', "Produto #{$id} excluído", $_SESSION['user']['id'] ?? null);
             $_SESSION['flash'] = ['type' => 'success', 'message' => 'Produto excluído com sucesso!'];
@@ -107,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'editar'
     if (!empty($_FILES['imagem']['name'])) {
         $novaImagem = uploadImagem($_FILES['imagem']);
         if ($novaImagem === false) {
-            $_SESSION['flash'] = ['type' => 'error', 'message' => 'Imagem inválida. Use JPG, PNG ou WEBP (máx. 5 MB).'];
+            $_SESSION['flash'] = ['type' => 'error', 'message' => 'Imagem inválida. Use JPG, PNG ou WEBP (máx. 5 MB, dimensões entre 300×300 e 4000×4000 px).'];
             header('Location: /pages/produtos.php');
             exit;
         }

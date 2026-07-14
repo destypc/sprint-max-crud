@@ -50,5 +50,5 @@ CREATE TABLE IF NOT EXISTS notificacoes (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 9. Tags e visibilidade nos produtos (apenas se nao existirem)
-ALTER TABLE produtos ADD COLUMN tags    VARCHAR(255) NULL;
-ALTER TABLE produtos ADD COLUMN visivel TINYINT(1)   NOT NULL DEFAULT 1;
+ALTER TABLE produtos ADD COLUMN IF NOT EXISTS tags    VARCHAR(255) NULL;
+ALTER TABLE produtos ADD COLUMN IF NOT EXISTS visivel TINYINT(1)   NOT NULL DEFAULT 1;

@@ -76,7 +76,7 @@
 /* Botões toggle e fechar */
 :root[data-theme="light"] .btn-toggle:hover,
 :root[data-theme="light"] .btn-close-drawer:hover,
-:root[data-theme="light"] .btn-close-modal:hover {
+:root[data-theme="light"] .botao-fechar-modal:hover {
   background: rgba(0, 0, 0, 0.05);
 }
 
@@ -97,10 +97,10 @@
 }
 
 /* Ghost button */
-:root[data-theme="light"] .btn-ghost {
+:root[data-theme="light"] .botao-secundario {
   background: rgba(0, 0, 0, 0.04);
 }
-:root[data-theme="light"] .btn-ghost:hover {
+:root[data-theme="light"] .botao-secundario:hover {
   background: rgba(0, 0, 0, 0.08);
   color: var(--text-main);
 }
@@ -131,7 +131,7 @@
 }
 
 /* Overlays mais suaves na luz */
-:root[data-theme="light"] .modal-backdrop {
+:root[data-theme="light"] .fundo-modal {
   background: rgba(0, 0, 0, 0.4);
 }
 :root[data-theme="light"] .drawer-overlay {
@@ -165,7 +165,7 @@
 }
 
 /* Form select options */
-:root[data-theme="light"] .form-select option {
+:root[data-theme="light"] .selecao-formulario option {
   background: #ffffff;
   color: #1f2937;
 }

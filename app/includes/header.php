@@ -134,7 +134,7 @@ try {
             </div>
         </div><!-- /notif-wrap -->
 
-        <!-- Profile card -->
+        <!-- Profile card (dropdown controlado por painel.js) -->
         <div class="profile-wrap">
             <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false">
                 <img class="profile-avatar"
@@ -164,23 +164,3 @@ try {
     </div>
 
 </header>
-
-<script>
-    /* Notification dropdown */
-    (function() {
-        var btn = document.getElementById('notifBtn');
-        var dd = document.getElementById('notifDropdown');
-        if (!btn || !dd) return;
-
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            dd.classList.toggle('open');
-        });
-
-        document.addEventListener('click', function(e) {
-            if (!dd.contains(e.target) && !btn.contains(e.target)) {
-                dd.classList.remove('open');
-            }
-        });
-    })();
-</script>

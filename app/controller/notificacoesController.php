@@ -10,12 +10,12 @@ if (empty($_SESSION['user'])) {
 require_once __DIR__ . '/../config/conexao.php';
 
 $pdo = Connection::getConnection();
-$uid = (int) $_SESSION['user']['id'];
+$id_usuario = (int) $_SESSION['user']['id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'marcar_lidas') {
     try {
         $pdo->prepare("UPDATE notificacoes SET lida = 1 WHERE usuario_id = ?")
-            ->execute([$uid]);
+            ->execute([$id_usuario]);
     } catch (PDOException $e) { /* silencioso */
     }
 

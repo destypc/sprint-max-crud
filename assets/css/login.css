@@ -36,14 +36,14 @@ body {
 }
 
 /* ---------- Layout Principal ---------- */
-.login-wrapper {
+.login-conteiner {
   display: flex;
   height: 100vh;
   overflow: hidden;
 }
 
 /* ---------- Lado Esquerdo (Formulário) ---------- */
-.login-left {
+.login-esquerda {
   flex: 1;
   display: flex;
   align-items: center;
@@ -55,41 +55,31 @@ body {
   overflow-y: auto;
 }
 
-.login-form-container {
+.login-formulario-conteiner {
   width: 100%;
   max-width: 420px;
   animation: fadeUp 0.6s ease-out;
 }
 
 /* ---------- Logo ---------- */
-.brand {
+.marca {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 2.5rem;
 }
 
-.brand img {
-  width: 56px;
-  height: 56px;
-  object-fit: contain;
-  object-position: center;
-  display: block;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-}
 
-.brand span {
+.marca span {
   font-family: "Poppins", sans-serif;
-  font-size: 1.5rem;
+  font-size: 2em;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--white);
 }
 
 /* ---------- Títulos ---------- */
-.login-title {
+.login-titulo {
   font-family: "Poppins", sans-serif;
   font-size: 1.75rem;
   font-weight: 700;
@@ -98,11 +88,15 @@ body {
   color: var(--white);
 }
 
-.login-title .accent {
+.login-titulo .destaque {
   color: var(--orange);
 }
 
-.login-subtitle {
+.destaque{
+color: var(--orange) !important;
+}
+
+.login-subtitulo {
   font-size: 0.875rem;
   color: var(--gray-text);
   margin-bottom: 2rem;
@@ -110,11 +104,11 @@ body {
 }
 
 /* ---------- Campos de Input ---------- */
-.form-group {
+.grupo-formulario {
   margin-bottom: 1.25rem;
 }
 
-.form-group label {
+.grupo-formulario label {
   display: block;
   font-size: 0.8125rem;
   font-weight: 500;
@@ -122,13 +116,13 @@ body {
   margin-bottom: 0.5rem;
 }
 
-.input-wrapper {
+.entrada-conteiner {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.input-wrapper .input-icon {
+.entrada-conteiner .icone-entrada {
   position: absolute;
   left: 1rem;
   color: var(--gray-light);
@@ -137,7 +131,7 @@ body {
   transition: color 0.3s;
 }
 
-.input-wrapper input {
+.entrada-conteiner input {
   width: 100%;
   padding: 0.8125rem 1rem 0.8125rem 2.75rem;
   background-color: var(--gray-mid);
@@ -153,27 +147,27 @@ body {
     background-color 0.3s;
 }
 
-.input-wrapper input::placeholder {
+.entrada-conteiner input::placeholder {
   color: var(--gray-light);
   font-weight: 400;
 }
 
-.input-wrapper input:hover {
+.entrada-conteiner input:hover {
   background-color: #2f2f34;
 }
 
-.input-wrapper input:focus {
+.entrada-conteiner input:focus {
   border-color: var(--orange);
   box-shadow: 0 0 0 3px var(--orange-glow);
   background-color: var(--gray-mid);
 }
 
-.input-wrapper input:focus ~ .input-icon {
+.entrada-conteiner input:focus ~ .icone-entrada {
   color: var(--orange);
 }
 
 /* Botão mostrar/ocultar senha */
-.toggle-password {
+.alternar-senha {
   position: absolute;
   right: 1rem;
   background: none;
@@ -185,12 +179,12 @@ body {
   transition: color 0.3s;
 }
 
-.toggle-password:hover {
+.alternar-senha:hover {
   color: var(--orange-light);
 }
 
 /* ---------- Botão Entrar / Cadastrar ---------- */
-.btn-sprint {
+.botao-sprint {
   width: 100%;
   padding: 0.8125rem;
   border: none;
@@ -212,40 +206,40 @@ body {
   margin-top: 0.5rem;
 }
 
-.btn-sprint:hover {
+.botao-sprint:hover {
   opacity: 0.92;
   box-shadow: 0 4px 20px rgba(249, 115, 22, 0.35);
   transform: translateY(-1px);
 }
 
-.btn-sprint:active {
+.botao-sprint:active {
   transform: translateY(0);
 }
 
 /* ---------- Divider ---------- */
-.divider {
+.divisor {
   display: flex;
   align-items: center;
   gap: 1rem;
   margin: 1.5rem 0;
 }
 
-.divider::before,
-.divider::after {
+.divisor::before,
+.divisor::after {
   content: "";
   flex: 1;
   height: 1px;
   background-color: var(--gray-mid);
 }
 
-.divider span {
+.divisor span {
   font-size: 0.8125rem;
   color: var(--gray-light);
   white-space: nowrap;
 }
 
 /* ---------- Botão Criar Conta ---------- */
-.btn-outline-sprint {
+.botao-contorno-sprint {
   width: 100%;
   padding: 0.75rem;
   border: 1.5px solid var(--orange);
@@ -266,13 +260,13 @@ body {
     box-shadow 0.3s;
 }
 
-.btn-outline-sprint:hover {
+.botao-contorno-sprint:hover {
   background-color: rgba(249, 115, 22, 0.1);
   box-shadow: 0 0 0 3px var(--orange-glow);
 }
 
 /* ---------- Card Admin (credenciais de teste) ---------- */
-.admin-card {
+.cartao-admin {
   margin-top: 1.75rem;
   padding: 0.875rem 1rem;
   background-color: rgba(249, 115, 22, 0.06);
@@ -283,7 +277,7 @@ body {
   gap: 0.75rem;
 }
 
-.admin-card .shield-icon {
+.cartao-admin .icone-escudo {
   width: 36px;
   height: 36px;
   min-width: 36px;
@@ -296,27 +290,27 @@ body {
   font-size: 0.875rem;
 }
 
-.admin-card .admin-info h6 {
+.cartao-admin .informacoes-admin h6 {
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--white);
   margin-bottom: 0.25rem;
 }
 
-.admin-card .admin-info p {
+.cartao-admin .informacoes-admin p {
   font-size: 0.75rem;
   color: var(--gray-text);
   margin: 0;
   line-height: 1.6;
 }
 
-.admin-card .admin-info span {
+.cartao-admin .informacoes-admin span {
   color: var(--orange-light);
   font-weight: 500;
 }
 
 /* ---------- Lado Direito (Visual) ---------- */
-.login-right {
+.login-direita {
   flex: 1;
   position: relative;
   overflow: hidden;
@@ -326,7 +320,7 @@ body {
   justify-content: center;
 }
 
-.login-right picture {
+.login-direita picture {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -334,7 +328,7 @@ body {
   z-index: 1;
 }
 
-.login-right picture img {
+.login-direita picture img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -343,7 +337,7 @@ body {
 }
 
 /* Elementos geométricos decorativos */
-.login-right::before {
+.login-direita::before {
   content: "";
   position: absolute;
   width: 500px;
@@ -355,7 +349,7 @@ body {
   animation: pulse-slow 6s ease-in-out infinite;
 }
 
-.login-right::after {
+.login-direita::after {
   content: "";
   position: absolute;
   width: 350px;
@@ -367,20 +361,20 @@ body {
 }
 
 /* Círculos adicionais */
-.geo-circle {
+.circulo-geometrico {
   position: absolute;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.geo-circle--1 {
+.circulo-geometrico--1 {
   width: 200px;
   height: 200px;
   top: 15%;
   left: 10%;
 }
 
-.geo-circle--2 {
+.circulo-geometrico--2 {
   width: 120px;
   height: 120px;
   bottom: 20%;
@@ -388,7 +382,7 @@ body {
   background: rgba(255, 255, 255, 0.04);
 }
 
-.geo-circle--3 {
+.circulo-geometrico--3 {
   width: 60px;
   height: 60px;
   top: 30%;
@@ -397,7 +391,7 @@ body {
 }
 
 /* Linhas de velocidade */
-.speed-line {
+.linha-velocidade {
   position: absolute;
   height: 2px;
   background: linear-gradient(
@@ -409,21 +403,21 @@ body {
   border-radius: 2px;
 }
 
-.speed-line--1 {
+.linha-velocidade--1 {
   width: 120px;
   top: 25%;
   left: 5%;
   transform: rotate(-8deg);
 }
 
-.speed-line--2 {
+.linha-velocidade--2 {
   width: 80px;
   bottom: 35%;
   right: 10%;
   transform: rotate(5deg);
 }
 
-.speed-line--3 {
+.linha-velocidade--3 {
   width: 100px;
   top: 60%;
   left: 20%;
@@ -431,14 +425,14 @@ body {
 }
 
 /* Branding central */
-.right-brand {
+.right-marca {
   position: relative;
   z-index: 2;
   text-align: center;
   animation: fadeUp 0.8s ease-out 0.2s both;
 }
 
-.right-brand .logo-ring {
+.right-marca .logo-ring {
   width: 120px;
   height: 120px;
   border-radius: 50%;
@@ -451,7 +445,7 @@ body {
   overflow: hidden;
 }
 
-.right-brand .logo-ring img {
+.right-marca .logo-ring img {
   width: 70%;
   height: 70%;
   object-fit: contain;
@@ -462,7 +456,7 @@ body {
   box-shadow: none;
 }
 
-.right-brand h2 {
+.right-marca h2 {
   font-family: "Poppins", sans-serif;
   font-size: 1.75rem;
   font-weight: 700;
@@ -471,7 +465,7 @@ body {
   letter-spacing: -0.01em;
 }
 
-.right-brand p {
+.right-marca p {
   font-size: 0.875rem;
   color: rgba(255, 255, 255, 0.75);
   font-weight: 400;
@@ -486,30 +480,30 @@ body {
   color: var(--white);
 }
 
-.modal-header {
+.cabecalho-modaler {
   border-bottom: 1px solid var(--gray-mid);
   padding: 1.5rem 1.5rem 1rem;
 }
 
-.modal-header .modal-title {
+.cabecalho-modaler .modal-title {
   font-family: "Poppins", sans-serif;
   font-weight: 700;
   font-size: 1.25rem;
 }
 
-.modal-header .modal-title .accent {
+.cabecalho-modaler .modal-title .destaque {
   color: var(--orange);
 }
 
-.modal-header .btn-close {
+.cabecalho-modaler .btn-close {
   filter: invert(1) grayscale(100%) brightness(200%);
 }
 
-.modal-body {
+.corpo-modal {
   padding: 1rem 1.5rem 1.5rem;
 }
 
-.modal-body .login-subtitle {
+.corpo-modal .login-subtitulo {
   margin-bottom: 1.5rem;
 }
 
@@ -541,15 +535,15 @@ body {
 
 /* Tablet */
 @media (max-width: 991.98px) {
-  .login-right {
+  .login-direita {
     display: none;
   }
 
-  .login-left {
+  .login-esquerda {
     padding: 2rem 1.5rem;
   }
 
-  .brand img {
+  .marca img {
     width: 50px;
     height: 50px;
   }
@@ -557,24 +551,24 @@ body {
 
 /* Mobile */
 @media (max-width: 575.98px) {
-  .login-left {
+  .login-esquerda {
     padding: 1.5rem 1.25rem;
   }
 
-  .login-form-container {
+  .login-formulario-conteiner {
     max-width: 100%;
   }
 
-  .login-title {
+  .login-titulo {
     font-size: 1.5rem;
   }
 
-  .brand img {
+  .marca img {
     width: 42px;
     height: 42px;
   }
 
-  .brand span {
+  .marca span {
     font-size: 1.25rem;
   }
 }
@@ -586,11 +580,11 @@ body {
    ====================================================== */
 
 /* ---------- Bolhas animadas (fundo do painel esquerdo) ---------- */
-.login-left {
+.login-esquerda {
   overflow: hidden; /* confina as bolhas */
 }
 
-.bubble {
+.bolha {
   position: absolute;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(249, 115, 22, 0.07), transparent);
@@ -600,7 +594,7 @@ body {
   animation-delay: var(--delay, 0s);
 }
 
-.bubble--1 {
+.bolha--1 {
   width: 90px;
   height: 90px;
   left: -15px;
@@ -608,7 +602,7 @@ body {
   --dur: 13s;
   --delay: 0s;
 }
-.bubble--2 {
+.bolha--2 {
   width: 55px;
   height: 55px;
   right: 4%;
@@ -616,7 +610,7 @@ body {
   --dur: 10s;
   --delay: 2s;
 }
-.bubble--3 {
+.bolha--3 {
   width: 130px;
   height: 130px;
   left: 28%;
@@ -624,7 +618,7 @@ body {
   --dur: 16s;
   --delay: 4s;
 }
-.bubble--4 {
+.bolha--4 {
   width: 42px;
   height: 42px;
   right: 18%;
@@ -650,21 +644,21 @@ body {
 }
 
 /* ---------- Estados de erro / sucesso nos inputs ---------- */
-.input-wrapper.error input {
+.entrada-conteiner.error input {
   border-color: var(--red) !important;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.14) !important;
 }
 
-.input-wrapper.error .input-icon {
+.entrada-conteiner.error .icone-entrada {
   color: var(--red);
 }
 
-.input-wrapper.success input {
+.entrada-conteiner.success input {
   border-color: #10b981 !important;
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12) !important;
 }
 
-.input-wrapper.success .input-icon {
+.entrada-conteiner.success .icone-entrada {
   color: #10b981;
 }
 
@@ -680,16 +674,16 @@ body {
 }
 
 /* ---------- Indicador de força de senha ---------- */
-.strength-wrapper {
+.forca-conteiner {
   margin-top: 0.5rem;
 }
 
-.password-strength {
+.forca-senha {
   display: flex;
   gap: 4px;
 }
 
-.strength-bar {
+.forca-barra {
   flex: 1;
   height: 3px;
   border-radius: 2px;
@@ -697,17 +691,17 @@ body {
   transition: background-color 0.3s ease;
 }
 
-.strength-bar.weak {
+.forca-barra.weak {
   background-color: var(--red);
 }
-.strength-bar.medium {
+.forca-barra.medium {
   background-color: #f59e0b;
 }
-.strength-bar.strong {
+.forca-barra.strong {
   background-color: #10b981;
 }
 
-.strength-label {
+.forca-rotulo {
   font-size: 0.7rem;
   font-weight: 500;
   color: var(--gray-text);
@@ -716,19 +710,19 @@ body {
   transition: color 0.3s;
 }
 
-.strength-label.weak {
+.forca-rotulo.weak {
   color: var(--red);
 }
-.strength-label.medium {
+.forca-rotulo.medium {
   color: #f59e0b;
 }
-.strength-label.strong {
+.forca-rotulo.strong {
   color: #10b981;
 }
 
 /* ---------- Estado de loading no botão ---------- */
-.btn-sprint:disabled,
-.btn-sprint.loading {
+.botao-sprint:disabled,
+.botao-sprint.loading {
   opacity: 0.7;
   cursor: not-allowed;
   pointer-events: none;
@@ -752,6 +746,6 @@ body {
 }
 
 /* ---------- Link outline sem inline style ---------- */
-.btn-outline-sprint {
+.botao-contorno-sprint {
   text-decoration: none;
 }

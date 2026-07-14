@@ -7,11 +7,11 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ── Utilitários de validação ──────────────────────────── */
 
   /** Verifica formato de e-mail */
-  function isValidEmail(email) {
+  function emailValido(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   }
 
-  /** Marca o input-wrapper com estado de erro */
+  /** Marca o entrada-conteiner com estado de erro */
   function setError(wrapper, msg) {
     clearState(wrapper);
     wrapper.classList.add("error");
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     wrapper.insertAdjacentElement("afterend", p);
   }
 
-  /** Marca o input-wrapper com estado de sucesso */
+  /** Marca o entrada-conteiner com estado de sucesso */
   function setSuccess(wrapper) {
     clearState(wrapper);
     wrapper.classList.add("success");
@@ -53,9 +53,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ── Toggle mostrar / ocultar senha ───────────────────── */
 
-  document.querySelectorAll(".toggle-password").forEach((btn) => {
+  document.querySelectorAll(".alternar-senha").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const input = btn.closest(".input-wrapper").querySelector("input");
+      const input = btn.closest(".entrada-conteiner").querySelector("input");
       const icon = btn.querySelector("i");
       if (input.type === "password") {
         input.type = "text";
@@ -69,9 +69,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ── Limpar estado ao digitar ─────────────────────────── */
 
-  document.querySelectorAll(".input-wrapper input").forEach((input) => {
+  document.querySelectorAll(".entrada-conteiner input").forEach((input) => {
     input.addEventListener("input", () => {
-      clearState(input.closest(".input-wrapper"));
+      clearState(input.closest(".entrada-conteiner"));
     });
   });
 
@@ -82,8 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const wrapper = document.getElementById(wrapperId);
     if (!input || !wrapper) return;
 
-    const bars = wrapper.querySelectorAll(".strength-bar");
-    const label = wrapper.querySelector(".strength-label");
+    const bars = wrapper.querySelectorAll(".forca-barra");
+    const label = wrapper.querySelector(".forca-rotulo");
 
     input.addEventListener("input", () => {
       const val = input.value;
@@ -101,12 +101,12 @@ document.addEventListener("DOMContentLoaded", () => {
       ];
 
       bars.forEach((bar, i) => {
-        bar.className = "strength-bar";
+        bar.className = "forca-barra";
         if (i < score) bar.classList.add(map[score].cls);
       });
 
       label.textContent = val.length ? map[score].text : "";
-      label.className = "strength-label " + (val.length ? map[score].cls : "");
+      label.className = "forca-rotulo " + (val.length ? map[score].cls : "");
     });
   }
 
@@ -122,10 +122,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (emailInput) {
       emailInput.addEventListener("blur", () => {
-        const w = emailInput.closest(".input-wrapper");
+        const w = emailInput.closest(".entrada-conteiner");
         if (!emailInput.value.trim()) {
           setError(w, "E-mail é obrigatório.");
-        } else if (!isValidEmail(emailInput.value)) {
+        } else if (!emailValido(emailInput.value)) {
           setError(w, "Digite um e-mail válido.");
         } else {
           setSuccess(w);
@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (senhaInput) {
       senhaInput.addEventListener("blur", () => {
-        const w = senhaInput.closest(".input-wrapper");
+        const w = senhaInput.closest(".entrada-conteiner");
         if (!senhaInput.value.trim()) {
           setError(w, "Senha é obrigatória.");
         } else {
@@ -147,16 +147,16 @@ document.addEventListener("DOMContentLoaded", () => {
     loginForm.addEventListener("submit", (e) => {
       let valid = true;
 
-      const emailW = emailInput.closest(".input-wrapper");
+      const emailW = emailInput.closest(".entrada-conteiner");
       if (!emailInput.value.trim()) {
         setError(emailW, "E-mail é obrigatório.");
         valid = false;
-      } else if (!isValidEmail(emailInput.value)) {
+      } else if (!emailValido(emailInput.value)) {
         setError(emailW, "Digite um e-mail válido.");
         valid = false;
       }
 
-      const senhaW = senhaInput.closest(".input-wrapper");
+      const senhaW = senhaInput.closest(".entrada-conteiner");
       if (!senhaInput.value.trim()) {
         setError(senhaW, "Senha é obrigatória.");
         valid = false;
@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Campos válidos: loading e deixa o form submeter ao PHP
       setBtnLoading(
-        loginForm.querySelector(".btn-sprint"),
+        loginForm.querySelector(".botao-sprint"),
         true,
         "Entrando...",
       );
@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function validateNome() {
       if (!cadNome) return true;
-      const w = cadNome.closest(".input-wrapper");
+      const w = cadNome.closest(".entrada-conteiner");
       if (!cadNome.value.trim()) {
         setError(w, "Nome é obrigatório.");
         return false;
@@ -209,12 +209,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function validateEmail() {
       if (!cadEmail) return true;
-      const w = cadEmail.closest(".input-wrapper");
+      const w = cadEmail.closest(".entrada-conteiner");
       if (!cadEmail.value.trim()) {
         setError(w, "E-mail é obrigatório.");
         return false;
       }
-      if (!isValidEmail(cadEmail.value)) {
+      if (!emailValido(cadEmail.value)) {
         setError(w, "Digite um e-mail válido.");
         return false;
       }
@@ -224,7 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function validateSenha() {
       if (!cadSenha) return true;
-      const w = cadSenha.closest(".input-wrapper");
+      const w = cadSenha.closest(".entrada-conteiner");
       if (!cadSenha.value.trim()) {
         setError(w, "Senha é obrigatória.");
         return false;
@@ -239,7 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function validateConfirmar() {
       if (!cadConfirmar) return true;
-      const w = cadConfirmar.closest(".input-wrapper");
+      const w = cadConfirmar.closest(".entrada-conteiner");
       if (!cadConfirmar.value.trim()) {
         setError(w, "Confirme sua senha.");
         return false;
@@ -261,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (cadConfirmar) {
       cadConfirmar.addEventListener("input", () => {
         if (!cadConfirmar.value) return;
-        const w = cadConfirmar.closest(".input-wrapper");
+        const w = cadConfirmar.closest(".entrada-conteiner");
         if (cadSenha && cadConfirmar.value !== cadSenha.value) {
           setError(w, "As senhas não coincidem.");
         } else {
@@ -283,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Campos válidos: loading e submete ao PHP
       setBtnLoading(
-        cadastroForm.querySelector(".btn-sprint"),
+        cadastroForm.querySelector(".botao-sprint"),
         true,
         "Cadastrando...",
       );

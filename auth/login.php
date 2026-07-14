@@ -21,34 +21,36 @@ $erro = $_GET['erro'] ?? '';
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
+    <!-- Favicon -->
+    <link rel="icon" href="/assets/img/favicon.png" type="image/x-icon">
+
     <!-- CSS Personalizado -->
     <link rel="stylesheet" href="/assets/css/login.css">
 </head>
 
 <body>
 
-    <div class="login-wrapper">
+    <div class="login-conteiner">
 
         <!-- ====== LADO ESQUERDO — Formulário ====== -->
-        <div class="login-left">
+        <div class="login-esquerda">
 
             <!-- Bolhas animadas de fundo -->
-            <div class="bubble bubble--1"></div>
-            <div class="bubble bubble--2"></div>
-            <div class="bubble bubble--3"></div>
-            <div class="bubble bubble--4"></div>
+            <div class="bolha bolha--1"></div>
+            <div class="bolha bolha--2"></div>
+            <div class="bolha bolha--3"></div>
+            <div class="bolha bolha--4"></div>
 
-            <div class="login-form-container">
+            <div class="login-formulario-conteiner">
 
                 <!-- Logo -->
-                <div class="brand">
-                    <img src="/assets/img/logo.png" alt="Sprint Max">
-                    <span>Sprint Max</span>
+                <div class="marca">
+                    <span>Sprint</span> <span class="destaque">Max</span>
                 </div>
 
                 <!-- Título -->
-                <h1 class="login-title">Bem-vindo <span class="accent">de volta</span></h1>
-                <p class="login-subtitle">Faça login para acessar seu painel.</p>
+                <h1 class="login-titulo">Bem-vindo <span class="destaque">de volta</span></h1>
+                <p class="login-subtitulo">Faça login para acessar seu painel.</p>
 
                 <?php if ($erro): ?>
                     <div class="alert alert-danger py-2" role="alert">
@@ -60,52 +62,52 @@ $erro = $_GET['erro'] ?? '';
                 <form id="loginForm" novalidate method="POST" action="/app/controller/loginController.php">
 
                     <!-- Email -->
-                    <div class="form-group">
+                    <div class="grupo-formulario">
                         <label for="loginEmail">E-mail</label>
-                        <div class="input-wrapper">
-                            <i class="fa-regular fa-envelope input-icon"></i>
+                        <div class="entrada-conteiner">
+                            <i class="fa-regular fa-envelope icone-entrada"></i>
                             <input type="email" id="loginEmail" name="email" placeholder="Digite seu e-mail" autocomplete="email">
                         </div>
                     </div>
 
                     <!-- Senha -->
-                    <div class="form-group">
+                    <div class="grupo-formulario">
                         <label for="loginSenha">Senha</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-lock input-icon"></i>
+                        <div class="entrada-conteiner">
+                            <i class="fa-solid fa-lock icone-entrada"></i>
                             <input type="password" id="loginSenha" name="senha" placeholder="Digite sua senha" autocomplete="current-password">
-                            <button type="button" class="toggle-password" aria-label="Mostrar senha">
+                            <button type="button" class="alternar-senha" aria-label="Mostrar senha">
                                 <i class="fa-regular fa-eye"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- Botão Entrar -->
-                    <button type="submit" class="btn-sprint">
+                    <button type="submit" class="botao-sprint">
                         <i class="fa-solid fa-right-to-bracket"></i>
                         Entrar
                     </button>
                 </form>
 
                 <!-- Divider -->
-                <div class="divider">
+                <div class="divisor">
                     <span>Ainda não tem uma conta?</span>
                 </div>
 
                 <!-- Botão Criar Conta -->
                 <a href="/auth/cadastro.php" style="text-decoration: none;">
-                    <button type="button" class="btn-outline-sprint">
+                    <button type="button" class="botao-contorno-sprint">
                         <i class="fa-solid fa-user-plus"></i>
                         Criar conta
                     </button>
                 </a>
 
                 <!-- Card Admin -->
-                <div class="admin-card">
-                    <div class="shield-icon">
+                <div class="cartao-admin">
+                    <div class="icone-escudo">
                         <i class="fa-solid fa-shield-halved"></i>
                     </div>
-                    <div class="admin-info">
+                    <div class="informacoes-admin">
                         <h6>Administrador para testes</h6>
                         <p>
                             <span>E-mail:</span> admin@gmail.com<br>
@@ -118,7 +120,7 @@ $erro = $_GET['erro'] ?? '';
         </div>
 
         <!-- ====== LADO DIREITO — Visual ====== -->
-        <div class="login-right">
+        <div class="login-direita">
 
             <picture>
                 <!-- Monitor grande / TV (1600px+) -->
