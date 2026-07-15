@@ -4,13 +4,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <!-- Anti-flash: aplica tema antes da primeira renderizacao -->
-    <script>
-        (function() {
-            var t = localStorage.getItem('sprint-theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', t);
-        })();
-    </script>
+    <?php require __DIR__ . '/../app/includes/theme-init.php'; ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sprint Max — Loja</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -66,7 +60,6 @@
                         'preco'     => (float) $p['preco'],
                         'quantidade' => (int)   $p['quantidade'],
                         'descricao' =>         $p['descricao'] ?? '',
-                        'status'    =>         $p['status'],
                         'imagem'    =>         $p['imagem'] ?? '',
                     ]), ENT_QUOTES);
                 ?>
@@ -112,7 +105,7 @@
                                 </button>
                             </form>
 
-                            <?php if ($p['status'] === 'sem_estoque'): ?>
+                            <?php if ((int)$p['quantidade'] === 0): ?>
                                 <div class="sem-estoque-overlay">Indisponível</div>
                             <?php endif; ?>
                         </div>
@@ -121,9 +114,9 @@
                             <span class="produto-cat"><?= htmlspecialchars($p['categoria']) ?></span>
                             <h3 class="produto-nome"><?= htmlspecialchars($p['nome']) ?></h3>
                             <div class="produto-preco">R$ <?= number_format($p['preco'], 2, ',', '.') ?></div>
-                            <?php if ($p['status'] === 'sem_estoque'): ?>
+                            <?php if ((int)$p['quantidade'] === 0): ?>
                                 <div class="produto-estoque sem">Indisponível</div>
-                            <?php elseif ($p['status'] === 'baixo_estoque'): ?>
+                            <?php elseif ((int)$p['quantidade'] <= 5): ?>
                                 <div class="produto-estoque baixo">Apenas <?= (int)$p['quantidade'] ?> em estoque</div>
                             <?php else: ?>
                                 <div class="produto-estoque"><?= (int)$p['quantidade'] ?> disponível(is)</div>
@@ -142,9 +135,9 @@
                                     <input type="hidden" name="quantidade" value="1">
                                     <input type="hidden" name="redirect" value="/pages/home.php">
                                     <button type="submit" class="btn-add-cart"
-                                        <?= $p['status'] === 'sem_estoque' ? 'disabled' : '' ?>>
+                                        <?= (int)$p['quantidade'] === 0 ? 'disabled' : '' ?>>
                                         <i class="fa-solid fa-cart-shopping"></i>
-                                        <?= $p['status'] === 'sem_estoque' ? 'Indisponível' : '+ Carrinho' ?>
+                                        <?= (int)$p['quantidade'] === 0 ? 'Indisponível' : '+ Carrinho' ?>
                                     </button>
                                 </form>
                             <?php endif; ?>

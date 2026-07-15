@@ -50,13 +50,8 @@ $avatar = !empty($foto_perfil)
 
 <head>
     <meta charset="UTF-8">
-    <script>
-        (function() {
-            var t = localStorage.getItem('sprint-theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', t);
-        })();
-    </script>
-    <meta name="viewport" content="widtfavicon.pngdth, initial-scale=1.0">
+    <?php require __DIR__ . '/../app/includes/theme-init.php'; ?>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sprint Max &mdash; Meu Perfil</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

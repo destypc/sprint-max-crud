@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'adicion
     $quantidade = max(1, (int) ($_POST['quantidade'] ?? 1));
 
     if ($id_produto > 0) {
-        $stmt = $pdo->prepare("SELECT id, quantidade FROM produtos WHERE id = ? AND status != 'sem_estoque'");
+        $stmt = $pdo->prepare("SELECT id, quantidade FROM produtos WHERE id = ? AND quantidade > 0");
         $stmt->execute([$id_produto]);
         $produto = $stmt->fetch(PDO::FETCH_ASSOC);
 

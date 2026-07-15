@@ -20,7 +20,7 @@
 
     function verDetalhes(p) {
         qtdAtual = 1;
-        qtdMax = p.status === 'sem_estoque' ? 0 : Math.max(1, p.quantidade);
+        qtdMax = p.quantidade === 0 ? 0 : Math.max(1, p.quantidade);
 
         var cat = $('detalheCat');
         if (cat) cat.textContent = p.categoria;
@@ -39,10 +39,10 @@
         var estoqueEl = $('detalheEstoque');
         if (estoqueEl) {
             estoqueEl.className = 'dprod-estoque-pill';
-            if (p.status === 'sem_estoque') {
+            if (p.quantidade === 0) {
                 estoqueEl.classList.add('indisponivel');
                 estoqueEl.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Indisponível';
-            } else if (p.status === 'baixo_estoque') {
+            } else if (p.quantidade <= 5) {
                 estoqueEl.classList.add('baixo');
                 estoqueEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Apenas ' + p.quantidade + ' em estoque';
             } else {
@@ -75,8 +75,8 @@
 
         var btnCart = $('btnAdicionarCart');
         if (btnCart) {
-            btnCart.disabled = p.status === 'sem_estoque';
-            btnCart.innerHTML = p.status === 'sem_estoque'
+            btnCart.disabled = p.quantidade === 0;
+            btnCart.innerHTML = p.quantidade === 0
                 ? '<i class="fa-solid fa-ban"></i> Indisponível'
                 : '<i class="fa-solid fa-cart-shopping"></i> Adicionar ao Carrinho';
         }

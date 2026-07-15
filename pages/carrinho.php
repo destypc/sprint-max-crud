@@ -66,13 +66,7 @@ if (!empty($_SESSION['cart'])) {
 
 <head>
     <meta charset="UTF-8">
-    <!-- Anti-flash: aplica tema antes da primeira renderizacao -->
-    <script>
-        (function() {
-            var t = localStorage.getItem('sprint-theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', t);
-        })();
-    </script>
+    <?php require __DIR__ . '/../app/includes/theme-init.php'; ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sprint Max — Carrinho</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -320,7 +314,7 @@ if (!empty($_SESSION['cart'])) {
                                     </span>
                                 </div>
 
-                                <!-- Botão Finalizar Compra (handler criado na Etapa 5) -->
+                                <!-- Botão Finalizar Compra (tratado em pedidoController.php) -->
                                 <form method="POST" action="/app/controller/pedidoController.php">
                                     <input type="hidden" name="acao" value="finalizar">
                                     <button type="submit" class="botao-primario"

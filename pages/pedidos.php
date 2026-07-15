@@ -85,13 +85,7 @@ function statusBadgePedido(string $status): string
 
 <head>
     <meta charset="UTF-8">
-    <!-- Anti-flash: aplica tema antes da primeira renderizacao -->
-    <script>
-        (function() {
-            var t = localStorage.getItem('sprint-theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', t);
-        })();
-    </script>
+    <?php require __DIR__ . '/../app/includes/theme-init.php'; ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sprint Max — <?= htmlspecialchars($page_title) ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -163,8 +157,10 @@ function statusBadgePedido(string $status): string
                                             <th>Total</th>
                                             <th>Status</th>
                                             <th>Salvar</th>
+                                            <th>Excluir</th>
                                         </tr>
                                     </thead>
+
                                     <tbody>
                                         <?php foreach ($pedidos as $p): ?>
                                             <tr>
@@ -205,6 +201,23 @@ function statusBadgePedido(string $status): string
                                                         </button>
                                                     </form>
                                                 </td>
+                                                <td>
+                                                    <form method="POST"
+                                                        action="/app/controller/pedidoController.php"
+                                                        onsubmit="return confirm('Tem certeza que deseja excluir este pedido?')">
+
+                                                        <input type="hidden" name="acao" value="excluir_pedido">
+                                                        <input type="hidden" name="pedido_id" value="<?= (int)$p['id'] ?>">
+
+                                                        <button type="submit"
+                                                            class="btn-icon del"
+                                                            title="Excluir pedido">
+                                                            <i class="fa-solid fa-trash"></i>
+                                                        </button>
+
+                                                    </form>
+                                                </td>
+
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>

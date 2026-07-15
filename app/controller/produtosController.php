@@ -107,8 +107,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'editar'
         exit;
     }
 
-    $status = resolverStatusProduto($quantidade);
-
     // Upload de nova imagem (opcional na edição)
     $novaImagem = null;
     if (!empty($_FILES['imagem']['name'])) {
@@ -132,16 +130,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'editar'
                 } catch (PDOException $e) { /* coluna imagem não existe ainda */
                 }
 
-                $conexao->prepare("UPDATE produtos SET nome=?, marca=?, cor=?, tags=?, visivel=?, categoria=?, preco=?, quantidade=?, status=?, imagem=? WHERE id=?")
-                    ->execute([$nome, $marca, $cor, $tags, $visivel, $categoria, $preco, $quantidade, $status, $novaImagem, $id]);
+                $conexao->prepare("UPDATE produtos SET nome=?, marca=?, cor=?, tags=?, visivel=?, categoria=?, preco=?, quantidade=?, imagem=? WHERE id=?")
+                    ->execute([$nome, $marca, $cor, $tags, $visivel, $categoria, $preco, $quantidade, $novaImagem, $id]);
             } else {
-                $conexao->prepare("UPDATE produtos SET nome=?, marca=?, cor=?, tags=?, visivel=?, categoria=?, preco=?, quantidade=?, status=? WHERE id=?")
-                    ->execute([$nome, $marca, $cor, $tags, $visivel, $categoria, $preco, $quantidade, $status, $id]);
+                $conexao->prepare("UPDATE produtos SET nome=?, marca=?, cor=?, tags=?, visivel=?, categoria=?, preco=?, quantidade=? WHERE id=?")
+                    ->execute([$nome, $marca, $cor, $tags, $visivel, $categoria, $preco, $quantidade, $id]);
             }
         } catch (PDOException $e) {
             // Fallback: banco sem migração — usa apenas colunas originais
-            $conexao->prepare("UPDATE produtos SET nome=?, categoria=?, preco=?, quantidade=?, status=? WHERE id=?")
-                ->execute([$nome, $categoria, $preco, $quantidade, $status, $id]);
+            $conexao->prepare("UPDATE produtos SET nome=?, categoria=?, preco=?, quantidade=? WHERE id=?")
+                ->execute([$nome, $categoria, $preco, $quantidade, $id]);
         }
         registrarLog($conexao, 'edicao_produto', "Produto \"{$nome}\" atualizado", $_SESSION['user']['id'] ?? null);
         $_SESSION['flash'] = ['type' => 'success', 'message' => 'Produto atualizado com sucesso!'];
@@ -195,8 +193,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $status = resolverStatusProduto($quantidade);
-
     // Upload de imagem (opcional)
     $imagem = null;
     if (!empty($_FILES['imagem']['name'])) {
@@ -212,16 +208,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Tenta com colunas novas (marca, cor, imagem)
         try {
             if ($imagem !== null) {
-                $conexao->prepare("INSERT INTO produtos (nome, marca, cor, tags, visivel, categoria, preco, quantidade, descricao, status, imagem) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-                    ->execute([$nome, $marca, $cor, $tags, $visivel, $categoria, $preco, $quantidade, $descricao, $status, $imagem]);
+                $conexao->prepare("INSERT INTO produtos (nome, marca, cor, tags, visivel, categoria, preco, quantidade, descricao, imagem) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                    ->execute([$nome, $marca, $cor, $tags, $visivel, $categoria, $preco, $quantidade, $descricao, $imagem]);
             } else {
-                $conexao->prepare("INSERT INTO produtos (nome, marca, cor, tags, visivel, categoria, preco, quantidade, descricao, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-                    ->execute([$nome, $marca, $cor, $tags, $visivel, $categoria, $preco, $quantidade, $descricao, $status]);
+                $conexao->prepare("INSERT INTO produtos (nome, marca, cor, tags, visivel, categoria, preco, quantidade, descricao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                    ->execute([$nome, $marca, $cor, $tags, $visivel, $categoria, $preco, $quantidade, $descricao]);
             }
         } catch (PDOException $e) {
             // Fallback: banco sem migração — usa apenas colunas originais
-            $conexao->prepare("INSERT INTO produtos (nome, categoria, preco, quantidade, descricao, status) VALUES (?, ?, ?, ?, ?, ?)")
-                ->execute([$nome, $categoria, $preco, $quantidade, $descricao, $status]);
+            $conexao->prepare("INSERT INTO produtos (nome, categoria, preco, quantidade, descricao) VALUES (?, ?, ?, ?, ?)")
+                ->execute([$nome, $categoria, $preco, $quantidade, $descricao]);
         }
         registrarLog($conexao, 'cadastro_produto', "Produto \"{$nome}\" cadastrado", $_SESSION['user']['id'] ?? null);
     } catch (PDOException $e) {
@@ -279,16 +275,6 @@ $total_produtos = $total;
 $total_paginas  = max(1, (int)ceil($total / $por_pagina));
 $inicio         = $total > 0 ? $offset + 1 : 0;
 $fim            = min($offset + $por_pagina, $total);
-
-function statusBadgeProduto(string $status): string
-{
-    return match ($status) {
-        'ativo'         => '<span class="badge badge-green">Ativo</span>',
-        'baixo_estoque' => '<span class="badge badge-yellow">Baixo estoque</span>',
-        'sem_estoque'   => '<span class="badge badge-red">Sem estoque</span>',
-        default         => '<span class="badge badge-orange">' . htmlspecialchars($status) . '</span>',
-    };
-}
 
 function precoFormatado(float $preco): string
 {

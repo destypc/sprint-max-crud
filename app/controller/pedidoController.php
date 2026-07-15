@@ -97,8 +97,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'finaliz
             ]);
 
             $novaQtd = $item['estoque_atual'] - $item['quantidade'];
-            $pdo->prepare("UPDATE produtos SET quantidade = ?, status = ? WHERE id = ?")
-                ->execute([$novaQtd, resolverStatusProduto($novaQtd), $item['produto_id']]);
+            $pdo->prepare("UPDATE produtos SET quantidade = ? WHERE id = ?")
+                ->execute([$novaQtd, $item['produto_id']]);
         }
 
         $pdo->commit();
@@ -184,6 +184,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'atualiz
             error_log('pedidoController status: ' . $e->getMessage());
             $_SESSION['flash'] = ['type' => 'error', 'message' => 'Erro ao atualizar status.'];
         }
+    }
+
+    header('Location: /pages/pedidos.php');
+    exit;
+}
+
+// ── EXCLUIR PEDIDO (admin) ────────────────────────────────────
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'excluir_pedido') {
+
+    if (($_SESSION['user']['tipo'] ?? '') !== 'admin') {
+        header('Location: /pages/pedidos.php');
+        exit;
+    }
+
+    $pedido_id = (int) ($_POST['pedido_id'] ?? 0);
+
+    if ($pedido_id <= 0) {
+        $_SESSION['flash'] = ['type' => 'error', 'message' => 'Pedido inválido.'];
+        header('Location: /pages/pedidos.php');
+        exit;
+    }
+
+    try {
+        $pdo->beginTransaction();
+
+        // 1) Remove os itens do pedido; 2) remove o pedido.
+        // A ordem evita violação de chave estrangeira em pedido_itens.
+        $pdo->prepare("DELETE FROM pedido_itens WHERE pedido_id = ?")->execute([$pedido_id]);
+        $pdo->prepare("DELETE FROM pedidos WHERE id = ?")->execute([$pedido_id]);
+
+        $pdo->commit();
+
+        registrarLog(
+            $pdo,
+            'exclusao_pedido',
+            "Pedido #{$pedido_id} excluído",
+            $_SESSION['user']['id'] ?? null
+        );
+
+        $_SESSION['flash'] = ['type' => 'success', 'message' => "Pedido #{$pedido_id} excluído com sucesso!"];
+    } catch (PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        error_log('pedidoController excluir_pedido: ' . $e->getMessage());
+        $_SESSION['flash'] = ['type' => 'error', 'message' => 'Erro ao excluir o pedido. Tente novamente.'];
     }
 
     header('Location: /pages/pedidos.php');

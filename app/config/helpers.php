@@ -10,13 +10,6 @@ function registrarLog(PDO $conexao, string $acao, string $descricao, ?int $usuar
     }
 }
 
-function resolverStatusProduto(int $qtd): string
-{
-    if ($qtd === 0) return 'sem_estoque';
-    if ($qtd <= 5)  return 'baixo_estoque';
-    return 'ativo';
-}
-
 /**
  * Faz upload de uma imagem para a pasta /uploads/.
  * Retorna o caminho web "/uploads/arquivo.ext" ou false em caso de erro.

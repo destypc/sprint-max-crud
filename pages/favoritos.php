@@ -23,7 +23,7 @@ $erroMigracao = false;
 try {
     $stmt = $pdo->prepare("
         SELECT pr.id, pr.nome, pr.categoria, pr.preco, pr.quantidade,
-               pr.descricao, pr.status,
+               pr.descricao,
                COALESCE(pr.imagem, '') AS imagem
         FROM favoritos f
         JOIN produtos pr ON pr.id = f.produto_id
@@ -41,13 +41,7 @@ try {
 
 <head>
     <meta charset="UTF-8">
-    <!-- Anti-flash: aplica tema antes da primeira renderizacao -->
-    <script>
-        (function() {
-            var t = localStorage.getItem('sprint-theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', t);
-        })();
-    </script>
+    <?php require __DIR__ . '/../app/includes/theme-init.php'; ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sprint Max — Favoritos</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -163,7 +157,6 @@ try {
                                 'preco'      => (float) $p['preco'],
                                 'quantidade' => (int)   $p['quantidade'],
                                 'descricao'  =>         $p['descricao'] ?? '',
-                                'status'     =>         $p['status'],
                                 'imagem'     =>         $p['imagem'] ?? '',
                             ]), ENT_QUOTES);
                         ?>
@@ -192,7 +185,7 @@ try {
                                         </button>
                                     </form>
 
-                                    <?php if ($p['status'] === 'sem_estoque'): ?>
+                                    <?php if ((int)$p['quantidade'] === 0): ?>
                                         <div class="sem-estoque-overlay">Indisponível</div>
                                     <?php endif; ?>
                                 </div>
@@ -201,9 +194,9 @@ try {
                                     <span class="produto-cat"><?= htmlspecialchars($p['categoria']) ?></span>
                                     <h3 class="produto-nome"><?= htmlspecialchars($p['nome']) ?></h3>
                                     <div class="produto-preco">R$ <?= number_format($p['preco'], 2, ',', '.') ?></div>
-                                    <?php if ($p['status'] === 'sem_estoque'): ?>
+                                    <?php if ((int)$p['quantidade'] === 0): ?>
                                         <div class="produto-estoque sem">Indisponível</div>
-                                    <?php elseif ($p['status'] === 'baixo_estoque'): ?>
+                                    <?php elseif ((int)$p['quantidade'] <= 5): ?>
                                         <div class="produto-estoque baixo">Apenas <?= (int)$p['quantidade'] ?> em estoque</div>
                                     <?php else: ?>
                                         <div class="produto-estoque"><?= (int)$p['quantidade'] ?> disponível(is)</div>
@@ -221,9 +214,9 @@ try {
                                         <input type="hidden" name="quantidade" value="1">
                                         <input type="hidden" name="redirect" value="/pages/favoritos.php">
                                         <button type="submit" class="btn-add-cart"
-                                            <?= $p['status'] === 'sem_estoque' ? 'disabled' : '' ?>>
+                                            <?= (int)$p['quantidade'] === 0 ? 'disabled' : '' ?>>
                                             <i class="fa-solid fa-cart-shopping"></i>
-                                            <?= $p['status'] === 'sem_estoque' ? 'Indisponível' : '+ Carrinho' ?>
+                                            <?= (int)$p['quantidade'] === 0 ? 'Indisponível' : '+ Carrinho' ?>
                                         </button>
                                     </form>
                                 </div>

@@ -4,13 +4,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <!-- Anti-flash: aplica tema antes da primeira renderizacao -->
-    <script>
-        (function() {
-            var t = localStorage.getItem('sprint-theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', t);
-        })();
-    </script>
+    <?php require __DIR__ . '/../app/includes/theme-init.php'; ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sprint Max — Produtos</title>
 
@@ -77,7 +71,6 @@
                                     <th>Categoria</th>
                                     <th>Preço</th>
                                     <th>Quantidade</th>
-                                    <th>Status</th>
                                     <th>Ações</th>
                                 </tr>
                             </thead>
@@ -92,7 +85,6 @@
                                         'categoria'  => $p['categoria'],
                                         'preco'      => $p['preco'],
                                         'quantidade' => $p['quantidade'],
-                                        'status'     => $p['status'],
                                         'imagem'     => $p['imagem']     ?? '',
                                     ]), ENT_QUOTES);
                                 ?>
@@ -130,7 +122,6 @@
                                         <td><?= htmlspecialchars($p['categoria']) ?></td>
                                         <td style="font-weight:600;color:var(--text-main)"><?= precoFormatado($p['preco']) ?></td>
                                         <td><?= (int)$p['quantidade'] ?></td>
-                                        <td><?= statusBadgeProduto($p['status']) ?></td>
                                         <td>
                                             <div class="actions-cell">
                                                 <!-- Toggle visibilidade -->
@@ -158,7 +149,7 @@
                                 <?php endforeach; ?>
                                 <!-- Estado vazio (exibido pelo JS quando busca não encontra nada) -->
                                 <tr id="emptyRow" style="display:none">
-                                    <td colspan="6">
+                                    <td colspan="5">
                                         <div class="estado-vazio">
                                             <i class="fa-solid fa-box-open"></i>
                                             <h4>Nenhum produto encontrado</h4>
