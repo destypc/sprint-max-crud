@@ -45,7 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'adicion
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'remover') {
-
     $id_produto = (int) ($_POST['produto_id'] ?? 0);
     if ($id_produto > 0 && isset($_SESSION['cart'][$id_produto])) {
         unset($_SESSION['cart'][$id_produto]);

@@ -12,9 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$nome           = trim($_POST['nome']          ?? '');
-$email          = trim($_POST['email']         ?? '');
-$senha          = $_POST['senha']              ?? '';
+$nome = trim($_POST['nome'] ?? '');
+$email = trim($_POST['email'] ?? '');
+$senha = $_POST['senha'] ?? '';
 $confirmarSenha = $_POST['confirmar_senha']    ?? '';
 
 if (empty($nome) || empty($email) || empty($senha)) {
@@ -50,13 +50,17 @@ try {
     $stmt = $conexao->prepare(
         "INSERT INTO usuarios (nome, email, senha, tipo) VALUES (:nome, :email, :senha, :tipo)"
     );
+
     $stmt->execute([':nome' => $nome, ':email' => $email, ':senha' => $senhaHash, ':tipo' => 'usuario']);
+
     registrarLog($conexao, 'cadastro_usuario', "Novo usuário \"{$nome}\" cadastrado", null);
 
     $_SESSION['flash'] = ['tipo' => 'sucesso', 'msg' => 'Conta criada com sucesso! Faça seu login.'];
     header("Location: /auth/login.php");
     exit;
-} catch (PDOException $e) {
+}
+
+ catch (PDOException $e) {
     error_log("Erro no cadastro: " . $e->getMessage());
     $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Erro interno. Tente novamente.'];
     header("Location: /auth/cadastro.php");

@@ -234,7 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $usuario_logado = $_SESSION['user'];
 $current_page   = 'produtos';
 $page_title     = 'Produtos';
-$breadcrumb     = [['label' => 'Produtos']];
+$trilhaNavegacao     = [['label' => 'Produtos']];
 
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);

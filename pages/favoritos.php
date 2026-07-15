@@ -13,11 +13,11 @@ $pdo = Connection::getConnection();
 $usuario_logado = $_SESSION['user'];
 $current_page   = 'favoritos';
 $page_title     = 'Favoritos';
-$breadcrumb     = [['label' => 'Favoritos']];
+$trilhaNavegacao     = [['label' => 'Favoritos']];
 $flash          = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
-// Carregar produtos favoritados (tabela existe após banco-migration.sql)
+// A tabela favoritos existe após rodar banco-migration.sql
 $favoritos    = [];
 $erroMigracao = false;
 try {
@@ -31,7 +31,7 @@ try {
         ORDER BY f.created_at DESC
     ");
     $stmt->execute([$usuario_logado['id']]);
-    $favoritos   = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $favoritos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $erroMigracao = true;
 }
@@ -85,17 +85,14 @@ try {
                 </div>
 
                 <?php if (empty($favoritos)): ?>
-
                     <div class="fav-empty-wrapper">
 
-                        <!-- Decoração de fundo -->
                         <div class="fav-empty-bg" aria-hidden="true">
                             <div class="fav-decor fd1"></div>
                             <div class="fav-decor fd2"></div>
                             <div class="fav-decor fd3"></div>
                         </div>
 
-                        <!-- Ícone animado -->
                         <div class="fav-empty-icon-wrap" aria-hidden="true">
                             <div class="fav-icon-glow"></div>
                             <div class="fav-icon-circle">
@@ -107,14 +104,12 @@ try {
                             <div class="fav-float fi-d"><i class="fa-solid fa-box-open"></i></div>
                         </div>
 
-                        <!-- Textos -->
                         <h2 class="fav-empty-title">Sua lista de favoritos está vazia</h2>
                         <p class="fav-empty-subtitle">
                             Navegue pela loja e clique no <i class="fa-solid fa-heart" style="color:#f97316;font-size:.9em"></i> para salvar<br>
                             os produtos que você mais gosta.
                         </p>
 
-                        <!-- CTAs -->
                         <div class="fav-empty-actions">
                             <a href="/pages/home.php" class="btn-fav-primary">
                                 <i class="fa-solid fa-store"></i>
@@ -126,7 +121,6 @@ try {
                             </a>
                         </div>
 
-                        <!-- Dicas -->
                         <div class="fav-empty-tips">
                             <div class="fav-tip">
                                 <i class="fa-solid fa-heart"></i>
@@ -145,11 +139,10 @@ try {
                         </div>
 
                     </div>
-
                 <?php else: ?>
-
                     <div class="produtos-grid">
-                        <?php foreach ($favoritos as $p):
+                        <?php foreach ($favoritos as $p): ?>
+                            <?php
                             $pJson = htmlspecialchars(json_encode([
                                 'id'         => (int)   $p['id'],
                                 'nome'       =>         $p['nome'],
@@ -159,7 +152,7 @@ try {
                                 'descricao'  =>         $p['descricao'] ?? '',
                                 'imagem'     =>         $p['imagem'] ?? '',
                             ]), ENT_QUOTES);
-                        ?>
+                            ?>
                             <article class="produto-card"
                                 data-categoria="<?= htmlspecialchars($p['categoria']) ?>"
                                 data-search="<?= htmlspecialchars(strtolower($p['nome'] . ' ' . $p['categoria'])) ?>"
@@ -167,16 +160,12 @@ try {
 
                                 <div class="produto-img">
                                     <?php if (!empty($p['imagem'])): ?>
-                                        <img src="<?= htmlspecialchars($p['imagem']) ?>"
-                                            alt="<?= htmlspecialchars($p['nome']) ?>">
+                                        <img src="<?= htmlspecialchars($p['imagem']) ?>" alt="<?= htmlspecialchars($p['nome']) ?>">
                                     <?php else: ?>
                                         <div class="no-img"><i class="fa-solid fa-box"></i></div>
                                     <?php endif; ?>
 
-                                    <!-- Remover favorito -->
-                                    <form class="fav-form" method="POST"
-                                        action="/app/controller/favoritosController.php"
-                                        onclick="event.stopPropagation()">
+                                    <form class="fav-form" method="POST" action="/app/controller/favoritosController.php" onclick="event.stopPropagation()">
                                         <input type="hidden" name="acao" value="toggle">
                                         <input type="hidden" name="produto_id" value="<?= (int)$p['id'] ?>">
                                         <input type="hidden" name="redirect" value="/pages/favoritos.php">
@@ -207,14 +196,12 @@ try {
                                     <button class="btn-detalhe" onclick="verDetalhes(<?= $pJson ?>)">
                                         <i class="fa-solid fa-eye"></i> Ver mais
                                     </button>
-                                    <form method="POST" action="/app/controller/carrinhoController.php"
-                                        style="flex:2;display:flex;">
+                                    <form method="POST" action="/app/controller/carrinhoController.php" style="flex:2;display:flex;">
                                         <input type="hidden" name="acao" value="adicionar">
                                         <input type="hidden" name="produto_id" value="<?= (int)$p['id'] ?>">
                                         <input type="hidden" name="quantidade" value="1">
                                         <input type="hidden" name="redirect" value="/pages/favoritos.php">
-                                        <button type="submit" class="btn-add-cart"
-                                            <?= (int)$p['quantidade'] === 0 ? 'disabled' : '' ?>>
+                                        <button type="submit" class="btn-add-cart" <?= (int)$p['quantidade'] === 0 ? 'disabled' : '' ?>>
                                             <i class="fa-solid fa-cart-shopping"></i>
                                             <?= (int)$p['quantidade'] === 0 ? 'Indisponível' : '+ Carrinho' ?>
                                         </button>
@@ -224,27 +211,22 @@ try {
                             </article>
                         <?php endforeach; ?>
                     </div>
-
                 <?php endif; ?>
 
         </main>
 
     </div>
 
-
-    <!-- Modal de detalhe (mesmo do home.php) -->
+    <!-- Modal: detalhe do produto (mesmo do home.php) -->
     <div class="fundo-modal" id="detalheModalBackdrop" onclick="fecharDetalhe(event)">
-        <div class="modal modal-produto-detalhe" role="dialog" aria-modal="true"
-            onclick="event.stopPropagation()">
+        <div class="modal modal-produto-detalhe" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
 
-            <!-- Fechar flutuante -->
             <button class="btn-close-detalhe" onclick="closeDetalheModal()" aria-label="Fechar">
                 <i class="fa-solid fa-xmark"></i>
             </button>
 
             <div class="dprod-layout">
 
-                <!-- Coluna da imagem -->
                 <div class="dprod-img-col">
                     <img id="detalheImg" src="" alt="" style="display:none">
                     <div id="detalheNoImg" class="dprod-no-img" style="display:none">
@@ -253,7 +235,6 @@ try {
                     <span class="dprod-cat-overlay" id="detalheCat"></span>
                 </div>
 
-                <!-- Coluna de informações -->
                 <div class="dprod-info-col">
                     <h2 class="dprod-nome" id="detalheNome"></h2>
                     <div class="dprod-preco" id="detalhePreco"></div>
@@ -263,7 +244,6 @@ try {
 
                     <p class="dprod-desc" id="detalheDesc"></p>
 
-                    <!-- Seletor de quantidade -->
                     <div class="dprod-qtd-row">
                         <span class="dprod-qtd-label">Quantidade</span>
                         <div class="dprod-qtd-controles">
@@ -277,14 +257,12 @@ try {
                         </div>
                     </div>
 
-                    <!-- Ações -->
                     <div class="dprod-actions">
                         <button type="button" class="dprod-btn-fechar" onclick="closeDetalheModal()">
                             <i class="fa-solid fa-chevron-left"></i>
                             Voltar
                         </button>
-                        <form id="formAddCart" method="POST" action="/app/controller/carrinhoController.php"
-                            style="flex:1;display:flex;">
+                        <form id="formAddCart" method="POST" action="/app/controller/carrinhoController.php" style="flex:1;display:flex;">
                             <input type="hidden" name="acao" value="adicionar">
                             <input type="hidden" name="produto_id" id="cartProdutoId" value="">
                             <input type="hidden" name="quantidade" id="cartQuantidade" value="1">

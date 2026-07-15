@@ -8,18 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sprint Max — Usuários</title>
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-
-    <!-- Favicon -->
     <link rel="icon" href="/assets/img/favicon.png" type="image/x-icon">
-
-    <!-- Dashboard CSS -->
     <link rel="stylesheet" href="/assets/css/dashboard.css">
     <link rel="stylesheet" href="/assets/css/theme.css">
 
@@ -109,7 +102,6 @@
 
     <div class="conteiner-principal">
 
-        <!-- TOPBAR -->
         <?php require_once __DIR__ . '/../app/includes/header.php'; ?>
 
         <main class="conteudo-pagina">
@@ -125,16 +117,12 @@
 
                 <div class="card-body">
 
-                    <!-- Toolbar -->
                     <div class="toolbar">
                         <div class="caixa-busca">
                             <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text"
-                                id="searchInput"
-                                class="entrada-busca"
+                            <input type="text" id="searchInput" class="entrada-busca"
                                 placeholder="Pesquisar por nome, e-mail ou tipo..."
-                                value="<?= htmlspecialchars($busca) ?>"
-                                autocomplete="off">
+                                value="<?= htmlspecialchars($busca) ?>" autocomplete="off">
                         </div>
                         <button class="botao-primario" onclick="openModal()">
                             <i class="fa-solid fa-plus"></i>
@@ -142,7 +130,6 @@
                         </button>
                     </div>
 
-                    <!-- Table -->
                     <div class="envoltorio-tabela">
                         <table>
                             <thead>
@@ -156,133 +143,124 @@
                             </thead>
                             <tbody id="tableBody">
                                 <?php if (empty($usuarios)): ?>
-                                    <tr>
-                                        <td colspan="5">
-                                            <div class="estado-vazio">
-                                                <i class="fa-solid fa-users-slash"></i>
-                                                <h4>Nenhum usuário encontrado</h4>
-                                                <p><?= $busca ? 'Tente outro termo de pesquisa.' : 'Cadastre o primeiro usuário.' ?></p>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td colspan="5">
+                                        <div class="estado-vazio">
+                                            <i class="fa-solid fa-users-slash"></i>
+                                            <h4>Nenhum usuário encontrado</h4>
+                                            <p><?= $busca ? 'Tente outro termo de pesquisa.' : 'Cadastre o primeiro usuário.' ?></p>
+                                        </div>
+                                    </td>
+                                </tr>
                                 <?php else: ?>
-                                    <?php foreach ($usuarios as $u):
-                                        $status_val = !empty($u['status']) ? $u['status'] : 'ativo';
-                                        $uAvatar    = avatarUrl($u['nome']);
-                                        $isSelf     = (int)$u['id'] === (int)$usuario_logado['id'];
-                                        $uJson      = htmlspecialchars(json_encode([
-                                            'id'         => $u['id'],
-                                            'nome'       => $u['nome'],
-                                            'email'      => $u['email'],
-                                            'tipo'       => $u['tipo'],
-                                            'status'     => $status_val,
-                                            'avatar'     => $uAvatar,
-                                            'created_at' => $u['created_at'] ?? null,
-                                        ]), ENT_QUOTES);
-                                    ?>
-                                        <tr>
-                                            <td>
-                                                <div class="user-cell">
-                                                    <img class="user-avatar"
-                                                        src="<?= $uAvatar ?>"
-                                                        alt="Avatar de <?= htmlspecialchars($u['nome']) ?>">
-                                                    <div>
-                                                        <div class="user-name"><?= htmlspecialchars($u['nome']) ?></div>
-                                                        <div class="user-email">#<?= $u['id'] ?></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td><?= htmlspecialchars($u['email']) ?></td>
-                                            <td><?= tipoBadge($u['tipo']) ?></td>
-                                            <td><?= statusBadge($status_val) ?></td>
-                                            <td>
-                                                <div class="actions-cell">
-                                                    <button class="btn-icon"
-                                                        title="Visualizar"
-                                                        onclick='openViewModal(<?= $uJson ?>)'>
-                                                        <i class="fa-solid fa-eye"></i>
-                                                    </button>
-                                                    <button class="btn-icon edit"
-                                                        title="Editar"
-                                                        onclick='openDrawer(<?= $uJson ?>)'>
-                                                        <i class="fa-solid fa-pen"></i>
-                                                    </button>
-                                                    <?php if (!$isSelf): ?>
-                                                        <button class="btn-icon del"
-                                                            title="Excluir"
-                                                            onclick="confirmDelete(<?= (int)$u['id'] ?>, '<?= htmlspecialchars(addslashes($u['nome'])) ?>')">
-                                                            <i class="fa-solid fa-trash"></i>
-                                                        </button>
-                                                    <?php else: ?>
-                                                        <button class="btn-icon del" title="Não pode excluir a si mesmo" disabled style="opacity:.3;cursor:not-allowed">
-                                                            <i class="fa-solid fa-trash"></i>
-                                                        </button>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
+                                <?php foreach ($usuarios as $u): ?>
+                                <?php
+                                    $status_val = !empty($u['status']) ? $u['status'] : 'ativo';
+                                    $uAvatar    = avatarUrl($u['nome']);
+                                    $isSelf     = (int)$u['id'] === (int)$usuario_logado['id'];
+                                    $uJson      = htmlspecialchars(json_encode([
+                                        'id'         => $u['id'],
+                                        'nome'       => $u['nome'],
+                                        'email'      => $u['email'],
+                                        'tipo'       => $u['tipo'],
+                                        'status'     => $status_val,
+                                        'avatar'     => $uAvatar,
+                                        'created_at' => $u['created_at'] ?? null,
+                                    ]), ENT_QUOTES);
+                                ?>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <img class="user-avatar" src="<?= $uAvatar ?>"
+                                                alt="Avatar de <?= htmlspecialchars($u['nome']) ?>">
+                                            <div>
+                                                <div class="user-name"><?= htmlspecialchars($u['nome']) ?></div>
+                                                <div class="user-email">#<?= $u['id'] ?></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><?= htmlspecialchars($u['email']) ?></td>
+                                    <td><?= tipoBadge($u['tipo']) ?></td>
+                                    <td><?= statusBadge($status_val) ?></td>
+                                    <td>
+                                        <div class="actions-cell">
+                                            <button class="btn-icon" title="Visualizar" onclick='openViewModal(<?= $uJson ?>)'>
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                            <button class="btn-icon edit" title="Editar" onclick='openDrawer(<?= $uJson ?>)'>
+                                                <i class="fa-solid fa-pen"></i>
+                                            </button>
+                                            <?php if (!$isSelf): ?>
+                                            <button class="btn-icon del" title="Excluir"
+                                                onclick="confirmDelete(<?= (int)$u['id'] ?>, '<?= htmlspecialchars(addslashes($u['nome'])) ?>')">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                            <?php else: ?>
+                                            <button class="btn-icon del" title="Não pode excluir a si mesmo" disabled style="opacity:.3;cursor:not-allowed">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
                                 <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
 
-                </div><!-- /card-body -->
+                </div>
 
-                <!-- Pagination -->
                 <?php if ($total > 0): ?>
-                    <div class="pagination">
-                        <div class="pagination-info">
-                            Mostrando <strong><?= $inicio ?>–<?= $fim ?></strong> de <strong><?= $total ?></strong> usuários
-                        </div>
-                        <div class="pagination-btns">
-                            <?php
-                            // Botão anterior
-                            $prevDisabled = $pagina <= 1 ? 'disabled' : '';
-                            $prevHref     = '?pagina=' . ($pagina - 1) . ($busca ? '&busca=' . urlencode($busca) : '');
-                            ?>
-                            <button class="page-btn" <?= $prevDisabled ?>
-                                <?= !$prevDisabled ? "onclick=\"location.href='{$prevHref}'\"" : '' ?>>
-                                <i class="fa-solid fa-chevron-left"></i>
-                            </button>
-
-                            <?php
-                            // Páginas numeradas (máx 5)
-                            $start = max(1, min($pagina - 2, $total_paginas - 4));
-                            $end   = min($total_paginas, $start + 4);
-                            for ($p = $start; $p <= $end; $p++):
-                                $href    = '?pagina=' . $p . ($busca ? '&busca=' . urlencode($busca) : '');
-                                $active  = $p === $pagina ? 'active' : '';
-                            ?>
-                                <button class="page-btn <?= $active ?>"
-                                    <?= !$active ? "onclick=\"location.href='{$href}'\"" : '' ?>>
-                                    <?= $p ?>
-                                </button>
-                            <?php endfor; ?>
-
-                            <?php
-                            // Botão próximo
-                            $nextDisabled = $pagina >= $total_paginas ? 'disabled' : '';
-                            $nextHref     = '?pagina=' . ($pagina + 1) . ($busca ? '&busca=' . urlencode($busca) : '');
-                            ?>
-                            <button class="page-btn" <?= $nextDisabled ?>
-                                <?= !$nextDisabled ? "onclick=\"location.href='{$nextHref}'\"" : '' ?>>
-                                <i class="fa-solid fa-chevron-right"></i>
-                            </button>
-                        </div>
+                <div class="pagination">
+                    <div class="pagination-info">
+                        Mostrando <strong><?= $inicio ?>–<?= $fim ?></strong> de <strong><?= $total ?></strong> usuários
                     </div>
+                    <div class="pagination-btns">
+                        <?php
+                        $prevDisabled = $pagina <= 1 ? 'disabled' : '';
+                        $prevHref     = '?pagina=' . ($pagina - 1) . ($busca ? '&busca=' . urlencode($busca) : '');
+                        ?>
+                        <button class="page-btn" <?= $prevDisabled ?>
+                            <?= !$prevDisabled ? "onclick=\"location.href='{$prevHref}'\"" : '' ?>>
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+
+                        <?php
+                        // Mostra no máximo 5 páginas centradas na atual
+                        $start = max(1, min($pagina - 2, $total_paginas - 4));
+                        $end   = min($total_paginas, $start + 4);
+                        for ($p = $start; $p <= $end; $p++):
+                            $href   = '?pagina=' . $p . ($busca ? '&busca=' . urlencode($busca) : '');
+                            $active = $p === $pagina ? 'active' : '';
+                        ?>
+                        <button class="page-btn <?= $active ?>"
+                            <?= !$active ? "onclick=\"location.href='{$href}'\"" : '' ?>>
+                            <?= $p ?>
+                        </button>
+                        <?php endfor; ?>
+
+                        <?php
+                        $nextDisabled = $pagina >= $total_paginas ? 'disabled' : '';
+                        $nextHref     = '?pagina=' . ($pagina + 1) . ($busca ? '&busca=' . urlencode($busca) : '');
+                        ?>
+                        <button class="page-btn" <?= $nextDisabled ?>
+                            <?= !$nextDisabled ? "onclick=\"location.href='{$nextHref}'\"" : '' ?>>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
                 <?php endif; ?>
 
-            </div><!-- /card -->
+            </div>
 
-        </main><!-- /conteudo-pagina -->
+        </main>
 
-    </div><!-- /conteiner-principal -->
-
-
+    </div>
 
     <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 
+    <!-- Drawer: editar usuário -->
     <div class="drawer" id="editDrawer" role="dialog" aria-modal="true" aria-label="Editar usuário">
 
         <div class="drawer-head">
@@ -348,8 +326,7 @@
         </form>
     </div>
 
-
-
+    <!-- Modal: novo usuário -->
     <div class="fundo-modal" id="modalBackdrop" onclick="handleModalClick(event)">
         <div class="modal" role="dialog" aria-modal="true" aria-label="Novo usuário">
 
@@ -414,16 +391,13 @@
         </div>
     </div>
 
-
-
+    <!-- Form oculto para exclusão -->
     <form id="deleteForm" method="POST" action="/app/controller/usuariosController.php" style="display:none">
         <input type="hidden" name="acao" value="excluir">
         <input type="hidden" name="id" id="deleteId">
     </form>
 
-
-
-    <!-- Modal Visualizar Usuário -->
+    <!-- Modal: visualizar usuário -->
     <div class="fundo-modal" id="viewModalBackdrop" onclick="handleViewModalClick(event)">
         <div class="modal" role="dialog" aria-modal="true" aria-label="Detalhes do usuário"
             style="max-width:420px" onclick="event.stopPropagation()">
@@ -437,7 +411,6 @@
 
             <div class="corpo-modal" style="gap:0;padding:0">
 
-                <!-- Cabeçalho com avatar -->
                 <div class="uview-hero">
                     <img class="uview-avatar" id="viewAvatar" src="" alt="Avatar">
                     <div class="uview-hero-info">
@@ -446,7 +419,6 @@
                     </div>
                 </div>
 
-                <!-- Linhas de info -->
                 <div class="uview-body">
                     <div class="uview-row">
                         <span class="uview-label"><i class="fa-solid fa-hashtag"></i> ID</span>
@@ -484,10 +456,8 @@
         <span id="toastMsg"></span>
     </div>
 
-
     <script src="/assets/js/usuarios.js"></script>
 
-    <!-- Modal Editar Perfil -->
     <?php require_once __DIR__ . '/../app/includes/modal-perfil.php'; ?>
 
 </body>

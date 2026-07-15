@@ -14,7 +14,7 @@ $pdo = Connection::getConnection();
 $usuario_logado = $_SESSION['user'];
 $current_page   = 'home';
 $page_title     = 'Loja';
-$breadcrumb     = [];
+$trilhaNavegacao     = [];
 $mensagem_flash  = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 

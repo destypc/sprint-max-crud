@@ -14,7 +14,7 @@ $usuario_logado = $_SESSION['user'];
 $uid            = (int) $usuario_logado['id'];
 $current_page   = 'perfil';
 $page_title     = 'Meu Perfil';
-$breadcrumb     = [['label' => 'Meu Perfil']];
+$trilhaNavegacao     = [['label' => 'Meu Perfil']];
 $flash          = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 

@@ -13,13 +13,13 @@ $pdo = Connection::getConnection();
 $usuario_logado = $_SESSION['user'];
 $current_page   = 'dashboard-usuario';
 $page_title     = 'Meu Painel';
-$breadcrumb     = [['label' => 'Meu Painel']];
+$trilhaNavegacao     = [['label' => 'Meu Painel']];
 $flash          = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
 $uid = (int) $usuario_logado['id'];
 
-// Estatísticas do usuário (tabelas existem após banco-migration.sql)
+// Estatísticas do usuário (tabelas existem após rodar banco-migration.sql)
 $totalPedidos     = 0;
 $totalGasto       = 0.0;
 $pedidosPendentes = 0;
@@ -121,7 +121,6 @@ function statusBadgeSimples(string $status): string
 
         <main class="conteudo-pagina">
 
-            <!-- HERO -->
             <?php if ($erroMigracao): ?>
                 <div class="card" style="padding:40px;text-align:center">
                     <i class="fa-solid fa-database" style="font-size:2.5rem;color:var(--orange);margin-bottom:16px;display:block"></i>
@@ -140,7 +139,6 @@ function statusBadgeSimples(string $status): string
                     <p>Olá, <?= htmlspecialchars($usuario_logado['nome']) ?>. Confira suas estatísticas.</p>
                 </div>
 
-                <!-- STAT CARDS -->
                 <div class="painel-cartoes">
 
                     <div class="indicador">
@@ -197,13 +195,11 @@ function statusBadgeSimples(string $status): string
                         </div>
                     </div>
 
-                </div><!-- /painel-cartoes -->
+                </div>
 
-
-                <!-- GRID: último pedido + últimas compras -->
                 <div class="painel-grade">
 
-                    <!-- Último Pedido -->
+                    <!-- Último pedido -->
                     <div class="painel">
                         <div class="painel-cabecalho">
                             <div>
@@ -274,8 +270,7 @@ function statusBadgeSimples(string $status): string
                             <?php endif; ?>
 
                         </div>
-                    </div><!-- /último pedido -->
-
+                    </div>
 
                     <!-- Histórico de compras -->
                     <div class="painel">
@@ -325,16 +320,15 @@ function statusBadgeSimples(string $status): string
 
                             </div>
                         </div>
-                    </div><!-- /histórico -->
+                    </div>
 
-                </div><!-- /painel-grade -->
+                </div>
 
         </main>
 
-    </div><!-- /conteiner-principal -->
+    </div>
 <?php endif; ?>
 
-<!-- ── Toast ──────────────────────────────────────────────── -->
 <div class="sp-toast" id="spToast"
     <?php if ($flash): ?> data-flash-msg="<?= htmlspecialchars($flash['message']) ?>" data-flash-type="<?= $flash['type'] === 'success' ? 'success' : 'error' ?>" <?php endif; ?>>
     <i class="fa-solid fa-circle-check" id="toastIcon"></i>

@@ -3,10 +3,8 @@
 function registrarLog(PDO $conexao, string $acao, string $descricao, ?int $usuario_id = null): void
 {
     try {
-        $conexao->prepare("INSERT INTO logs (usuario_id, acao, descricao, data) VALUES (?, ?, ?, NOW())")
-            ->execute([$usuario_id, $acao, $descricao]);
+        $conexao->prepare("INSERT INTO logs (usuario_id, acao, descricao, data) VALUES (?, ?, ?, NOW())")->execute([$usuario_id, $acao, $descricao]);
     } catch (PDOException $erro) {
-        // falha silenciosa — mantém o sistema funcional mesmo sem a tabela logs
     }
 }
 
@@ -41,7 +39,7 @@ function uploadImagem(array $arquivo, string $prefixo = 'produto'): string|false
     if ($largura > $largura_maxima || $altura > $altura_maxima) return false;
     // ───────────────────────────────────────────────────────────
 
-    $nome    = $prefixo . '_' . uniqid() . '.' . $extensao;
+    $nome = $prefixo . '_' . uniqid() . '.' . $extensao;
     $destino = __DIR__ . '/../../uploads/' . $nome;
 
     if (!move_uploaded_file($arquivo['tmp_name'], $destino)) return false;
@@ -49,11 +47,10 @@ function uploadImagem(array $arquivo, string $prefixo = 'produto'): string|false
     return '/uploads/' . $nome;
 }
 
-/**
- * Remove um arquivo de imagem do disco (falha silenciosamente).
- */
-function excluirImagem(?string $caminho): void
-{
+
+//  Remove um arquivo de imagem do disco (falha silenciosamente).
+
+function excluirImagem(?string $caminho): void{
     if (empty($caminho)) return;
     $fisico = __DIR__ . '/../../' . ltrim($caminho, '/');
     if (file_exists($fisico)) @unlink($fisico);

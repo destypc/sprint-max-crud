@@ -178,7 +178,7 @@ $flash          = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 $current_page   = 'usuarios';
 $page_title     = 'Usuários';
-$breadcrumb     = [['label' => 'Usuários']];
+$trilhaNavegacao     = [['label' => 'Usuários']];
 
 $busca      = trim($_GET['busca']   ?? '');
 $pagina     = max(1, (int)($_GET['pagina'] ?? 1));

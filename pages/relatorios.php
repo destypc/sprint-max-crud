@@ -12,17 +12,15 @@ $pdo = Connection::getConnection();
 $usuario_logado = $_SESSION['user'];
 $current_page   = 'relatorios';
 $page_title     = 'Logs';
-$breadcrumb     = [['label' => 'Logs']];
+$trilhaNavegacao     = [['label' => 'Logs']];
 $flash          = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
-// Paginação
 $por_pagina = 15;
 $pagina     = max(1, (int)($_GET['pagina'] ?? 1));
 $offset     = ($pagina - 1) * $por_pagina;
 $total_logs = 0;
 
-// Logs do sistema (todas as ações)
 $logs = [];
 try {
     $total_logs = (int) $pdo->query("SELECT COUNT(*) FROM logs")->fetchColumn();
@@ -60,6 +58,7 @@ function logIconeRelatorio(string $acao): string
         'exclusao_produto'  => 'fa-trash',
         'pedido_realizado'  => 'fa-bag-shopping',
         'status_pedido'     => 'fa-rotate',
+        'exclusao_pedido'   => 'fa-trash',
         default             => 'fa-circle-info',
     };
 }
@@ -91,13 +90,11 @@ function logIconeRelatorio(string $acao): string
 
         <main class="conteudo-pagina">
 
-            <!-- ── HERO ─────────────────────────────────────────── -->
             <div class="painel-destaque">
                 <h1>Logs</h1>
                 <p>Visualize o histórico de acessos e atividades do sistema.</p>
             </div>
 
-            <!-- ── ÚLTIMOS ACESSOS ───────────────────────────────── -->
             <div class="dash-access">
                 <div class="painel-cabecalho">
                     <div>
@@ -173,7 +170,7 @@ function logIconeRelatorio(string $acao): string
                         </tbody>
                     </table>
                 </div>
-            </div><!-- /dash-access -->
+            </div>
 
             <?php if ($total_paginas > 1): ?>
                 <div class="pagination" style="margin-top:16px">

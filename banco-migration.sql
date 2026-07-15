@@ -52,3 +52,7 @@ CREATE TABLE IF NOT EXISTS notificacoes (
 -- 9. Tags e visibilidade nos produtos (apenas se nao existirem)
 ALTER TABLE produtos ADD COLUMN IF NOT EXISTS tags    VARCHAR(255) NULL;
 ALTER TABLE produtos ADD COLUMN IF NOT EXISTS visivel TINYINT(1)   NOT NULL DEFAULT 1;
+
+-- 10. Sprint Max — Remove o sistema de status de PRODUTO
+
+ALTER TABLE produtos DROP COLUMN IF EXISTS status;

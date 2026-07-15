@@ -12,33 +12,18 @@ require_once __DIR__ . '/../config/conexao.php';
 
 $pdo = Connection::getConnection();
 
-// Cria a tabela de logs se ainda não existir
-try {
-    $pdo->exec("
-        CREATE TABLE IF NOT EXISTS logs (
-            id         INT AUTO_INCREMENT PRIMARY KEY,
-            usuario_id INT NULL,
-            acao       VARCHAR(50)  NOT NULL,
-            descricao  VARCHAR(255) NOT NULL,
-            data       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-    ");
-} catch (PDOException $e) { /* ignora se já existir ou não for possível */
-}
-
 $usuario_logado = $_SESSION['user'];
 unset($_SESSION['flash']);
-$current_page   = 'dashboard';
-$page_title     = 'Dashboard';
-$breadcrumb     = [];
+$current_page = 'dashboard';
+$page_title = 'Dashboard';
+$trilhaNavegacao = [];
 
 $totalUsuarios = (int) $pdo->query("SELECT COUNT(*) FROM usuarios")->fetchColumn();
 $totalProdutos = (int) $pdo->query("SELECT COUNT(*) FROM produtos")->fetchColumn();
 $totalAdmins   = (int) $pdo->query("SELECT COUNT(*) FROM usuarios WHERE tipo = 'admin'")->fetchColumn();
 
 // Queries que dependem das tabelas criadas pela migração
-$totalPedidos    = 0;
+$totalPedidos = 0;
 $pedidosRecentes = [];
 
 try {
@@ -76,8 +61,9 @@ try {
 } catch (PDOException $e) { /* tabela logs ainda não criada */
 }
 
-function timeAgo(string $date): string
-{
+// Retorna uma data em formato amigável (Agora mesmo, Há X min, Há X h, Ontem ou data completa)
+
+function timeAgo(string $date): string{
     $diff = time() - strtotime($date);
     if ($diff < 60)     return 'Agora mesmo';
     if ($diff < 3600)   return 'Há ' . floor($diff / 60) . ' min';
@@ -86,8 +72,7 @@ function timeAgo(string $date): string
     return date('d/m/Y H:i', strtotime($date));
 }
 
-function logIcone(string $acao): array
-{
+function logIcone(string $acao): array{
     return match ($acao) {
         'cadastro_usuario'  => ['green',  'fa-user-plus'],
         'edicao_usuario'    => ['purple', 'fa-pen'],
@@ -96,16 +81,13 @@ function logIcone(string $acao): array
         'exclusao_produto'  => ['red',    'fa-trash'],
         'pedido_realizado'  => ['blue',   'fa-bag-shopping'],
         'status_pedido'     => ['purple', 'fa-rotate'],
-        'venda_cadastrada'  => ['blue',   'fa-circle-dollar-to-slot'],
-        'venda_editada'     => ['purple', 'fa-pen'],
-        'venda_excluida'    => ['red',    'fa-trash'],
+        'exclusao_pedido'   => ['red',    'fa-trash'],
         'login'             => ['green',  'fa-right-to-bracket'],
         default             => ['gray',   'fa-bell'],
     };
 }
 
-function pedidoDotCor(string $status): string
-{
+function pedidoDotCor(string $status): string{
     return match ($status) {
         'entregue'   => 'green',
         'enviado'    => 'blue',
@@ -115,8 +97,7 @@ function pedidoDotCor(string $status): string
     };
 }
 
-function pedidoStatusBadge(string $status): string
-{
+function pedidoStatusBadge(string $status): string{
     return match ($status) {
         'pendente'   => '<span class="badge badge-yellow"  style="font-size:.65rem">Pendente</span>',
         'preparando' => '<span class="badge badge-orange"  style="font-size:.65rem">Preparando</span>',

@@ -28,13 +28,11 @@ require_once __DIR__ . '/../app/controller/dashboardController.php';
 
         <main class="conteudo-pagina">
 
-            <!-- HERO -->
             <div class="painel-destaque">
                 <h1>Dashboard</h1>
                 <p>Bem-vindo de volta, <?= htmlspecialchars($usuario_logado['nome'] ?? 'Administrador') ?>.</p>
             </div>
 
-            <!-- STAT CARDS -->
             <div class="painel-cartoes">
 
                 <div class="indicador">
@@ -81,12 +79,11 @@ require_once __DIR__ . '/../app/controller/dashboardController.php';
                     </div>
                 </div>
 
-            </div><!-- /painel-cartoes -->
+            </div>
 
-            <!-- GRID: VENDAS RECENTES + ATIVIDADES -->
             <div class="painel-grade">
 
-                <!-- Pedidos Recentes -->
+                <!-- Pedidos recentes -->
                 <div class="painel">
                     <div class="painel-cabecalho">
                         <div>
@@ -99,36 +96,34 @@ require_once __DIR__ . '/../app/controller/dashboardController.php';
                     </div>
                     <div class="painel-corpo">
                         <div class="lista-atividade">
-
                             <?php if (!empty($pedidosRecentes)): ?>
-                                <?php foreach ($pedidosRecentes as $i => $pr): ?>
-                                    <div class="item-atividade" style="justify-content:space-between;align-items:center<?= $i === count($pedidosRecentes) - 1 ? ';border-bottom:none;padding-bottom:0' : '' ?>">
-                                        <div class="ponto-atividade <?= pedidoDotCor($pr['status']) ?>">
-                                            <i class="fa-solid fa-bag-shopping"></i>
-                                        </div>
-                                        <div class="texto-atividade">
-                                            <div class="descricao-atividade">Pedido #<?= (int)$pr['id'] ?></div>
-                                            <div class="horario-atividade"><?= htmlspecialchars($pr['cliente']) ?> &middot; <?= timeAgo($pr['created_at']) ?></div>
-                                        </div>
-                                        <div style="text-align:right;flex-shrink:0;margin-left:12px">
-                                            <div style="font-size:.88rem;font-weight:700;color:var(--text-main)">R$&nbsp;<?= number_format((float)$pr['total'], 2, ',', '.') ?></div>
-                                            <?= pedidoStatusBadge($pr['status']) ?>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <div class="item-atividade" style="border-bottom:none;padding-bottom:0">
-                                    <div class="texto-atividade">
-                                        <div class="descricao-atividade" style="color:var(--text-dim)">Nenhum pedido registrado ainda.</div>
-                                    </div>
+                            <?php foreach ($pedidosRecentes as $i => $pr): ?>
+                            <div class="item-atividade" style="justify-content:space-between;align-items:center<?= $i === count($pedidosRecentes) - 1 ? ';border-bottom:none;padding-bottom:0' : '' ?>">
+                                <div class="ponto-atividade <?= pedidoDotCor($pr['status']) ?>">
+                                    <i class="fa-solid fa-bag-shopping"></i>
                                 </div>
+                                <div class="texto-atividade">
+                                    <div class="descricao-atividade">Pedido #<?= (int)$pr['id'] ?></div>
+                                    <div class="horario-atividade"><?= htmlspecialchars($pr['cliente']) ?> &middot; <?= timeAgo($pr['created_at']) ?></div>
+                                </div>
+                                <div style="text-align:right;flex-shrink:0;margin-left:12px">
+                                    <div style="font-size:.88rem;font-weight:700;color:var(--text-main)">R$&nbsp;<?= number_format((float)$pr['total'], 2, ',', '.') ?></div>
+                                    <?= pedidoStatusBadge($pr['status']) ?>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                            <?php else: ?>
+                            <div class="item-atividade" style="border-bottom:none;padding-bottom:0">
+                                <div class="texto-atividade">
+                                    <div class="descricao-atividade" style="color:var(--text-dim)">Nenhum pedido registrado ainda.</div>
+                                </div>
+                            </div>
                             <?php endif; ?>
-
                         </div>
                     </div>
                 </div>
 
-                <!-- Atividades Recentes -->
+                <!-- Atividades recentes (logs) -->
                 <div class="painel">
                     <div class="painel-cabecalho">
                         <div>
@@ -141,36 +136,33 @@ require_once __DIR__ . '/../app/controller/dashboardController.php';
                     </div>
                     <div class="painel-corpo">
                         <div class="lista-atividade">
-
                             <?php if (!empty($logsRecentes)): ?>
-                                <?php foreach ($logsRecentes as $i => $log):
-                                    [$cor, $icone] = logIcone($log['acao']);
-                                ?>
-                                    <div class="item-atividade<?= $i === count($logsRecentes) - 1 ? ' style="border-bottom:none;padding-bottom:0"' : '' ?>">
-                                        <div class="ponto-atividade <?= $cor ?>"><i class="fa-solid <?= $icone ?>"></i></div>
-                                        <div class="texto-atividade">
-                                            <div class="descricao-atividade"><?= htmlspecialchars($log['descricao']) ?></div>
-                                            <div class="horario-atividade"><?= timeAgo($log['data']) ?></div>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <div class="item-atividade" style="border-bottom:none;padding-bottom:0">
-                                    <div class="texto-atividade">
-                                        <div class="descricao-atividade" style="color:var(--text-dim)">Nenhuma atividade registrada ainda.</div>
-                                    </div>
+                            <?php foreach ($logsRecentes as $i => $log): ?>
+                            <?php [$cor, $icone] = logIcone($log['acao']); ?>
+                            <div class="item-atividade<?= $i === count($logsRecentes) - 1 ? ' style="border-bottom:none;padding-bottom:0"' : '' ?>">
+                                <div class="ponto-atividade <?= $cor ?>"><i class="fa-solid <?= $icone ?>"></i></div>
+                                <div class="texto-atividade">
+                                    <div class="descricao-atividade"><?= htmlspecialchars($log['descricao']) ?></div>
+                                    <div class="horario-atividade"><?= timeAgo($log['data']) ?></div>
                                 </div>
+                            </div>
+                            <?php endforeach; ?>
+                            <?php else: ?>
+                            <div class="item-atividade" style="border-bottom:none;padding-bottom:0">
+                                <div class="texto-atividade">
+                                    <div class="descricao-atividade" style="color:var(--text-dim)">Nenhuma atividade registrada ainda.</div>
+                                </div>
+                            </div>
                             <?php endif; ?>
-
                         </div>
                     </div>
                 </div>
 
-            </div><!-- /painel-grade -->
+            </div>
 
-        </main><!-- /conteudo-pagina -->
+        </main>
 
-    </div><!-- /conteiner-principal -->
+    </div>
 
     <?php require_once __DIR__ . '/../app/includes/modal-perfil.php'; ?>
 

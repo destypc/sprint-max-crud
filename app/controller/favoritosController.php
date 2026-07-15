@@ -21,8 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'toggle'
         $stmt->execute([$id_usuario, $id_produto]);
 
         if ($stmt->fetchColumn()) {
-            $pdo->prepare("DELETE FROM favoritos WHERE usuario_id = ? AND produto_id = ?")
-                ->execute([$id_usuario, $id_produto]);
+            $pdo->prepare("DELETE FROM favoritos WHERE usuario_id = ? AND produto_id = ?") ->execute([$id_usuario, $id_produto]);
             $_SESSION['flash'] = ['type' => 'success', 'message' => 'Removido dos favoritos.'];
         } else {
             $pdo->prepare("INSERT INTO favoritos (usuario_id, produto_id) VALUES (?, ?)")

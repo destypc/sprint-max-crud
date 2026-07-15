@@ -14,11 +14,11 @@ $usuario_logado = $_SESSION['user'];
 $isAdmin        = $usuario_logado['tipo'] === 'admin';
 $current_page   = 'pedidos';
 $page_title     = $isAdmin ? 'Pedidos' : 'Meus Pedidos';
-$breadcrumb     = [['label' => $page_title]];
+$trilhaNavegacao     = [['label' => $page_title]];
 $flash          = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
-// Carregar pedidos (tabela existe após banco-migration.sql)
+// As tabelas de pedidos existem após rodar banco-migration.sql
 $pedidos      = [];
 $itemsByOrder = [];
 $erroMigracao = false;
@@ -67,7 +67,6 @@ try {
     $erroMigracao = true;
 }
 
-// ── Helper: badge de status ──────────────────────────────────
 function statusBadgePedido(string $status): string
 {
     return match ($status) {
@@ -120,10 +119,9 @@ function statusBadgePedido(string $status): string
                         <i class="fa-solid fa-house"></i> Voltar ao Dashboard
                     </a>
                 </div>
+
             <?php elseif ($isAdmin): ?>
-                <!-- ═══════════════════════════════════════════════ -->
-                <!-- VISÃO ADMIN: tabela de todos os pedidos         -->
-                <!-- ═══════════════════════════════════════════════ -->
+                <!-- Visão admin: tabela de todos os pedidos -->
                 <div class="card">
 
                     <div class="card-header">
@@ -145,7 +143,6 @@ function statusBadgePedido(string $status): string
                                 <p>Os pedidos dos clientes aparecerão aqui.</p>
                             </div>
                         <?php else: ?>
-
                             <div class="envoltorio-tabela">
                                 <table>
                                     <thead>
@@ -160,7 +157,6 @@ function statusBadgePedido(string $status): string
                                             <th>Excluir</th>
                                         </tr>
                                     </thead>
-
                                     <tbody>
                                         <?php foreach ($pedidos as $p): ?>
                                             <tr>
@@ -182,14 +178,11 @@ function statusBadgePedido(string $status): string
                                                 <td>
                                                     <?= statusBadgePedido($p['status']) ?>
                                                 </td>
-                                                <!-- Formulário para atualizar status -->
                                                 <td>
-                                                    <form method="POST" action="/app/controller/pedidoController.php"
-                                                        style="display:flex;gap:6px;align-items:center">
+                                                    <form method="POST" action="/app/controller/pedidoController.php" style="display:flex;gap:6px;align-items:center">
                                                         <input type="hidden" name="acao" value="atualizar_status">
                                                         <input type="hidden" name="pedido_id" value="<?= (int)$p['id'] ?>">
-                                                        <select name="status" class="selecao-formulario"
-                                                            style="width:auto;padding:6px 10px;font-size:.8rem">
+                                                        <select name="status" class="selecao-formulario" style="width:auto;padding:6px 10px;font-size:.8rem">
                                                             <option value="pendente" <?= $p['status'] === 'pendente'   ? 'selected' : '' ?>>Pendente</option>
                                                             <option value="preparando" <?= $p['status'] === 'preparando' ? 'selected' : '' ?>>Preparando</option>
                                                             <option value="enviado" <?= $p['status'] === 'enviado'    ? 'selected' : '' ?>>Enviado</option>
@@ -202,28 +195,20 @@ function statusBadgePedido(string $status): string
                                                     </form>
                                                 </td>
                                                 <td>
-                                                    <form method="POST"
-                                                        action="/app/controller/pedidoController.php"
+                                                    <form method="POST" action="/app/controller/pedidoController.php"
                                                         onsubmit="return confirm('Tem certeza que deseja excluir este pedido?')">
-
                                                         <input type="hidden" name="acao" value="excluir_pedido">
                                                         <input type="hidden" name="pedido_id" value="<?= (int)$p['id'] ?>">
-
-                                                        <button type="submit"
-                                                            class="btn-icon del"
-                                                            title="Excluir pedido">
+                                                        <button type="submit" class="btn-icon del" title="Excluir pedido">
                                                             <i class="fa-solid fa-trash"></i>
                                                         </button>
-
                                                     </form>
                                                 </td>
-
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
                             </div>
-
                         <?php endif; ?>
 
                     </div>
@@ -231,17 +216,13 @@ function statusBadgePedido(string $status): string
                 </div>
 
             <?php else: ?>
-                <!-- ═══════════════════════════════════════════════ -->
-                <!-- VISÃO USUÁRIO: cards com detalhes dos pedidos   -->
-                <!-- ═══════════════════════════════════════════════ -->
-
+                <!-- Visão usuário: cards com os detalhes dos pedidos -->
                 <div class="painel-destaque">
                     <h1>Meus Pedidos</h1>
                     <p>Acompanhe o status das suas compras.</p>
                 </div>
 
                 <?php if (empty($pedidos)): ?>
-
                     <div class="card">
                         <div class="estado-vazio">
                             <i class="fa-solid fa-bag-shopping"></i>
@@ -253,13 +234,10 @@ function statusBadgePedido(string $status): string
                             </a>
                         </div>
                     </div>
-
                 <?php else: ?>
-
                     <?php foreach ($pedidos as $p): ?>
                         <div class="pedido-card">
 
-                            <!-- Cabeçalho do pedido -->
                             <div class="pedido-head">
                                 <div>
                                     <div class="pedido-id">
@@ -278,14 +256,11 @@ function statusBadgePedido(string $status): string
                                 </div>
                             </div>
 
-                            <!-- Itens do pedido -->
                             <div class="pedido-itens-lista">
                                 <?php foreach ($itemsByOrder[$p['id']] ?? [] as $item): ?>
                                     <div class="pedido-item-row">
                                         <?php if (!empty($item['produto_imagem'])): ?>
-                                            <img class="pedido-item-img"
-                                                src="<?= htmlspecialchars($item['produto_imagem']) ?>"
-                                                alt="<?= htmlspecialchars($item['produto_nome']) ?>">
+                                            <img class="pedido-item-img" src="<?= htmlspecialchars($item['produto_imagem']) ?>" alt="<?= htmlspecialchars($item['produto_nome']) ?>">
                                         <?php else: ?>
                                             <div class="pedido-item-no-img">
                                                 <i class="fa-solid fa-box"></i>
@@ -312,17 +287,14 @@ function statusBadgePedido(string $status): string
 
                         </div>
                     <?php endforeach; ?>
-
                 <?php endif; ?>
 
             <?php endif; ?>
 
         </main>
 
-    </div><!-- /conteiner-principal -->
+    </div>
 
-
-    <!-- ── Toast ──────────────────────────────────────────────── -->
     <div class="sp-toast" id="spToast"
         <?php if ($flash): ?> data-flash-msg="<?= htmlspecialchars($flash['message']) ?>" data-flash-type="<?= $flash['type'] === 'success' ? 'success' : 'error' ?>" <?php endif; ?>>
         <i class="fa-solid fa-circle-check" id="toastIcon"></i>

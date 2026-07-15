@@ -8,18 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sprint Max — Produtos</title>
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-
-    <!-- Favicon -->
     <link rel="icon" href="/assets/img/favicon.png" type="image/x-icon">
-
-    <!-- Dashboard CSS -->
     <link rel="stylesheet" href="/assets/css/dashboard.css">
     <link rel="stylesheet" href="/assets/css/theme.css">
 </head>
@@ -30,7 +23,6 @@
 
     <div class="conteiner-principal">
 
-        <!-- TOPBAR -->
         <?php require_once __DIR__ . '/../app/includes/header.php'; ?>
 
         <main class="conteudo-pagina">
@@ -46,15 +38,11 @@
 
                 <div class="card-body">
 
-                    <!-- Toolbar -->
                     <div class="toolbar">
                         <div class="caixa-busca">
                             <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text"
-                                id="searchInput"
-                                class="entrada-busca"
-                                placeholder="Pesquisar por nome ou categoria..."
-                                autocomplete="off">
+                            <input type="text" id="searchInput" class="entrada-busca"
+                                placeholder="Pesquisar por nome ou categoria..." autocomplete="off">
                         </div>
                         <button class="botao-primario" onclick="openProductModal()">
                             <i class="fa-solid fa-plus"></i>
@@ -62,7 +50,6 @@
                         </button>
                     </div>
 
-                    <!-- Table -->
                     <div class="envoltorio-tabela">
                         <table>
                             <thead>
@@ -75,7 +62,8 @@
                                 </tr>
                             </thead>
                             <tbody id="tableBody">
-                                <?php foreach ($produtos as $p):
+                                <?php foreach ($produtos as $p): ?>
+                                <?php
                                     $searchable = strtolower($p['nome'] . ' ' . $p['categoria'] . ' ' . ($p['marca'] ?? '') . ' ' . ($p['cor'] ?? ''));
                                     $pJson = htmlspecialchars(json_encode([
                                         'id'         => $p['id'],
@@ -88,66 +76,62 @@
                                         'imagem'     => $p['imagem']     ?? '',
                                     ]), ENT_QUOTES);
                                 ?>
-                                    <tr data-searchable="<?= htmlspecialchars($searchable) ?>">
-                                        <td>
-                                            <div class="product-cell">
-                                                <?php if (!empty($p['imagem'])): ?>
-                                                    <img class="product-thumb-img"
-                                                        src="<?= htmlspecialchars($p['imagem']) ?>"
-                                                        alt="">
-                                                <?php else: ?>
-                                                    <div class="product-thumb">
-                                                        <i class="fa-solid fa-box"></i>
-                                                    </div>
-                                                <?php endif; ?>
-                                                <div>
-                                                    <span class="product-name"><?= htmlspecialchars($p['nome']) ?></span>
-                                                    <?php if (!empty($p['marca']) || !empty($p['cor'])): ?>
-                                                        <div style="font-size:.72rem;color:var(--text-dim);margin-top:2px">
-                                                            <?= htmlspecialchars(implode(' · ', array_filter([$p['marca'] ?? '', $p['cor'] ?? '']))) ?>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                    <?php if (!empty($p['tags'])): ?>
-                                                        <div class="prod-tags">
-                                                            <?php foreach (array_slice(explode(',', $p['tags']), 0, 3) as $tag): ?>
-                                                                <?php if (trim($tag) !== ''): ?>
-                                                                    <span class="prod-tag"><?= htmlspecialchars(trim($tag)) ?></span>
-                                                                <?php endif; ?>
-                                                            <?php endforeach; ?>
-                                                        </div>
-                                                    <?php endif; ?>
+                                <tr data-searchable="<?= htmlspecialchars($searchable) ?>">
+                                    <td>
+                                        <div class="product-cell">
+                                            <?php if (!empty($p['imagem'])): ?>
+                                            <img class="product-thumb-img" src="<?= htmlspecialchars($p['imagem']) ?>" alt="">
+                                            <?php else: ?>
+                                            <div class="product-thumb">
+                                                <i class="fa-solid fa-box"></i>
+                                            </div>
+                                            <?php endif; ?>
+                                            <div>
+                                                <span class="product-name"><?= htmlspecialchars($p['nome']) ?></span>
+                                                <?php if (!empty($p['marca']) || !empty($p['cor'])): ?>
+                                                <div style="font-size:.72rem;color:var(--text-dim);margin-top:2px">
+                                                    <?= htmlspecialchars(implode(' · ', array_filter([$p['marca'] ?? '', $p['cor'] ?? '']))) ?>
                                                 </div>
+                                                <?php endif; ?>
+                                                <?php if (!empty($p['tags'])): ?>
+                                                <div class="prod-tags">
+                                                    <?php foreach (array_slice(explode(',', $p['tags']), 0, 3) as $tag): ?>
+                                                    <?php if (trim($tag) !== ''): ?>
+                                                    <span class="prod-tag"><?= htmlspecialchars(trim($tag)) ?></span>
+                                                    <?php endif; ?>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                                <?php endif; ?>
                                             </div>
-                                        </td>
-                                        <td><?= htmlspecialchars($p['categoria']) ?></td>
-                                        <td style="font-weight:600;color:var(--text-main)"><?= precoFormatado($p['preco']) ?></td>
-                                        <td><?= (int)$p['quantidade'] ?></td>
-                                        <td>
-                                            <div class="actions-cell">
-                                                <!-- Toggle visibilidade -->
-                                                <form method="POST" style="display:inline">
-                                                    <input type="hidden" name="acao" value="toggle_visivel">
-                                                    <input type="hidden" name="id" value="<?= (int)$p['id'] ?>">
-                                                    <button type="submit" class="btn-icon"
-                                                        title="<?= ($p['visivel'] ?? 1) ? 'Ocultar da loja' : 'Tornar visível' ?>">
-                                                        <i class="fa-solid <?= ($p['visivel'] ?? 1) ? 'fa-eye' : 'fa-eye-slash' ?>"
-                                                            style="color:<?= ($p['visivel'] ?? 1) ? 'var(--green)' : 'var(--text-dim)' ?>"></i>
-                                                    </button>
-                                                </form>
-                                                <button class="btn-icon edit"
-                                                    title="Editar"
-                                                    onclick='openEditDrawer(<?= $pJson ?>)'>
-                                                    <i class="fa-solid fa-pen"></i>
+                                        </div>
+                                    </td>
+                                    <td><?= htmlspecialchars($p['categoria']) ?></td>
+                                    <td style="font-weight:600;color:var(--text-main)"><?= precoFormatado($p['preco']) ?></td>
+                                    <td><?= (int)$p['quantidade'] ?></td>
+                                    <td>
+                                        <div class="actions-cell">
+                                            <!-- Alterna visibilidade do produto na loja -->
+                                            <form method="POST" style="display:inline">
+                                                <input type="hidden" name="acao" value="toggle_visivel">
+                                                <input type="hidden" name="id" value="<?= (int)$p['id'] ?>">
+                                                <button type="submit" class="btn-icon"
+                                                    title="<?= ($p['visivel'] ?? 1) ? 'Ocultar da loja' : 'Tornar visível' ?>">
+                                                    <i class="fa-solid <?= ($p['visivel'] ?? 1) ? 'fa-eye' : 'fa-eye-slash' ?>"
+                                                        style="color:<?= ($p['visivel'] ?? 1) ? 'var(--green)' : 'var(--text-dim)' ?>"></i>
                                                 </button>
-                                                <button class="btn-icon del" title="Excluir"
-                                                    onclick="openDeleteModal(<?= (int)$p['id'] ?>, <?= htmlspecialchars(json_encode($p['nome']), ENT_QUOTES) ?>)">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                            </form>
+                                            <button class="btn-icon edit" title="Editar" onclick='openEditDrawer(<?= $pJson ?>)'>
+                                                <i class="fa-solid fa-pen"></i>
+                                            </button>
+                                            <button class="btn-icon del" title="Excluir"
+                                                onclick="openDeleteModal(<?= (int)$p['id'] ?>, <?= htmlspecialchars(json_encode($p['nome']), ENT_QUOTES) ?>)">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
                                 <?php endforeach; ?>
-                                <!-- Estado vazio (exibido pelo JS quando busca não encontra nada) -->
+                                <!-- Estado vazio exibido via JS quando a busca não retorna nada -->
                                 <tr id="emptyRow" style="display:none">
                                     <td colspan="5">
                                         <div class="estado-vazio">
@@ -161,9 +145,8 @@
                         </table>
                     </div>
 
-                </div><!-- /card-body -->
+                </div>
 
-                <!-- Pagination -->
                 <div class="pagination">
                     <div class="pagination-info">
                         Mostrando <strong><span id="countVisible"><?= $total_produtos ?></span></strong>
@@ -180,15 +163,15 @@
                     </div>
                 </div>
 
-            </div><!-- /card -->
+            </div>
 
-        </main><!-- /conteudo-pagina -->
+        </main>
 
-    </div><!-- /conteiner-principal -->
-
+    </div>
 
     <div class="drawer-overlay" id="drawerOverlay" onclick="closeEditDrawer()"></div>
 
+    <!-- Drawer: editar produto -->
     <div class="drawer" id="editDrawer" role="dialog" aria-modal="true" aria-label="Editar produto">
 
         <div class="drawer-head">
@@ -255,16 +238,12 @@
                 <div class="grupo-formulario">
                     <label class="rotulo-formulario">Imagem do produto</label>
                     <div class="upload-area" id="editUploadArea">
-                        <input type="file" id="editImagem" name="imagem"
-                            accept="image/jpeg,image/png,image/webp"
-                            style="display:none">
-                        <!-- Sem imagem -->
+                        <input type="file" id="editImagem" name="imagem" accept="image/jpeg,image/png,image/webp" style="display:none">
                         <div id="editUploadVazio">
                             <i class="fa-regular fa-image upload-icon"></i>
                             <span class="upload-titulo">Clique para adicionar imagem</span>
                             <span class="upload-dica">JPG, PNG ou WEBP — máx. 5 MB</span>
                         </div>
-                        <!-- Com imagem -->
                         <div id="editUploadPreview" style="display:none">
                             <img id="editImgPreview" src="" alt="Preview">
                             <div class="upload-arquivo">
@@ -279,7 +258,6 @@
                     <span class="form-hint">Deixe sem alterar para manter a imagem atual.</span>
                 </div>
 
-                <!-- Tags do produto -->
                 <div class="grupo-formulario">
                     <label class="rotulo-formulario">Tags</label>
                     <div class="tag-picker" id="editTagPicker">
@@ -295,7 +273,6 @@
                     <input type="hidden" id="editTagsInput" name="tags">
                 </div>
 
-                <!-- Visibilidade -->
                 <div class="grupo-formulario">
                     <label class="rotulo-formulario" for="editVisivel">Visibilidade na loja</label>
                     <select id="editVisivel" name="visivel" class="selecao-formulario">
@@ -305,7 +282,7 @@
                     <span class="form-hint">Produtos ocultos só o admin pode ver.</span>
                 </div>
 
-            </div><!-- /drawer-body -->
+            </div>
 
             <div class="drawer-foot">
                 <button type="button" class="btn-cancel-drawer" onclick="closeEditDrawer()">Cancelar</button>
@@ -316,9 +293,9 @@
 
         </form>
 
-    </div><!-- /drawer -->
+    </div>
 
-
+    <!-- Modal: novo produto -->
     <div class="fundo-modal" id="productModalBackdrop" onclick="handleProductModalClick(event)">
         <div class="modal modal-rolavel" role="dialog" aria-modal="true" aria-label="Novo produto">
 
@@ -332,28 +309,22 @@
             <form id="novoProdutoForm" method="POST" action="" enctype="multipart/form-data" novalidate>
                 <div class="corpo-modal">
 
-                    <!-- IMAGEM (primeiro campo) -->
                     <div class="grupo-formulario">
                         <label class="rotulo-formulario">Imagem do produto</label>
                         <div class="upload-area" id="criarUploadArea">
-                            <input type="file" id="criarImagem" name="imagem"
-                                accept="image/jpeg,image/png,image/webp"
-                                style="display:none">
-                            <!-- placeholder -->
+                            <input type="file" id="criarImagem" name="imagem" accept="image/jpeg,image/png,image/webp" style="display:none">
                             <div id="criarUploadVazio">
                                 <i class="fa-regular fa-image upload-icon"></i>
                                 <span class="upload-titulo">Clique ou arraste uma imagem</span>
                                 <span class="upload-dica">JPG, PNG ou WEBP — máx. 5 MB (opcional)</span>
                                 <span class="upload-dica">Mínimo 300px — Máximo 4000px</span>
                             </div>
-                            <!-- preview -->
                             <div id="criarUploadPreview" style="display:none">
                                 <img id="criarImgPreview" src="" alt="Preview">
                                 <div class="upload-arquivo">
                                     <i class="fa-solid fa-circle-check" style="color:var(--green);flex-shrink:0"></i>
                                     <span id="criarUploadNome"></span>
-                                    <button type="button" id="criarUploadRemover"
-                                        aria-label="Remover imagem">
+                                    <button type="button" id="criarUploadRemover" aria-label="Remover imagem">
                                         <i class="fa-solid fa-xmark"></i>
                                     </button>
                                 </div>
@@ -363,14 +334,8 @@
 
                     <div class="grupo-formulario">
                         <label class="rotulo-formulario" for="criarNome">Nome *</label>
-                        <input
-                            type="text"
-                            id="criarNome"
-                            name="nome"
-                            class="entrada-formulario"
-                            placeholder="Nome do produto"
-                            maxlength="70"
-                            autocomplete="off">
+                        <input type="text" id="criarNome" name="nome" class="entrada-formulario"
+                            placeholder="Nome do produto" maxlength="70" autocomplete="off">
                     </div>
 
                     <div class="grupo-formulario">
@@ -387,10 +352,7 @@
 
                     <div class="grupo-formulario">
                         <label class="rotulo-formulario" for="criarCategoria">Categoria</label>
-                        <select id="criarCategoria"
-                            name="categoria"
-                            class="selecao-formulario"
-                            required>
+                        <select id="criarCategoria" name="categoria" class="selecao-formulario" required>
                             <option value="">Selecione uma categoria</option>
                             <option value="Tênis Esportivo">Tênis Esportivo</option>
                             <option value="Chuteira">Chuteira</option>
@@ -411,32 +373,14 @@
 
                     <div class="grupo-formulario">
                         <label class="rotulo-formulario" for="criarPreco">Preço (R$) *</label>
-                        <input
-                            type="number"
-                            id="criarPreco"
-                            name="preco"
-                            class="entrada-formulario"
-                            placeholder="0.00"
-                            step="0.01"
-                            min="1"
-                            max="9999.99"
-                            required
-                            autocomplete="off">
+                        <input type="number" id="criarPreco" name="preco" class="entrada-formulario"
+                            placeholder="0.00" step="0.01" min="1" max="9999.99" required autocomplete="off">
                     </div>
 
                     <div class="grupo-formulario">
                         <label class="rotulo-formulario" for="criarEstoque">Quantidade em estoque</label>
-                        <input
-                            type="number"
-                            id="criarEstoque"
-                            name="quantidade"
-                            class="entrada-formulario"
-                            placeholder="0"
-                            min="0"
-                            max="9999"
-                            value="1"
-                            required
-                            autocomplete="off">
+                        <input type="number" id="criarEstoque" name="quantidade" class="entrada-formulario"
+                            placeholder="0" min="0" max="9999" value="1" required autocomplete="off">
                     </div>
 
                     <div class="grupo-formulario">
@@ -445,7 +389,6 @@
                             placeholder="Descrição do produto..." rows="3"></textarea>
                     </div>
 
-                    <!-- Tags do produto -->
                     <div class="grupo-formulario">
                         <label class="rotulo-formulario">Tags</label>
                         <div class="tag-picker" id="criarTagPicker">
@@ -461,7 +404,6 @@
                         <input type="hidden" id="criarTagsInput" name="tags">
                     </div>
 
-                    <!-- Visibilidade -->
                     <div class="grupo-formulario">
                         <label class="rotulo-formulario" for="criarVisivel">Visibilidade na loja</label>
                         <select id="criarVisivel" name="visivel" class="selecao-formulario">
@@ -485,14 +427,13 @@
         </div>
     </div>
 
-
     <!-- Form oculto para excluir produto -->
     <form id="deleteProductForm" method="POST" action="/pages/produtos.php" style="display:none">
         <input type="hidden" name="acao" value="excluir">
         <input type="hidden" name="id" id="deleteProductId">
     </form>
 
-    <!-- Modal de confirmação de exclusão -->
+    <!-- Modal: confirmação de exclusão -->
     <div class="fundo-modal" id="deleteModalBackdrop" onclick="handleDeleteModalClick(event)">
         <div class="modal" style="max-width:400px" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Confirmar exclusão">
 
@@ -540,10 +481,7 @@
         <span id="toastMsg"></span>
     </div>
 
-
-    <!-- Modal Editar Perfil -->
     <?php require_once __DIR__ . '/../app/includes/modal-perfil.php'; ?>
-
 
     <script src="/assets/js/produtos.js"></script>
 
