@@ -2,20 +2,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 
-<head>
-    <meta charset="UTF-8">
-    <?php require __DIR__ . '/../app/includes/theme-init.php'; ?>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sprint Max — Loja</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link rel="icon" href="/assets/img/favicon.png" type="image/x-icon">
-    <link rel="stylesheet" href="/assets/css/dashboard.css">
-    <link rel="stylesheet" href="/assets/css/theme.css">
-    <link rel="stylesheet" href="/assets/css/loja.css">
-</head>
+<?php $css_extra = ['loja.css']; require __DIR__ . '/../app/includes/head.php'; ?>
 
 <body>
 
@@ -30,7 +17,7 @@
             <div class="loja-hero">
                 <div class="loja-hero-text">
                     <h1>Loja</h1>
-                    <p>Encontre os melhores produtos de tecnologia.</p>
+                    <p>Encontre os melhores produtos esportivos.</p>
                 </div>
                 <div class="loja-search">
                     <i class="fa-solid fa-magnifying-glass"></i>
@@ -39,7 +26,6 @@
             </div>
 
             <div class="cat-filters">
-                <button class="cat-btn active" data-cat="">Todos</button>
                 <?php foreach ($categorias as $cat): ?>
                 <button class="cat-btn" data-cat="<?= htmlspecialchars($cat) ?>">
                     <?= htmlspecialchars($cat) ?>
@@ -87,6 +73,7 @@
                         </div>
                         <?php endif; ?>
 
+                        <?php if (($usuario_logado['tipo'] ?? '') !== 'admin'): ?>
                         <form class="fav-form" method="POST" action="/app/controller/favoritosController.php" onclick="event.stopPropagation()">
                             <input type="hidden" name="acao" value="toggle">
                             <input type="hidden" name="produto_id" value="<?= (int)$p['id'] ?>">
@@ -97,6 +84,7 @@
                                 <i class="fa-<?= in_array((int)$p['id'], $ids_favoritos) ? 'solid' : 'regular' ?> fa-heart"></i>
                             </button>
                         </form>
+                        <?php endif; ?>
 
                         <?php if ((int)$p['quantidade'] === 0): ?>
                         <div class="sem-estoque-overlay">Indisponível</div>
@@ -204,11 +192,7 @@
         </div>
     </div>
 
-    <div class="sp-toast" id="spToast"
-        <?php if ($mensagem_flash): ?> data-flash-msg="<?= htmlspecialchars($mensagem_flash['message']) ?>" data-flash-type="<?= $mensagem_flash['type'] === 'success' ? 'success' : 'error' ?>" <?php endif; ?>>
-        <i class="fa-solid fa-circle-check" id="toastIcon"></i>
-        <span id="toastMsg"></span>
-    </div>
+    <?php require __DIR__ . '/../app/includes/toast.php'; ?>
 
     <?php require_once __DIR__ . '/../app/includes/modal-perfil.php'; ?>
 

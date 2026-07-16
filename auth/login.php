@@ -1,6 +1,8 @@
 <?php
 session_start();
-$erro = $_GET['erro'] ?? '';
+$erro  = $_GET['erro'] ?? '';
+$flash = $_SESSION['flash'] ?? null;
+unset($_SESSION['flash']);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -46,6 +48,13 @@ $erro = $_GET['erro'] ?? '';
                 </div>
                 <?php endif; ?>
 
+                <?php if ($flash): ?>
+                <div class="alert alert-<?= $flash['tipo'] === 'erro' ? 'danger' : 'success' ?> py-2" role="alert">
+                    <i class="fa-solid fa-<?= $flash['tipo'] === 'erro' ? 'circle-exclamation' : 'circle-check' ?> me-2"></i>
+                    <?= htmlspecialchars($flash['msg']) ?>
+                </div>
+                <?php endif; ?>
+
                 <form id="loginForm" novalidate method="POST" action="/app/controller/loginController.php">
 
                     <div class="grupo-formulario">
@@ -65,6 +74,10 @@ $erro = $_GET['erro'] ?? '';
                                 <i class="fa-regular fa-eye"></i>
                             </button>
                         </div>
+                    </div>
+
+                    <div class="esqueci-senha">
+                        <a href="/auth/recuperar.php">Esqueci minha senha</a>
                     </div>
 
                     <button type="submit" class="botao-sprint">
@@ -113,7 +126,7 @@ $erro = $_GET['erro'] ?? '';
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/assets/js/auth-comum.js"></script>
     <script src="/assets/js/login.js"></script>
 
 </body>

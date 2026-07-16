@@ -151,9 +151,19 @@
 
             catBtns.forEach(function (btn) {
                 btn.addEventListener('click', function () {
-                    catBtns.forEach(function (b) { b.classList.remove('active'); });
-                    this.classList.add('active');
-                    activeCategory = this.dataset.cat;
+                    // Clicar na categoria já ativa desmarca e volta a mostrar todas.
+                    var jaAtiva = this.classList.contains('active');
+                    catBtns.forEach(function (b) {
+                        b.classList.remove('active');
+                        b.setAttribute('aria-pressed', 'false');
+                    });
+                    if (jaAtiva) {
+                        activeCategory = '';
+                    } else {
+                        this.classList.add('active');
+                        this.setAttribute('aria-pressed', 'true');
+                        activeCategory = this.dataset.cat;
+                    }
                     filtrar();
                 });
             });

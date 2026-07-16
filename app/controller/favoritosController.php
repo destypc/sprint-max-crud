@@ -12,6 +12,12 @@ require_once __DIR__ . '/../config/conexao.php';
 $pdo = Connection::getConnection();
 $id_usuario = (int) $_SESSION['user']['id'];
 
+// Favoritos são exclusivos de usuários comuns — o admin não participa do recurso.
+if (($_SESSION['user']['tipo'] ?? '') === 'admin') {
+    header('Location: /pages/home.php');
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'toggle') {
 
     $id_produto = (int) ($_POST['produto_id'] ?? 0);

@@ -163,21 +163,80 @@
 
     /* ── Tag Picker ────────────────────────────────────────────── */
 
+    function toggleChip(chip, pickerId, inputId) {
+        chip.classList.toggle('ativo');
+        syncTagInput(pickerId, inputId);
+    }
+
     function initTagPicker(pickerId, inputId) {
         var picker = $(pickerId);
         if (!picker) return;
         picker.querySelectorAll('.tag-chip').forEach(function (chip) {
-            chip.addEventListener('click', function () {
-                this.classList.toggle('ativo');
-                syncTagInput(pickerId, inputId);
-            });
+            chip.addEventListener('click', function () { toggleChip(chip, pickerId, inputId); });
         });
+    }
+
+    /* Adiciona um chip ao picker (ou apenas o seleciona, se já existir). */
+    function adicionarChip(pickerId, inputId, nome, selecionar) {
+        var picker = $(pickerId);
+        if (!picker) return;
+        var existente = null;
+        picker.querySelectorAll('.tag-chip').forEach(function (c) {
+            if (c.dataset.tag === nome) existente = c;
+        });
+        if (existente) {
+            if (selecionar) existente.classList.add('ativo');
+        } else {
+            var chip = document.createElement('button');
+            chip.type = 'button';
+            chip.className = 'tag-chip' + (selecionar ? ' ativo' : '');
+            chip.dataset.tag = nome;
+            chip.textContent = nome;
+            chip.addEventListener('click', function () { toggleChip(chip, pickerId, inputId); });
+            picker.appendChild(chip);
+        }
+        syncTagInput(pickerId, inputId);
+    }
+
+    /* Cria uma tag personalizada no catálogo e a disponibiliza nos dois pickers. */
+    function criarTagPersonalizada(nome, pickerId, inputId, botao) {
+        nome = (nome || '').trim();
+        if (!nome) return;
+
+        var dados = new FormData();
+        dados.append('acao', 'criar');
+        dados.append('nome', nome);
+
+        if (botao) botao.disabled = true;
+
+        fetch('/app/controller/tagsController.php', { method: 'POST', body: dados })
+            .then(function (r) {
+                // Aceita JSON mesmo em respostas de erro (422/500); protege contra HTML inesperado.
+                return r.json().catch(function () {
+                    return { ok: false, erro: 'Resposta inválida do servidor.' };
+                });
+            })
+            .then(function (res) {
+                if (!res.ok) {
+                    showToast(res.erro || 'Não foi possível criar a tag.', 'error');
+                    return;
+                }
+                // Disponível para reuso em ambos os formulários; selecionada onde foi criada.
+                adicionarChip('criarTagPicker', 'criarTagsInput', res.tag.nome, pickerId === 'criarTagPicker');
+                adicionarChip('editTagPicker', 'editTagsInput', res.tag.nome, pickerId === 'editTagPicker');
+            })
+            .catch(function () { showToast('Erro de conexão ao criar a tag.', 'error'); })
+            .finally(function () { if (botao) botao.disabled = false; });
     }
 
     function setTagPicker(pickerId, inputId, tagsStr) {
         var picker = $(pickerId);
         if (!picker) return;
         var tags = tagsStr ? tagsStr.split(',').map(function (t) { return t.trim(); }) : [];
+        // Garante que tags do produto que não estejam no catálogo apareçam como chips.
+        tags.forEach(function (nome) {
+            if (nome) adicionarChip(pickerId, inputId, nome, false);
+        });
         picker.querySelectorAll('.tag-chip').forEach(function (chip) {
             chip.classList.toggle('ativo', tags.indexOf(chip.dataset.tag) !== -1);
         });
@@ -192,6 +251,29 @@
         var inp = $(inputId);
         if (inp) inp.value = selected.join(',');
     }
+
+    /* Liga os controles de "criar tag" (input + botão) de todos os seletores. */
+    function initCriarTag() {
+        document.querySelectorAll('.tag-criar-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var input = btn.parentElement.querySelector('.tag-criar-input');
+                if (!input) return;
+                criarTagPersonalizada(input.value, btn.dataset.alvoPicker, btn.dataset.alvoInput, btn);
+                input.value = '';
+            });
+        });
+        document.querySelectorAll('.tag-criar-input').forEach(function (input) {
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    var botao = input.parentElement.querySelector('.tag-criar-btn');
+                    criarTagPersonalizada(input.value, input.dataset.alvoPicker, input.dataset.alvoInput, botao);
+                    input.value = '';
+                }
+            });
+        });
+    }
+
     window.setTagPicker = setTagPicker;
 
     /* ── Drawer editar produto (global) ────────────────────────── */
@@ -293,30 +375,17 @@
         if (e.target === $('productModalBackdrop')) closeProductModal();
     }
 
-    /* ── Modal exclusão (global) ───────────────────────────────── */
+    /* ── Exclusão (usa o modal reutilizável de painel.js) ──────── */
 
     function openDeleteModal(id, nome) {
-        $('deleteProductId').value = id;
-        $('deleteProductNome').textContent = nome;
-        $('deleteModalBackdrop').classList.add('open');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeDeleteModal() {
-        var backdrop = $('deleteModalBackdrop');
-        if (backdrop) backdrop.classList.remove('open');
-        document.body.style.overflow = '';
-    }
-
-    function handleDeleteModalClick(e) {
-        if (e.target === $('deleteModalBackdrop')) closeDeleteModal();
-    }
-
-    function confirmDeleteProduct() {
-        var btn = $('btnConfirmarDelete');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right:6px"></i>Excluindo...';
-        $('deleteProductForm').submit();
+        abrirModalExclusao({
+            titulo: 'Excluir produto?',
+            alvo: nome,
+            aoConfirmar: function () {
+                $('deleteProductId').value = id;
+                $('deleteProductForm').submit();
+            }
+        });
     }
 
     window.openEditDrawer = openEditDrawer;
@@ -325,9 +394,6 @@
     window.closeProductModal = closeProductModal;
     window.handleProductModalClick = handleProductModalClick;
     window.openDeleteModal = openDeleteModal;
-    window.closeDeleteModal = closeDeleteModal;
-    window.handleDeleteModalClick = handleDeleteModalClick;
-    window.confirmDeleteProduct = confirmDeleteProduct;
 
     /* ── Inicialização ─────────────────────────────────────────── */
 
@@ -394,13 +460,13 @@
         /* Tag pickers */
         initTagPicker('criarTagPicker', 'criarTagsInput');
         initTagPicker('editTagPicker', 'editTagsInput');
+        initCriarTag();
 
         /* ESC fecha drawers/modais desta página */
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 closeEditDrawer();
                 closeProductModal();
-                closeDeleteModal();
             }
         });
     });

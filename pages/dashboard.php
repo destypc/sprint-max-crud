@@ -4,19 +4,7 @@ require_once __DIR__ . '/../app/controller/dashboardController.php';
 <!DOCTYPE html>
 <html lang="pt-BR">
 
-<head>
-    <meta charset="UTF-8">
-    <?php require __DIR__ . '/../app/includes/theme-init.php'; ?>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sprint Max — Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link rel="icon" href="/assets/img/favicon.png" type="image/x-icon">
-    <link rel="stylesheet" href="/assets/css/dashboard.css">
-    <link rel="stylesheet" href="/assets/css/theme.css">
-</head>
+<?php require __DIR__ . '/../app/includes/head.php'; ?>
 
 <body>
 
@@ -139,7 +127,7 @@ require_once __DIR__ . '/../app/controller/dashboardController.php';
                             <?php if (!empty($logsRecentes)): ?>
                             <?php foreach ($logsRecentes as $i => $log): ?>
                             <?php [$cor, $icone] = logIcone($log['acao']); ?>
-                            <div class="item-atividade<?= $i === count($logsRecentes) - 1 ? ' style="border-bottom:none;padding-bottom:0"' : '' ?>">
+                            <div class="item-atividade"<?= $i === count($logsRecentes) - 1 ? ' style="border-bottom:none;padding-bottom:0"' : '' ?>>
                                 <div class="ponto-atividade <?= $cor ?>"><i class="fa-solid <?= $icone ?>"></i></div>
                                 <div class="texto-atividade">
                                     <div class="descricao-atividade"><?= htmlspecialchars($log['descricao']) ?></div>

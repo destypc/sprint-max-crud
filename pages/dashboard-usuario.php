@@ -96,20 +96,7 @@ function statusBadgeSimples(string $status): string
 <!DOCTYPE html>
 <html lang="pt-BR">
 
-<head>
-    <meta charset="UTF-8">
-    <?php require __DIR__ . '/../app/includes/theme-init.php'; ?>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sprint Max — Meu Painel</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link rel="icon" href="/assets/img/favicon.png" type="image/x-icon">
-    <link rel="stylesheet" href="/assets/css/dashboard.css">
-    <link rel="stylesheet" href="/assets/css/theme.css">
-    <link rel="stylesheet" href="/assets/css/loja.css">
-</head>
+<?php $css_extra = ['loja.css']; require __DIR__ . '/../app/includes/head.php'; ?>
 
 <body>
 
@@ -329,11 +316,7 @@ function statusBadgeSimples(string $status): string
     </div>
 <?php endif; ?>
 
-<div class="sp-toast" id="spToast"
-    <?php if ($flash): ?> data-flash-msg="<?= htmlspecialchars($flash['message']) ?>" data-flash-type="<?= $flash['type'] === 'success' ? 'success' : 'error' ?>" <?php endif; ?>>
-    <i class="fa-solid fa-circle-check" id="toastIcon"></i>
-    <span id="toastMsg"></span>
-</div>
+<?php require __DIR__ . '/../app/includes/toast.php'; ?>
 
 <?php require_once __DIR__ . '/../app/includes/modal-perfil.php'; ?>
 

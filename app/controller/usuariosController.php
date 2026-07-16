@@ -9,16 +9,17 @@ if (empty($_SESSION['user']) || $_SESSION['user']['tipo'] !== 'admin') {
 }
 
 require_once __DIR__ . '/../../app/config/conexao.php';
+require_once __DIR__ . '/../../app/config/helpers.php';
 
 $conexao = Connection::getConnection();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'criar') {
 
-    $nome   = trim($_POST['nome']   ?? '');
-    $email  = trim($_POST['email']  ?? '');
-    $senha  = $_POST['senha']       ?? '';
-    $tipo   = $_POST['tipo']        ?? 'usuario';
-    $status = $_POST['status']      ?? 'ativo';
+    $nome = trim($_POST['nome'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $senha = $_POST['senha'] ?? '';
+    $tipo = $_POST['tipo'] ?? 'usuario';
+    $status = $_POST['status'] ?? 'ativo';
 
     if (empty($nome) || empty($email) || empty($senha)) {
         $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Preencha todos os campos obrigatórios.'];
@@ -26,8 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'criar')
         exit;
     }
 
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'E-mail inválido.'];
+    $checagemEmail = validarEmail($email);
+    if (!$checagemEmail['valido']) {
+        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => $checagemEmail['mensagem']];
         header('Location: /pages/usuarios.php');
         exit;
     }
@@ -50,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'criar')
             exit;
         }
 
-        $hash = password_hash($senha, PASSWORD_DEFAULT);
+        $hash = password_hash($senha, PASSWORD_DEFAULT); // Deixa a senha criptografada no banco de dados
 
         // Tenta inserir com coluna status (fallback sem status se a coluna não existir)
         try {
@@ -77,12 +79,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'criar')
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'editar') {
 
-    $id     = (int)($_POST['id']    ?? 0);
-    $nome   = trim($_POST['nome']   ?? '');
-    $email  = trim($_POST['email']  ?? '');
-    $tipo   = $_POST['tipo']        ?? 'usuario';
-    $status = $_POST['status']      ?? 'ativo';
-    $senha  = $_POST['senha']       ?? '';
+    $id = (int)($_POST['id'] ?? 0);
+    $nome = trim($_POST['nome'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $tipo = $_POST['tipo'] ?? 'usuario';
+    $status = $_POST['status'] ?? 'ativo';
+    $senha = $_POST['senha'] ?? '';
 
     if ($id <= 0 || empty($nome) || empty($email)) {
         $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Dados inválidos.'];
@@ -90,18 +92,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'editar'
         exit;
     }
 
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'E-mail inválido.'];
+    $checagemEmail = validarEmail($email);
+    if (!$checagemEmail['valido']) {
+        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => $checagemEmail['mensagem']];
         header('Location: /pages/usuarios.php');
         exit;
     }
 
-    $tipo   = in_array($tipo,   ['admin', 'usuario']) ? $tipo   : 'usuario';
+    $tipo = in_array($tipo, ['admin', 'usuario']) ? $tipo   : 'usuario';
     $status = in_array($status, ['ativo', 'inativo']) ? $status : 'ativo';
 
     try {
         $stmt = $conexao->prepare("SELECT id FROM usuarios WHERE email = :email AND id != :id");
         $stmt->execute([':email' => $email, ':id' => $id]);
+
         if ($stmt->fetch()) {
             $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Este e-mail já está em uso por outro usuário.'];
             header('Location: /pages/usuarios.php');

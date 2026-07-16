@@ -32,6 +32,65 @@ function handleProfileModalClick(e) {
     }
 }
 
+/* ── Modal de exclusão reutilizável ─────────────────────────── */
+/* Depende do include app/includes/modal-exclusao.php na página.   */
+
+var _exclusaoConfig = null;
+
+/**
+ * Abre o modal de confirmação de exclusão.
+ * opcoes: { titulo, mensagem, alvo, aoConfirmar, formId }
+ * - titulo/mensagem: textos exibidos (opcionais, têm padrão).
+ * - alvo: nome destacado do item que será excluído.
+ * - aoConfirmar: função executada ao confirmar (tem prioridade).
+ * - formId: alternativa a aoConfirmar — envia o formulário com esse id.
+ */
+function abrirModalExclusao(opcoes) {
+    _exclusaoConfig = opcoes || {};
+
+    var backdrop = document.getElementById('modalExclusaoBackdrop');
+    if (!backdrop) return;
+
+    var titulo = document.getElementById('exclusaoTitulo');
+    var mensagem = document.getElementById('exclusaoMensagem');
+    var alvo = document.getElementById('exclusaoAlvo');
+    if (titulo) titulo.textContent = _exclusaoConfig.titulo || 'Confirmar exclusão?';
+    if (mensagem) mensagem.textContent = _exclusaoConfig.mensagem || 'Você está prestes a excluir';
+    if (alvo) alvo.textContent = _exclusaoConfig.alvo || '';
+
+    var btn = document.getElementById('btnConfirmarExclusao');
+    if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-trash" style="margin-right:6px"></i>Excluir';
+    }
+
+    backdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function fecharModalExclusao() {
+    var backdrop = document.getElementById('modalExclusaoBackdrop');
+    if (backdrop) backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+function confirmarExclusao() {
+    var cfg = _exclusaoConfig || {};
+
+    var btn = document.getElementById('btnConfirmarExclusao');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right:6px"></i>Excluindo...';
+    }
+
+    if (typeof cfg.aoConfirmar === 'function') {
+        cfg.aoConfirmar();
+    } else if (cfg.formId) {
+        var form = document.getElementById(cfg.formId);
+        if (form) form.submit();
+    }
+}
+
 /**
  * Toast flutuante. Usa o elemento fixo #spToast presente nas páginas.
  * No-op seguro quando o elemento não existe.
@@ -108,9 +167,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /* ESC fecha o modal de perfil */
+    /* ESC fecha o modal de perfil e o de exclusão */
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') closeProfileModal();
+        if (e.key === 'Escape') {
+            closeProfileModal();
+            fecharModalExclusao();
+        }
     });
 
     /* Bootstrap de flash: lê data-attributes do #spToast */

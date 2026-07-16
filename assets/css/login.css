@@ -216,6 +216,25 @@ color: var(--orange) !important;
   transform: translateY(0);
 }
 
+/* ---------- Link "Esqueci minha senha" ---------- */
+.esqueci-senha {
+  text-align: right;
+  margin: -6px 0 14px;
+}
+
+.esqueci-senha a {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--orange, #f97316);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.esqueci-senha a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
 /* ---------- Divider ---------- */
 .divisor {
   display: flex;
@@ -374,22 +393,6 @@ color: var(--orange) !important;
   left: 10%;
 }
 
-.circulo-geometrico--2 {
-  width: 120px;
-  height: 120px;
-  bottom: 20%;
-  right: 15%;
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.circulo-geometrico--3 {
-  width: 60px;
-  height: 60px;
-  top: 30%;
-  right: 25%;
-  background: rgba(255, 255, 255, 0.06);
-}
-
 /* Linhas de velocidade */
 .linha-velocidade {
   position: absolute;
@@ -410,93 +413,11 @@ color: var(--orange) !important;
   transform: rotate(-8deg);
 }
 
-.linha-velocidade--2 {
-  width: 80px;
-  bottom: 35%;
-  right: 10%;
-  transform: rotate(5deg);
-}
-
 .linha-velocidade--3 {
   width: 100px;
   top: 60%;
   left: 20%;
   transform: rotate(-3deg);
-}
-
-/* Branding central */
-.right-marca {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  animation: fadeUp 0.8s ease-out 0.2s both;
-}
-
-.right-marca .logo-ring {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  overflow: hidden;
-}
-
-.right-marca .logo-ring img {
-  width: 70%;
-  height: 70%;
-  object-fit: contain;
-  object-position: center;
-  display: block;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-}
-
-.right-marca h2 {
-  font-family: "Poppins", sans-serif;
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--white);
-  margin-bottom: 0.5rem;
-  letter-spacing: -0.01em;
-}
-
-.right-marca p {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.75);
-  font-weight: 400;
-  letter-spacing: 0.04em;
-}
-
-/* ---------- Modal Cadastro ---------- */
-.modal-content {
-  background-color: var(--gray-dark);
-  border: 1px solid var(--gray-mid);
-  border-radius: 14px;
-  color: var(--white);
-}
-
-.cabecalho-modaler {
-  border-bottom: 1px solid var(--gray-mid);
-  padding: 1.5rem 1.5rem 1rem;
-}
-
-.cabecalho-modaler .modal-title {
-  font-family: "Poppins", sans-serif;
-  font-weight: 700;
-  font-size: 1.25rem;
-}
-
-.cabecalho-modaler .modal-title .destaque {
-  color: var(--orange);
-}
-
-.cabecalho-modaler .btn-close {
-  filter: invert(1) grayscale(100%) brightness(200%);
 }
 
 .corpo-modal {

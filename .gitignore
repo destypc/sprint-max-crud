@@ -1,0 +1,9 @@
+# Dependências do Composer (rode "composer install" para recriar)
+/vendor/
+
+# Credenciais de e-mail (SMTP) — nunca versionar
+/app/config/email.php
+
+# Uploads em runtime — versiona apenas o index.php de proteção
+/uploads/*
+!/uploads/index.php

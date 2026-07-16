@@ -9,6 +9,35 @@ function registrarLog(PDO $conexao, string $acao, string $descricao, ?int $usuar
 }
 
 /**
+ * Valida um e-mail em duas camadas: formato (FILTER_VALIDATE_EMAIL) e
+ * existência do domínio (registro MX, com fallback para A/AAAA).
+ * Não envia e-mail — apenas verifica se o endereço pode receber mensagens.
+ * Retorna ['valido' => bool, 'mensagem' => string].
+ */
+function validarEmail(string $email): array
+{
+    $email = trim($email);
+
+    if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return ['valido' => false, 'mensagem' => 'Digite um e-mail válido.'];
+    }
+
+    $dominio = substr(strrchr($email, '@'), 1);
+
+    // Só verifica DNS quando a função existe e há resolução de nomes disponível.
+    // Aceita MX ou, como fallback, um registro A/AAAA (domínios que recebem e-mail sem MX dedicado).
+    if (function_exists('checkdnsrr') && $dominio !== '') {
+        $temMx = checkdnsrr($dominio, 'MX');
+        $temA  = checkdnsrr($dominio, 'A') || checkdnsrr($dominio, 'AAAA');
+        if (!$temMx && !$temA) {
+            return ['valido' => false, 'mensagem' => 'O domínio do e-mail não parece existir.'];
+        }
+    }
+
+    return ['valido' => true, 'mensagem' => ''];
+}
+
+/**
  * Faz upload de uma imagem para a pasta /uploads/.
  * Retorna o caminho web "/uploads/arquivo.ext" ou false em caso de erro.
  */

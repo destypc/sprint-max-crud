@@ -30,11 +30,14 @@ $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $categorias = array_values(array_unique(array_column($produtos, 'categoria')));
 sort($categorias);
 
-// IDs dos produtos favoritados (tabela existe após migração do banco)
+// IDs dos produtos favoritados — recurso exclusivo de usuários comuns.
+// (tabela existe após migração do banco)
 $ids_favoritos = [];
-try {
-    $stmtFav = $pdo->prepare("SELECT produto_id FROM favoritos WHERE usuario_id = ?");
-    $stmtFav->execute([$usuario_logado['id']]);
-    $ids_favoritos = array_map('intval', array_column($stmtFav->fetchAll(PDO::FETCH_ASSOC), 'produto_id'));
-} catch (PDOException $e) { /* tabela favoritos não existe ainda */
+if (($usuario_logado['tipo'] ?? '') !== 'admin') {
+    try {
+        $stmtFav = $pdo->prepare("SELECT produto_id FROM favoritos WHERE usuario_id = ?");
+        $stmtFav->execute([$usuario_logado['id']]);
+        $ids_favoritos = array_map('intval', array_column($stmtFav->fetchAll(PDO::FETCH_ASSOC), 'produto_id'));
+    } catch (PDOException $e) { /* tabela favoritos não existe ainda */
+    }
 }

@@ -5,7 +5,8 @@
  *
  * Mantido inline (e não em /assets/js) de propósito: precisa executar
  * de forma síncrona no <head>, antes do CSS, sem uma requisição extra.
- * Incluído por todas as páginas para eliminar a duplicação do snippet.
+ * Incluído pelas páginas do painel/loja (via head.php). As telas de
+ * login/cadastro não usam tema e não incluem este snippet.
  */
 ?>
 <script>

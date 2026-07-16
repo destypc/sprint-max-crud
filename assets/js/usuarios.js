@@ -66,19 +66,16 @@
         $('viewId').textContent = '#' + user.id;
         $('viewEmail').textContent = user.email;
 
+        // Reaproveita as mesmas classes das badges da tabela (definidas no CSS).
         var tipoBadge = $('viewTipoBadge');
-        if (user.tipo === 'admin') {
-            tipoBadge.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:50px;background:rgba(249,115,22,.15);color:var(--orange);font-size:.72rem;font-weight:700;border:1px solid rgba(249,115,22,.3)"><i class="fa-solid fa-shield-halved"></i> Administrador</span>';
-        } else {
-            tipoBadge.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:50px;background:rgba(139,92,246,.15);color:#a78bfa;font-size:.72rem;font-weight:700;border:1px solid rgba(139,92,246,.3)"><i class="fa-solid fa-user"></i> Usuário</span>';
-        }
+        tipoBadge.innerHTML = user.tipo === 'admin'
+            ? '<span class="badge-tipo admin">Administrador</span>'
+            : '<span class="badge-tipo usuario">Usuário</span>';
 
         var statusBadge = $('viewStatusBadge');
-        if (user.status === 'ativo') {
-            statusBadge.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:50px;background:rgba(16,185,129,.12);color:var(--green);font-size:.75rem;font-weight:600;border:1px solid rgba(16,185,129,.28)"><i class="fa-solid fa-circle" style="font-size:.5rem"></i> Ativo</span>';
-        } else {
-            statusBadge.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:50px;background:rgba(239,68,68,.12);color:var(--red);font-size:.75rem;font-weight:600;border:1px solid rgba(239,68,68,.28)"><i class="fa-solid fa-circle" style="font-size:.5rem"></i> Inativo</span>';
-        }
+        statusBadge.innerHTML = user.status === 'ativo'
+            ? '<span class="badge badge-green">Ativo</span>'
+            : '<span class="badge badge-orange">Inativo</span>';
 
         var createdRow = $('viewCreatedRow');
         if (user.created_at) {
@@ -113,9 +110,14 @@
     /* ── Exclusão (global) ─────────────────────────────────────── */
 
     function confirmDelete(id, nome) {
-        if (!confirm('Excluir o usuário "' + nome + '"?\nEsta ação não pode ser desfeita.')) return;
-        $('deleteId').value = id;
-        $('deleteForm').submit();
+        abrirModalExclusao({
+            titulo: 'Excluir usuário?',
+            alvo: nome,
+            aoConfirmar: function () {
+                $('deleteId').value = id;
+                $('deleteForm').submit();
+            }
+        });
     }
 
     window.openDrawer = openDrawer;

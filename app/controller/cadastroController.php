@@ -23,6 +23,13 @@ if (empty($nome) || empty($email) || empty($senha)) {
     exit;
 }
 
+$checagemEmail = validarEmail($email);
+if (!$checagemEmail['valido']) {
+    $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => $checagemEmail['mensagem']];
+    header("Location: /auth/cadastro.php");
+    exit;
+}
+
 if ($senha !== $confirmarSenha) {
     $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'As senhas não coincidem.'];
     header("Location: /auth/cadastro.php");

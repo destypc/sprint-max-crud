@@ -141,6 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'editar'
             $conexao->prepare("UPDATE produtos SET nome=?, categoria=?, preco=?, quantidade=? WHERE id=?")
                 ->execute([$nome, $categoria, $preco, $quantidade, $id]);
         }
+        sincronizarTagsProduto($conexao, $id, $tags);
         registrarLog($conexao, 'edicao_produto', "Produto \"{$nome}\" atualizado", $_SESSION['user']['id'] ?? null);
         $_SESSION['flash'] = ['type' => 'success', 'message' => 'Produto atualizado com sucesso!'];
     } catch (PDOException $e) {
@@ -219,6 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conexao->prepare("INSERT INTO produtos (nome, categoria, preco, quantidade, descricao) VALUES (?, ?, ?, ?, ?)")
                 ->execute([$nome, $categoria, $preco, $quantidade, $descricao]);
         }
+        sincronizarTagsProduto($conexao, (int) $conexao->lastInsertId(), $tags);
         registrarLog($conexao, 'cadastro_produto', "Produto \"{$nome}\" cadastrado", $_SESSION['user']['id'] ?? null);
     } catch (PDOException $e) {
         $_SESSION['flash'] = ['type' => 'error', 'message' => 'Erro ao cadastrar produto. Tente novamente.'];
@@ -239,6 +241,17 @@ $trilhaNavegacao     = [['label' => 'Produtos']];
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
+// Catálogo de tags disponíveis para o seletor (fallback para os padrões
+// caso a tabela ainda não exista — banco sem migração).
+$tagsDisponiveis = [];
+try {
+    $tagsDisponiveis = $conexao->query("SELECT id, nome FROM tags ORDER BY nome ASC")->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    foreach (['Promoção', 'Lançamento', 'Exclusivo', 'Mais Vendido', 'Novidade', 'Oferta', 'Kit', 'Edição Limitada'] as $nomeTag) {
+        $tagsDisponiveis[] = ['nome' => $nomeTag];
+    }
+}
+
 $busca      = trim($_GET['busca'] ?? '');
 $pagina     = max(1, (int)($_GET['pagina'] ?? 1));
 $por_pagina = 20;
@@ -255,10 +268,10 @@ if ($busca !== '') {
     $stmt = $conexao->prepare(
         "SELECT * FROM produtos WHERE nome LIKE :n OR categoria LIKE :c ORDER BY id DESC LIMIT :lim OFFSET :off"
     );
-    $stmt->bindValue(':n',   $like,       PDO::PARAM_STR);
-    $stmt->bindValue(':c',   $like,       PDO::PARAM_STR);
+    $stmt->bindValue(':n', $like, PDO::PARAM_STR);
+    $stmt->bindValue(':c', $like, PDO::PARAM_STR);
     $stmt->bindValue(':lim', $por_pagina, PDO::PARAM_INT);
-    $stmt->bindValue(':off', $offset,     PDO::PARAM_INT);
+    $stmt->bindValue(':off', $offset, PDO::PARAM_INT);
     $stmt->execute();
 } else {
     $count = $conexao->query("SELECT COUNT(*) FROM produtos");
@@ -272,11 +285,45 @@ if ($busca !== '') {
 
 $produtos       = $stmt->fetchAll();
 $total_produtos = $total;
-$total_paginas  = max(1, (int)ceil($total / $por_pagina));
-$inicio         = $total > 0 ? $offset + 1 : 0;
-$fim            = min($offset + $por_pagina, $total);
 
-function precoFormatado(float $preco): string
-{
+function precoFormatado(float $preco): string{
     return 'R$ ' . number_format($preco, 2, ',', '.');
+}
+
+/**
+ * Sincroniza os vínculos produto <-> tag (tabela produto_tags) a partir da
+ * lista de nomes recebida do formulário (CSV). Cria no catálogo as tags que
+ * ainda não existirem. Não faz nada se as tabelas de tags não existirem.
+ */
+function sincronizarTagsProduto(PDO $conexao, int $produtoId, string $tagsCsv): void{
+    if ($produtoId <= 0) return;
+
+    try {
+        $nomes = array_values(array_unique(array_filter(
+            array_map('trim', explode(',', $tagsCsv)),
+            fn($n) => $n !== ''
+        )));
+
+        $idsTags = [];
+        foreach ($nomes as $nome) {
+            $sel = $conexao->prepare("SELECT id FROM tags WHERE nome = ?");
+            $sel->execute([$nome]);
+            $tagId = $sel->fetchColumn();
+            if (!$tagId) {
+                $conexao->prepare("INSERT INTO tags (nome) VALUES (?)")->execute([$nome]);
+                $tagId = (int) $conexao->lastInsertId();
+            }
+            $idsTags[] = (int) $tagId;
+        }
+
+        $conexao->prepare("DELETE FROM produto_tags WHERE produto_id = ?")->execute([$produtoId]);
+        if ($idsTags) {
+            $ins = $conexao->prepare("INSERT IGNORE INTO produto_tags (produto_id, tag_id) VALUES (?, ?)");
+            foreach ($idsTags as $tagId) {
+                $ins->execute([$produtoId, $tagId]);
+            }
+        }
+    } catch (PDOException $e) {
+        // Tabelas de tags ainda não migradas — segue apenas com o CSV em produtos.tags.
+    }
 }

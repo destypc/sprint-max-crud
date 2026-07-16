@@ -2,99 +2,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 
-<head>
-    <meta charset="UTF-8">
-    <?php require __DIR__ . '/../app/includes/theme-init.php'; ?>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sprint Max — Usuários</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link rel="icon" href="/assets/img/favicon.png" type="image/x-icon">
-    <link rel="stylesheet" href="/assets/css/dashboard.css">
-    <link rel="stylesheet" href="/assets/css/theme.css">
-
-    <style>
-        /* ── Modal Visualizar Usuário ── */
-        .uview-hero {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 24px 22px 20px;
-            background: linear-gradient(135deg, rgba(249, 115, 22, .08), rgba(249, 115, 22, .02));
-            border-bottom: 1px solid var(--border);
-        }
-
-        .uview-avatar {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            border: 3px solid rgba(249, 115, 22, .35);
-            object-fit: cover;
-            flex-shrink: 0;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, .3);
-        }
-
-        .uview-hero-info {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
-        .uview-nome {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin: 0;
-            line-height: 1.2;
-        }
-
-        .uview-body {
-            padding: 6px 0 4px;
-        }
-
-        .uview-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            padding: 12px 22px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .uview-row:last-child {
-            border-bottom: none;
-        }
-
-        .uview-label {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            font-size: .75rem;
-            font-weight: 600;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: .5px;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .uview-label i {
-            color: var(--orange);
-            font-size: .7rem;
-        }
-
-        .uview-value {
-            font-size: .84rem;
-            font-weight: 500;
-            color: var(--text-main);
-            text-align: right;
-            word-break: break-all;
-        }
-    </style>
-</head>
+<?php require __DIR__ . '/../app/includes/head.php'; ?>
 
 <body>
 
@@ -184,14 +92,14 @@
                                     <td><?= statusBadge($status_val) ?></td>
                                     <td>
                                         <div class="actions-cell">
-                                            <button class="btn-icon" title="Visualizar" onclick='openViewModal(<?= $uJson ?>)'>
+                                            <button class="btn-icon" aria-label="Visualizar usuário" title="Visualizar" onclick='openViewModal(<?= $uJson ?>)'>
                                                 <i class="fa-solid fa-eye"></i>
                                             </button>
-                                            <button class="btn-icon edit" title="Editar" onclick='openDrawer(<?= $uJson ?>)'>
+                                            <button class="btn-icon edit" aria-label="Editar usuário" title="Editar" onclick='openDrawer(<?= $uJson ?>)'>
                                                 <i class="fa-solid fa-pen"></i>
                                             </button>
                                             <?php if (!$isSelf): ?>
-                                            <button class="btn-icon del" title="Excluir"
+                                            <button class="btn-icon del" aria-label="Excluir usuário" title="Excluir"
                                                 onclick="confirmDelete(<?= (int)$u['id'] ?>, '<?= htmlspecialchars(addslashes($u['nome'])) ?>')">
                                                 <i class="fa-solid fa-trash"></i>
                                             </button>
@@ -397,6 +305,9 @@
         <input type="hidden" name="id" id="deleteId">
     </form>
 
+    <!-- Modal reutilizável de confirmação de exclusão -->
+    <?php require_once __DIR__ . '/../app/includes/modal-exclusao.php'; ?>
+
     <!-- Modal: visualizar usuário -->
     <div class="fundo-modal" id="viewModalBackdrop" onclick="handleViewModalClick(event)">
         <div class="modal" role="dialog" aria-modal="true" aria-label="Detalhes do usuário"
@@ -450,11 +361,7 @@
         </div>
     </div>
 
-    <div class="sp-toast" id="spToast"
-        <?php if ($flash): ?> data-flash-msg="<?= htmlspecialchars($flash['msg']) ?>" data-flash-type="<?= $flash['tipo'] === 'sucesso' ? 'success' : 'error' ?>" <?php endif; ?>>
-        <i class="fa-solid fa-circle-check" id="toastIcon"></i>
-        <span id="toastMsg"></span>
-    </div>
+    <?php require __DIR__ . '/../app/includes/toast.php'; ?>
 
     <script src="/assets/js/usuarios.js"></script>
 

@@ -2,20 +2,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 
-<head>
-    <meta charset="UTF-8">
-    <?php require __DIR__ . '/../app/includes/theme-init.php'; ?>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sprint Max — Produtos</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link rel="icon" href="/assets/img/favicon.png" type="image/x-icon">
-    <link rel="stylesheet" href="/assets/css/dashboard.css">
-    <link rel="stylesheet" href="/assets/css/theme.css">
-</head>
+<?php require __DIR__ . '/../app/includes/head.php'; ?>
 
 <body>
 
@@ -74,6 +61,7 @@
                                         'preco'      => $p['preco'],
                                         'quantidade' => $p['quantidade'],
                                         'imagem'     => $p['imagem']     ?? '',
+                                        'tags'       => $p['tags']       ?? '',
                                     ]), ENT_QUOTES);
                                 ?>
                                 <tr data-searchable="<?= htmlspecialchars($searchable) ?>">
@@ -115,15 +103,16 @@
                                                 <input type="hidden" name="acao" value="toggle_visivel">
                                                 <input type="hidden" name="id" value="<?= (int)$p['id'] ?>">
                                                 <button type="submit" class="btn-icon"
+                                                    aria-label="<?= ($p['visivel'] ?? 1) ? 'Ocultar da loja' : 'Tornar visível' ?>"
                                                     title="<?= ($p['visivel'] ?? 1) ? 'Ocultar da loja' : 'Tornar visível' ?>">
                                                     <i class="fa-solid <?= ($p['visivel'] ?? 1) ? 'fa-eye' : 'fa-eye-slash' ?>"
                                                         style="color:<?= ($p['visivel'] ?? 1) ? 'var(--green)' : 'var(--text-dim)' ?>"></i>
                                                 </button>
                                             </form>
-                                            <button class="btn-icon edit" title="Editar" onclick='openEditDrawer(<?= $pJson ?>)'>
+                                            <button class="btn-icon edit" aria-label="Editar produto" title="Editar" onclick='openEditDrawer(<?= $pJson ?>)'>
                                                 <i class="fa-solid fa-pen"></i>
                                             </button>
-                                            <button class="btn-icon del" title="Excluir"
+                                            <button class="btn-icon del" aria-label="Excluir produto" title="Excluir"
                                                 onclick="openDeleteModal(<?= (int)$p['id'] ?>, <?= htmlspecialchars(json_encode($p['nome']), ENT_QUOTES) ?>)">
                                                 <i class="fa-solid fa-trash"></i>
                                             </button>
@@ -260,17 +249,12 @@
 
                 <div class="grupo-formulario">
                     <label class="rotulo-formulario">Tags</label>
-                    <div class="tag-picker" id="editTagPicker">
-                        <button type="button" class="tag-chip" data-tag="Promoção">Promoção</button>
-                        <button type="button" class="tag-chip" data-tag="Lançamento">Lançamento</button>
-                        <button type="button" class="tag-chip" data-tag="Exclusivo">Exclusivo</button>
-                        <button type="button" class="tag-chip" data-tag="Mais Vendido">Mais Vendido</button>
-                        <button type="button" class="tag-chip" data-tag="Novidade">Novidade</button>
-                        <button type="button" class="tag-chip" data-tag="Oferta">Oferta</button>
-                        <button type="button" class="tag-chip" data-tag="Kit">Kit</button>
-                        <button type="button" class="tag-chip" data-tag="Edição Limitada">Edição Limitada</button>
-                    </div>
-                    <input type="hidden" id="editTagsInput" name="tags">
+                    <?php
+                    $seletorId = 'editTagPicker';
+                    $inputId   = 'editTagsInput';
+                    require __DIR__ . '/../app/includes/seletor-tags.php';
+                    ?>
+                    <span class="form-hint">Clique para selecionar/remover. Crie novas tags para reutilizar em qualquer produto.</span>
                 </div>
 
                 <div class="grupo-formulario">
@@ -391,17 +375,12 @@
 
                     <div class="grupo-formulario">
                         <label class="rotulo-formulario">Tags</label>
-                        <div class="tag-picker" id="criarTagPicker">
-                            <button type="button" class="tag-chip" data-tag="Promoção">Promoção</button>
-                            <button type="button" class="tag-chip" data-tag="Lançamento">Lançamento</button>
-                            <button type="button" class="tag-chip" data-tag="Exclusivo">Exclusivo</button>
-                            <button type="button" class="tag-chip" data-tag="Mais Vendido">Mais Vendido</button>
-                            <button type="button" class="tag-chip" data-tag="Novidade">Novidade</button>
-                            <button type="button" class="tag-chip" data-tag="Oferta">Oferta</button>
-                            <button type="button" class="tag-chip" data-tag="Kit">Kit</button>
-                            <button type="button" class="tag-chip" data-tag="Edição Limitada">Edição Limitada</button>
-                        </div>
-                        <input type="hidden" id="criarTagsInput" name="tags">
+                        <?php
+                        $seletorId = 'criarTagPicker';
+                        $inputId   = 'criarTagsInput';
+                        require __DIR__ . '/../app/includes/seletor-tags.php';
+                        ?>
+                        <span class="form-hint">Clique para selecionar/remover. Crie novas tags para reutilizar em qualquer produto.</span>
                     </div>
 
                     <div class="grupo-formulario">
@@ -433,53 +412,10 @@
         <input type="hidden" name="id" id="deleteProductId">
     </form>
 
-    <!-- Modal: confirmação de exclusão -->
-    <div class="fundo-modal" id="deleteModalBackdrop" onclick="handleDeleteModalClick(event)">
-        <div class="modal" style="max-width:400px" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Confirmar exclusão">
+    <!-- Modal reutilizável de confirmação de exclusão -->
+    <?php require_once __DIR__ . '/../app/includes/modal-exclusao.php'; ?>
 
-            <div class="cabecalho-modal" style="border-bottom:none;padding-bottom:8px">
-                <div style="flex:1"></div>
-                <button class="botao-fechar-modal" onclick="closeDeleteModal()" aria-label="Fechar">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <div class="corpo-modal" style="align-items:center;text-align:center;gap:14px;padding-top:0">
-                <div style="width:64px;height:64px;border-radius:50%;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);display:flex;align-items:center;justify-content:center;margin:0 auto">
-                    <i class="fa-solid fa-trash" style="font-size:1.4rem;color:var(--red)"></i>
-                </div>
-                <div>
-                    <h3 style="font-size:1.05rem;font-weight:700;color:var(--text-main);margin-bottom:8px">Excluir produto?</h3>
-                    <p style="font-size:.85rem;color:var(--text-sub);line-height:1.65">
-                        Você está prestes a excluir<br>
-                        <strong id="deleteProductNome" style="color:var(--text-main)"></strong>.<br>
-                        <span style="color:var(--red);font-size:.78rem;font-weight:500">
-                            <i class="fa-solid fa-triangle-exclamation" style="margin-right:3px"></i>
-                            Esta ação não pode ser desfeita.
-                        </span>
-                    </p>
-                </div>
-            </div>
-
-            <div class="rodape-modal">
-                <button type="button" class="botao-secundario" style="flex:1" onclick="closeDeleteModal()">
-                    Cancelar
-                </button>
-                <button type="button" id="btnConfirmarDelete" onclick="confirmDeleteProduct()"
-                    style="flex:1;padding:10px;background:var(--red);border:none;border-radius:var(--radius-sm);color:#fff;font-size:.875rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all var(--transition)">
-                    <i class="fa-solid fa-trash" style="margin-right:6px"></i>
-                    Excluir
-                </button>
-            </div>
-
-        </div>
-    </div>
-
-    <div class="sp-toast" id="spToast"
-        <?php if ($flash): ?> data-flash-msg="<?= htmlspecialchars($flash['message']) ?>" data-flash-type="<?= $flash['type'] === 'success' ? 'success' : 'error' ?>" <?php endif; ?>>
-        <i class="fa-solid fa-circle-check" id="toastIcon"></i>
-        <span id="toastMsg"></span>
-    </div>
+    <?php require __DIR__ . '/../app/includes/toast.php'; ?>
 
     <?php require_once __DIR__ . '/../app/includes/modal-perfil.php'; ?>
 

@@ -1,323 +1,65 @@
 /* ============================================================
-   Sprint Max — Login & Cadastro
-   Validação em tempo real, loading states e alertas (SweetAlert2).
+   Sprint Max — Login
+   Validação em tempo real e estado de loading do formulário.
+   Helpers compartilhados vêm de auth-comum.js.
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    /* ── Utilitários de validação ──────────────────────────── */
-
-    function emailValido(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-    }
-
-    function setError(wrapper, msg) {
-        clearState(wrapper);
-        wrapper.classList.add("error");
-        const p = document.createElement("p");
-        p.className = "field-error";
-        p.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${msg}`;
-        wrapper.insertAdjacentElement("afterend", p);
-    }
-
-    function setSuccess(wrapper) {
-        clearState(wrapper);
-        wrapper.classList.add("success");
-    }
-
-    function clearState(wrapper) {
-        wrapper.classList.remove("error", "success");
-        const sibling = wrapper.nextElementSibling;
-        if (sibling && sibling.classList.contains("field-error")) {
-            sibling.remove();
-        }
-    }
-
-    /* ── Estado de loading no botão ───────────────────────── */
-
-    function setBtnLoading(btn, loading, text = "Aguarde...") {
-        if (loading) {
-            btn.dataset.original = btn.innerHTML;
-            btn.innerHTML = `<span class="btn-spinner"></span> ${text}`;
-            btn.classList.add("loading");
-            btn.disabled = true;
-        } else {
-            btn.innerHTML = btn.dataset.original || btn.innerHTML;
-            btn.classList.remove("loading");
-            btn.disabled = false;
-        }
-    }
-
-    /* ── Toggle mostrar / ocultar senha ───────────────────── */
-
-    document.querySelectorAll(".alternar-senha").forEach((btn) => {
-        btn.addEventListener("click", () => {
-            const input = btn.closest(".entrada-conteiner").querySelector("input");
-            const icon = btn.querySelector("i");
-            if (input.type === "password") {
-                input.type = "text";
-                icon.classList.replace("fa-eye", "fa-eye-slash");
-            } else {
-                input.type = "password";
-                icon.classList.replace("fa-eye-slash", "fa-eye");
-            }
-        });
-    });
-
-    /* Limpa o estado de validação ao digitar */
-    document.querySelectorAll(".entrada-conteiner input").forEach((input) => {
-        input.addEventListener("input", () => {
-            clearState(input.closest(".entrada-conteiner"));
-        });
-    });
-
-    /* ── Indicador de força de senha ──────────────────────── */
-
-    function initStrength(inputId, wrapperId) {
-        const input = document.getElementById(inputId);
-        const wrapper = document.getElementById(wrapperId);
-        if (!input || !wrapper) return;
-
-        const bars = wrapper.querySelectorAll(".forca-barra");
-        const label = wrapper.querySelector(".forca-rotulo");
-
-        input.addEventListener("input", () => {
-            const val = input.value;
-            let score = 0;
-
-            if (val.length >= 6) score++;
-            if (val.length >= 10) score++;
-            if (/[A-Z]/.test(val) && /[0-9!@#$%]/.test(val)) score++;
-
-            const map = [
-                { cls: "", text: "" },
-                { cls: "weak", text: "Fraca" },
-                { cls: "medium", text: "Média" },
-                { cls: "strong", text: "Forte" },
-            ];
-
-            bars.forEach((bar, i) => {
-                bar.className = "forca-barra";
-                if (i < score) bar.classList.add(map[score].cls);
-            });
-
-            label.textContent = val.length ? map[score].text : "";
-            label.className = "forca-rotulo " + (val.length ? map[score].cls : "");
-        });
-    }
-
-    initStrength("cadSenha", "cadSenhaStrength");
-
-    /* ── Formulário de Login ──────────────────────────────── */
-
     const loginForm = document.getElementById("loginForm");
+    if (!loginForm) return;
 
-    if (loginForm) {
-        const emailInput = document.getElementById("loginEmail");
-        const senhaInput = document.getElementById("loginSenha");
+    const emailInput = document.getElementById("loginEmail");
+    const senhaInput = document.getElementById("loginSenha");
 
-        if (emailInput) {
-            emailInput.addEventListener("blur", () => {
-                const w = emailInput.closest(".entrada-conteiner");
-                if (!emailInput.value.trim()) {
-                    setError(w, "E-mail é obrigatório.");
-                } else if (!emailValido(emailInput.value)) {
-                    setError(w, "Digite um e-mail válido.");
-                } else {
-                    setSuccess(w);
-                }
-            });
-        }
-
-        if (senhaInput) {
-            senhaInput.addEventListener("blur", () => {
-                const w = senhaInput.closest(".entrada-conteiner");
-                if (!senhaInput.value.trim()) {
-                    setError(w, "Senha é obrigatória.");
-                } else {
-                    setSuccess(w);
-                }
-            });
-        }
-
-        loginForm.addEventListener("submit", (e) => {
-            let valid = true;
-
-            const emailW = emailInput.closest(".entrada-conteiner");
+    if (emailInput) {
+        emailInput.addEventListener("blur", () => {
+            const w = emailInput.closest(".entrada-conteiner");
             if (!emailInput.value.trim()) {
-                setError(emailW, "E-mail é obrigatório.");
-                valid = false;
-            } else if (!emailValido(emailInput.value)) {
-                setError(emailW, "Digite um e-mail válido.");
-                valid = false;
-            }
-
-            const senhaW = senhaInput.closest(".entrada-conteiner");
-            if (!senhaInput.value.trim()) {
-                setError(senhaW, "Senha é obrigatória.");
-                valid = false;
-            }
-
-            if (!valid) {
-                e.preventDefault();
-                return;
-            }
-
-            setBtnLoading(loginForm.querySelector(".botao-sprint"), true, "Entrando...");
-        });
-    }
-
-    /* ── Formulário de Cadastro ───────────────────────────── */
-
-    const cadastroForm = document.getElementById("cadastroForm");
-
-    if (cadastroForm) {
-        const cadNome = document.getElementById("cadNome");
-        const cadEmail = document.getElementById("cadEmail");
-        const cadSenha = document.getElementById("cadSenha");
-        const cadConfirmar = document.getElementById("cadConfirmar");
-
-        function validateNome() {
-            if (!cadNome) return true;
-            const w = cadNome.closest(".entrada-conteiner");
-            if (!cadNome.value.trim()) {
-                setError(w, "Nome é obrigatório.");
-                return false;
-            }
-            if (cadNome.value.trim().length < 3) {
-                setError(w, "Nome deve ter pelo menos 3 caracteres.");
-                return false;
-            }
-            const regex = /^[A-Za-zÀ-ÿ ]+$/;
-            if (!regex.test(cadNome.value.trim())) {
-                setError(w, "Nome inválido.");
-                return false;
-            }
-            return true;
-        }
-
-        function validateEmail() {
-            if (!cadEmail) return true;
-            const w = cadEmail.closest(".entrada-conteiner");
-            if (!cadEmail.value.trim()) {
                 setError(w, "E-mail é obrigatório.");
-                return false;
-            }
-            if (!emailValido(cadEmail.value)) {
+            } else if (!emailValido(emailInput.value)) {
                 setError(w, "Digite um e-mail válido.");
-                return false;
+            } else {
+                setSuccess(w);
             }
-            setSuccess(w);
-            return true;
-        }
+        });
+    }
 
-        function validateSenha() {
-            if (!cadSenha) return true;
-            const w = cadSenha.closest(".entrada-conteiner");
-            if (!cadSenha.value.trim()) {
+    if (senhaInput) {
+        senhaInput.addEventListener("blur", () => {
+            const w = senhaInput.closest(".entrada-conteiner");
+            if (!senhaInput.value.trim()) {
                 setError(w, "Senha é obrigatória.");
-                return false;
+            } else {
+                setSuccess(w);
             }
-            if (cadSenha.value.length < 6) {
-                setError(w, "Mínimo 6 caracteres.");
-                return false;
-            }
-            setSuccess(w);
-            return true;
-        }
-
-        function validateConfirmar() {
-            if (!cadConfirmar) return true;
-            const w = cadConfirmar.closest(".entrada-conteiner");
-            if (!cadConfirmar.value.trim()) {
-                setError(w, "Confirme sua senha.");
-                return false;
-            }
-            if (cadSenha && cadConfirmar.value !== cadSenha.value) {
-                setError(w, "As senhas não coincidem.");
-                return false;
-            }
-            setSuccess(w);
-            return true;
-        }
-
-        if (cadNome) cadNome.addEventListener("blur", validateNome);
-        if (cadEmail) cadEmail.addEventListener("blur", validateEmail);
-        if (cadSenha) cadSenha.addEventListener("blur", validateSenha);
-        if (cadConfirmar) cadConfirmar.addEventListener("blur", validateConfirmar);
-
-        /* Verificação de coincidência das senhas em tempo real */
-        if (cadConfirmar) {
-            cadConfirmar.addEventListener("input", () => {
-                if (!cadConfirmar.value) return;
-                const w = cadConfirmar.closest(".entrada-conteiner");
-                if (cadSenha && cadConfirmar.value !== cadSenha.value) {
-                    setError(w, "As senhas não coincidem.");
-                } else {
-                    setSuccess(w);
-                }
-            });
-        }
-
-        cadastroForm.addEventListener("submit", (e) => {
-            const n = validateNome();
-            const m = validateEmail();
-            const s = validateSenha();
-            const c = validateConfirmar();
-
-            if (!n || !m || !s || !c) {
-                e.preventDefault();
-                return;
-            }
-
-            setBtnLoading(cadastroForm.querySelector(".botao-sprint"), true, "Cadastrando...");
         });
     }
 
-    /* ── Alertas vindos do backend via query string ─────────── */
+    loginForm.addEventListener("submit", (e) => {
+        let valid = true;
 
-    const params = new URLSearchParams(window.location.search);
+        const emailW = emailInput.closest(".entrada-conteiner");
+        if (!emailInput.value.trim()) {
+            setError(emailW, "E-mail é obrigatório.");
+            valid = false;
+        } else if (!emailValido(emailInput.value)) {
+            setError(emailW, "Digite um e-mail válido.");
+            valid = false;
+        }
 
-    if (params.has("erro") && typeof Swal !== "undefined") {
-        const msgs = {
-            credenciais: "E-mail ou senha incorretos.",
-            email_existe: "Este e-mail já está cadastrado.",
-            campos: "Preencha todos os campos obrigatórios.",
-            senha_curta: "A senha deve ter pelo menos 6 caracteres.",
-            senhas_diferentes: "As senhas não coincidem.",
-        };
-        const codigo = params.get("erro");
-        const texto = msgs[codigo] || "Ocorreu um erro. Tente novamente.";
+        const senhaW = senhaInput.closest(".entrada-conteiner");
+        if (!senhaInput.value.trim()) {
+            setError(senhaW, "Senha é obrigatória.");
+            valid = false;
+        }
 
-        Swal.fire({
-            icon: "error",
-            title: "Ops!",
-            text: texto,
-            background: "#1A1A1D",
-            color: "#FFFFFF",
-            confirmButtonColor: "#F97316",
-            confirmButtonText: "Entendido",
-        });
-    }
+        if (!valid) {
+            e.preventDefault();
+            return;
+        }
 
-    if (params.has("sucesso") && typeof Swal !== "undefined") {
-        const msgsSucesso = {
-            cadastro: "Conta criada com sucesso! Faça login para continuar.",
-            logout: "Você saiu da sua conta.",
-        };
-        const codigo = params.get("sucesso");
-        const texto = msgsSucesso[codigo] || "Operação realizada com sucesso.";
-
-        Swal.fire({
-            icon: "success",
-            title: "Sucesso!",
-            text: texto,
-            background: "#1A1A1D",
-            color: "#FFFFFF",
-            confirmButtonColor: "#F97316",
-            confirmButtonText: "Ok",
-            timer: 3000,
-            timerProgressBar: true,
-        });
-    }
+        setBtnLoading(loginForm.querySelector(".botao-sprint"), true, "Entrando...");
+    });
 });
+

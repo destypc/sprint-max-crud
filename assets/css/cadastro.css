@@ -54,15 +54,6 @@
   animation: fadeUp 0.8s ease-out 0.15s both;
 }
 
-/* Logo no topo */
-.right-logo img {
-  height: 40px;
-  width: auto;
-  object-fit: contain;
-  display: block;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
-}
-
 /* Eyebrow acima do título */
 .slogan-sobrancelha {
   font-size: 0.7rem;
@@ -147,20 +138,6 @@
     rgba(249, 115, 22, 0.18),
     transparent
   );
-}
-
-/* ---------- Logo full (logo-name.png) ---------- */
-.marca-completa {
-  margin-bottom: 2.2rem;
-}
-
-.marca-completa img {
-  height: 72px;
-  width: auto;
-  display: block;
-  object-fit: contain;
-  mix-blend-mode: screen;
-  filter: drop-shadow(0 0 12px rgba(249, 115, 22, 0.18));
 }
 
 /* ---------- Responsivo ---------- */
