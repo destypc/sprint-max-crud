@@ -12,11 +12,6 @@ RUN apt-get update \
 # Permite o Composer rodar como root no build sem desabilitar plugins.
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Garante um único MPM ativo (prefork, exigido pelo mod_php) — evita o erro
-# "More than one MPM loaded" caso o mpm_event/worker também esteja carregado.
-RUN a2dismod mpm_event mpm_worker 2>/dev/null || true; \
-    a2enmod mpm_prefork
-
 # Habilita o mod_rewrite (o .htaccess depende dele) e permite override do .htaccess.
 RUN a2enmod rewrite \
     && sed -ri 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
@@ -43,3 +38,9 @@ RUN mkdir -p /var/www/html/uploads \
     && chown -R www-data:www-data /var/www/html
 
 EXPOSE 8080
+
+# Normaliza o MPM em RUNTIME antes de subir o Apache. Na Railway os módulos
+# mpm_event/worker acabam reativados durante a inicialização do container, então
+# corrigir só no build não basta — é preciso garantir aqui que apenas o
+# mpm_prefork (exigido pelo mod_php) esteja ativo.
+CMD ["bash", "-lc", "set -eu; a2dismod mpm_event mpm_worker || true; rm -f /etc/apache2/mods-enabled/mpm_event.* /etc/apache2/mods-enabled/mpm_worker.* || true; a2enmod mpm_prefork; apache2ctl -t || true; exec apache2-foreground"]
