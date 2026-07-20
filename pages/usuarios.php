@@ -98,13 +98,17 @@
                                             <button class="btn-icon edit" aria-label="Editar usuário" title="Editar" onclick='openDrawer(<?= $uJson ?>)'>
                                                 <i class="fa-solid fa-pen"></i>
                                             </button>
-                                            <?php if (!$isSelf): ?>
-                                            <button class="btn-icon del" aria-label="Excluir usuário" title="Excluir"
-                                                onclick="confirmDelete(<?= (int)$u['id'] ?>, '<?= htmlspecialchars(addslashes($u['nome'])) ?>')">
+                                            <?php if ($isSelf): ?>
+                                            <button class="btn-icon del" title="Não pode excluir a si mesmo" disabled style="opacity:.3;cursor:not-allowed">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                            <?php elseif ($u['tipo'] === 'admin'): ?>
+                                            <button class="btn-icon del" title="Contas de administrador não podem ser excluídas" disabled style="opacity:.3;cursor:not-allowed">
                                                 <i class="fa-solid fa-trash"></i>
                                             </button>
                                             <?php else: ?>
-                                            <button class="btn-icon del" title="Não pode excluir a si mesmo" disabled style="opacity:.3;cursor:not-allowed">
+                                            <button class="btn-icon del" aria-label="Excluir usuário" title="Excluir"
+                                                onclick="confirmDelete(<?= (int)$u['id'] ?>, '<?= htmlspecialchars(addslashes($u['nome'])) ?>')">
                                                 <i class="fa-solid fa-trash"></i>
                                             </button>
                                             <?php endif; ?>

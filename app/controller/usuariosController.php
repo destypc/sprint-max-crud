@@ -167,6 +167,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'excluir
         exit;
     }
 
+    // Contas de administrador não podem ser excluídas.
+    $alvo = $conexao->prepare("SELECT tipo FROM usuarios WHERE id = :id");
+    $alvo->execute([':id' => $id]);
+    if ($alvo->fetchColumn() === 'admin') {
+        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Contas de administrador não podem ser excluídas.'];
+        header('Location: /pages/usuarios.php');
+        exit;
+    }
+
     try {
         $stmt = $conexao->prepare("DELETE FROM usuarios WHERE id = :id");
         $stmt->execute([':id' => $id]);
