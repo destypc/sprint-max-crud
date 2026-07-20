@@ -12,6 +12,11 @@ RUN apt-get update \
 # Permite o Composer rodar como root no build sem desabilitar plugins.
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
+# Garante um único MPM ativo (prefork, exigido pelo mod_php) — evita o erro
+# "More than one MPM loaded" caso o mpm_event/worker também esteja carregado.
+RUN a2dismod mpm_event mpm_worker 2>/dev/null || true; \
+    a2enmod mpm_prefork
+
 # Habilita o mod_rewrite (o .htaccess depende dele) e permite override do .htaccess.
 RUN a2enmod rewrite \
     && sed -ri 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
