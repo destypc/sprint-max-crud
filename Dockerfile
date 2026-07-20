@@ -1,8 +1,16 @@
 # Imagem PHP + Apache — roda o app tal como ele foi feito (usa o .htaccess).
 FROM php:8.2-apache
 
-# Extensões PHP necessárias (PDO MySQL para o banco).
-RUN docker-php-ext-install pdo pdo_mysql
+# Extensões PHP + utilitários necessários.
+# git e unzip são exigidos pelo Composer para baixar/extrair os pacotes
+# (a imagem base não os traz); pdo_mysql é a extensão do banco.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git unzip \
+    && docker-php-ext-install pdo pdo_mysql \
+    && rm -rf /var/lib/apt/lists/*
+
+# Permite o Composer rodar como root no build sem desabilitar plugins.
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Habilita o mod_rewrite (o .htaccess depende dele) e permite override do .htaccess.
 RUN a2enmod rewrite \
