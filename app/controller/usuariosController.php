@@ -167,11 +167,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'excluir
         exit;
     }
 
-    // Contas de administrador não podem ser excluídas.
+    // Contas de administrador só podem ser excluídas pelo super admin.
     $alvo = $conexao->prepare("SELECT tipo FROM usuarios WHERE id = :id");
     $alvo->execute([':id' => $id]);
-    if ($alvo->fetchColumn() === 'admin') {
-        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Contas de administrador não podem ser excluídas.'];
+    if ($alvo->fetchColumn() === 'admin' && !ehSuperAdmin()) {
+        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Apenas o administrador principal pode excluir outros administradores.'];
         header('Location: /pages/usuarios.php');
         exit;
     }

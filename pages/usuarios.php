@@ -102,8 +102,8 @@
                                             <button class="btn-icon del" title="Não pode excluir a si mesmo" disabled style="opacity:.3;cursor:not-allowed">
                                                 <i class="fa-solid fa-trash"></i>
                                             </button>
-                                            <?php elseif ($u['tipo'] === 'admin'): ?>
-                                            <button class="btn-icon del" title="Contas de administrador não podem ser excluídas" disabled style="opacity:.3;cursor:not-allowed">
+                                            <?php elseif ($u['tipo'] === 'admin' && !ehSuperAdmin()): ?>
+                                            <button class="btn-icon del" title="Apenas o administrador principal pode excluir administradores" disabled style="opacity:.3;cursor:not-allowed">
                                                 <i class="fa-solid fa-trash"></i>
                                             </button>
                                             <?php else: ?>

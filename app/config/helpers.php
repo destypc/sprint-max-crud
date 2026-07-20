@@ -64,6 +64,20 @@ function exigirCsrf(): void
 }
 
 /**
+ * E-mail do administrador principal ("super admin"): o único que pode
+ * excluir outras contas de administrador.
+ */
+const SUPER_ADMIN_EMAIL = 'admin@gmail.com';
+
+/** Indica se o usuário (por padrão o logado) é o super admin. */
+function ehSuperAdmin(?array $usuario = null): bool
+{
+    $usuario = $usuario ?? ($_SESSION['user'] ?? null);
+    return is_array($usuario)
+        && strcasecmp($usuario['email'] ?? '', SUPER_ADMIN_EMAIL) === 0;
+}
+
+/**
  * Revalida a sessão contra o banco: se o usuário logado foi EXCLUÍDO ou
  * DESATIVADO pelo admin, encerra a sessão na hora e manda para o login.
  * Deve ser chamada no topo de cada página/controller autenticado, antes de
