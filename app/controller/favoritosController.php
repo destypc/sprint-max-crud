@@ -8,9 +8,12 @@ if (empty($_SESSION['user'])) {
 }
 
 require_once __DIR__ . '/../config/conexao.php';
+require_once __DIR__ . '/../config/helpers.php';
 
 $pdo = Connection::getConnection();
 $id_usuario = (int) $_SESSION['user']['id'];
+
+exigirCsrf();
 
 // Favoritos são exclusivos de usuários comuns — o admin não participa do recurso.
 if (($_SESSION['user']['tipo'] ?? '') === 'admin') {

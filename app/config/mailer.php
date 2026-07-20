@@ -6,13 +6,33 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 /**
- * Lê a configuração de e-mail (app/config/email.php).
- * Retorna null se o arquivo não existir.
+ * Lê a configuração de e-mail.
+ * Prioridade: arquivo local app/config/email.php (dev) → variáveis de
+ * ambiente (produção). Retorna null se nenhuma fonte estiver disponível.
  */
 function configEmail(): ?array
 {
     $caminho = __DIR__ . '/email.php';
-    return is_file($caminho) ? require $caminho : null;
+    if (is_file($caminho)) {
+        return require $caminho;
+    }
+
+    // Fallback para variáveis de ambiente (deploy).
+    $usuario = getenv('MAIL_USERNAME');
+    if ($usuario === false || $usuario === '') {
+        return null;
+    }
+
+    return [
+        'ativo'           => filter_var(getenv('MAIL_ATIVO') ?: 'true', FILTER_VALIDATE_BOOLEAN),
+        'host'            => getenv('MAIL_HOST') ?: 'smtp.gmail.com',
+        'porta'           => getenv('MAIL_PORT') ?: 587,
+        'seguranca'       => getenv('MAIL_SEGURANCA') ?: 'tls',
+        'usuario'         => $usuario,
+        'senha'           => getenv('MAIL_PASSWORD') ?: '',
+        'remetente_email' => getenv('MAIL_FROM') ?: $usuario,
+        'remetente_nome'  => getenv('MAIL_FROM_NOME') ?: 'Sprint Max',
+    ];
 }
 
 /**

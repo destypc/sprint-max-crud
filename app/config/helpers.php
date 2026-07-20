@@ -1,5 +1,51 @@
 <?php
 
+/* ── Proteção CSRF ───────────────────────────────────────────
+ * Gera um token por sessão e o valida nas requisições POST que
+ * alteram estado. Formulários incluem o token via csrfCampo();
+ * requisições AJAX o lêem da <meta name="csrf-token"> (head.php).
+ */
+
+function csrfToken(): string
+{
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+/** Campo hidden com o token, para colar dentro dos <form>. */
+function csrfCampo(): string
+{
+    return '<input type="hidden" name="csrf_token" value="'
+        . htmlspecialchars(csrfToken(), ENT_QUOTES) . '">';
+}
+
+/** Confere o token enviado (POST header X-CSRF-Token ou campo csrf_token). */
+function verificarCsrf(): bool
+{
+    $enviado = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+    return is_string($enviado)
+        && $enviado !== ''
+        && !empty($_SESSION['csrf_token'])
+        && hash_equals($_SESSION['csrf_token'], $enviado);
+}
+
+/**
+ * Bloqueia a requisição se for POST sem token CSRF válido.
+ * Chame no topo dos controllers que processam formulários.
+ */
+function exigirCsrf(): void
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verificarCsrf()) {
+        http_response_code(403);
+        exit('Requisição inválida ou sessão expirada. Recarregue a página e tente novamente.');
+    }
+}
+
 function registrarLog(PDO $conexao, string $acao, string $descricao, ?int $usuario_id = null): void
 {
     try {

@@ -113,10 +113,14 @@ Principais tabelas:
 
 - usuarios
 - produtos
-- pedidos
-- carrinho
+- pedidos / pedido_itens
 - favoritos
+- notificacoes
+- tags / produto_tags
+- recuperacao_senha
 - logs
+
+> O carrinho é mantido em sessão (`$_SESSION['cart']`), não em tabela.
 
 ---
 
@@ -176,28 +180,34 @@ banco-migration.sql
 
 ### 4 Configure a conexão
 
-Edite:
+Para desenvolvimento local **não é preciso editar nada**: sem variáveis de
+ambiente, o `app/config/conexao.php` usa os padrões do XAMPP
+(`localhost`, usuário `root`, sem senha, banco `crud-sistema`).
 
-```text
-app/config/conexao.php
-```
-
-Configure:
-
-```php
-$host
-$banco
-$usuario
-$senha
-```
+Se o seu ambiente for diferente, defina as variáveis `MYSQLHOST`, `MYSQLPORT`,
+`MYSQLDATABASE`, `MYSQLUSER`, `MYSQLPASSWORD` (ver `.env.example`).
 
 ### 5 Execute
 
 Inicie o Apache e o MySQL pelo XAMPP e acesse:
 
 ```text
-http://localhost:8080
+http://localhost/sprint-max
 ```
+
+**Login inicial** (criado pelo `banco-migration.sql`):
+`admin@sprintmax.com` / `admin123` — troque a senha após o primeiro acesso.
+
+---
+
+## ☁️ Deploy em produção
+
+Este app usa PHP + MySQL + upload de arquivos, então **não roda bem em
+plataformas serverless** (Vercel/Netlify): o filesystem é efêmero e não há
+MySQL nativo. O deploy recomendado é via **Docker no Railway** (container
+persistente + MySQL gerenciado + volume para uploads).
+
+👉 Passo a passo completo em **[`DEPLOY.md`](DEPLOY.md)**.
 
 ---
 

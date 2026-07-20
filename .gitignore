@@ -1,3 +1,4 @@
+# Diz ao Git o que NÃO deve ser enviado para o repositório (GitHub). No seu caso:
 # Dependências do Composer (rode "composer install" para recriar)
 /vendor/
 

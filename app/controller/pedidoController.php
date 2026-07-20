@@ -12,6 +12,8 @@ require_once __DIR__ . '/../config/helpers.php';
 
 $pdo = Connection::getConnection();
 
+exigirCsrf();
+
 $usuario_id = (int) $_SESSION['user']['id'];
 
 // ── FINALIZAR COMPRA ─────────────────────────────────────────

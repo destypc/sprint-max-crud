@@ -206,6 +206,7 @@
         var dados = new FormData();
         dados.append('acao', 'criar');
         dados.append('nome', nome);
+        dados.append('csrf_token', window.CSRF_TOKEN || '');
 
         if (botao) botao.disabled = true;
 

@@ -97,20 +97,6 @@ unset($_SESSION['flash']);
                     </button>
                 </a>
 
-                <!-- Credenciais de admin para teste -->
-                <div class="cartao-admin">
-                    <div class="icone-escudo">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-                    <div class="informacoes-admin">
-                        <h6>Administrador para testes</h6>
-                        <p>
-                            <span>E-mail:</span> admin@gmail.com<br>
-                            <span>Senha:</span> 123456
-                        </p>
-                    </div>
-                </div>
-
             </div>
         </div>
 

@@ -11,6 +11,9 @@ require_once __DIR__ . '/../config/conexao.php';
 require_once __DIR__ . '/../config/helpers.php';
 
 $pdo = Connection::getConnection();
+
+exigirCsrf();
+
 $id_usuario = (int) $_SESSION['user']['id'];
 $redirect = filter_var($_POST['redirect'] ?? '/pages/perfil.php', FILTER_SANITIZE_URL);
 

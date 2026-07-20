@@ -1,0 +1,15 @@
+# Não copiar para a imagem — reduz o build e evita sobrescrever o composer install.
+/vendor/
+/.git/
+/.github/
+/.vscode/
+/.claude/
+/uploads/*
+!/uploads/index.php
+.gitignore
+.dockerignore
+README.md
+DEPLOY.md
+banco-migration.sql
+vercel.json
+app/config/email.php

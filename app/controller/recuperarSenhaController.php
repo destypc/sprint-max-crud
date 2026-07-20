@@ -50,7 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $acao === 'solicitar') {
                 ->execute([$usuario['id'], $token, $expira]);
 
             // Monta o link absoluto de redefinição a partir do host da requisição.
-            $protocolo = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            // Atrás de proxy (Railway/host), o TLS termina no proxy: confia no X-Forwarded-Proto.
+            $forwardedProto = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '';
+            $httpsDireto    = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+            $protocolo = ($forwardedProto === 'https' || $httpsDireto) ? 'https' : 'http';
             $host      = $_SERVER['HTTP_HOST'] ?? 'localhost';
             $link      = $protocolo . '://' . $host . '/auth/redefinir.php?token=' . urlencode($token);
 

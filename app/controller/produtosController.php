@@ -2,7 +2,8 @@
 
 session_start();
 
-if (empty($_SESSION['user'])) {
+// A gestão de produtos (criar/editar/excluir/ocultar) é exclusiva de administradores.
+if (empty($_SESSION['user']) || ($_SESSION['user']['tipo'] ?? '') !== 'admin') {
     header('Location: /auth/login.php');
     exit;
 }
@@ -11,6 +12,8 @@ require_once __DIR__ . '/../../app/config/conexao.php';
 require_once __DIR__ . '/../../app/config/helpers.php';
 
 $conexao = Connection::getConnection();
+
+exigirCsrf();
 
 // Alternar visibilidade do produto (botão olho na tabela)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'toggle_visivel') {

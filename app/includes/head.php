@@ -7,11 +7,15 @@
  */
 $page_title = $page_title ?? 'Sprint Max';
 $css_extra  = $css_extra  ?? [];
+// Garante que os helpers (e o token CSRF) estejam disponíveis para as views,
+// mesmo em páginas que carregam apenas a conexão.
+require_once __DIR__ . '/../config/helpers.php';
 ?>
 <head>
     <meta charset="UTF-8">
     <?php require __DIR__ . '/theme-init.php'; ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?= htmlspecialchars(csrfToken(), ENT_QUOTES) ?>">
     <title>Sprint Max — <?= htmlspecialchars($page_title) ?></title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,6 +25,7 @@ $css_extra  = $css_extra  ?? [];
     <link rel="icon" href="/assets/img/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="/assets/css/dashboard.css">
     <link rel="stylesheet" href="/assets/css/theme.css">
+    <script src="/assets/js/csrf.js" defer></script>
     <?php foreach ($css_extra as $arquivoCss): ?>
     <link rel="stylesheet" href="/assets/css/<?= htmlspecialchars($arquivoCss) ?>">
     <?php endforeach; ?>

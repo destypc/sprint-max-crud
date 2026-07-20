@@ -8,8 +8,11 @@ if (empty($_SESSION['user'])) {
 }
 
 require_once __DIR__ . '/../config/conexao.php';
+require_once __DIR__ . '/../config/helpers.php';
 
 $pdo = Connection::getConnection();
+
+exigirCsrf();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'adicionar') {
 

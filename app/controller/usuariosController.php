@@ -13,6 +13,8 @@ require_once __DIR__ . '/../../app/config/helpers.php';
 
 $conexao = Connection::getConnection();
 
+exigirCsrf();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'criar') {
 
     $nome = trim($_POST['nome'] ?? '');

@@ -11,6 +11,13 @@ if (empty($_SESSION['user']) || $_SESSION['user']['tipo'] !== 'admin') {
 }
 
 require_once __DIR__ . '/../../app/config/conexao.php';
+require_once __DIR__ . '/../../app/config/helpers.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verificarCsrf()) {
+    http_response_code(403);
+    echo json_encode(['ok' => false, 'erro' => 'Token de segurança inválido. Recarregue a página.']);
+    exit;
+}
 
 $conexao = Connection::getConnection();
 $acao    = $_POST['acao'] ?? '';
