@@ -12,6 +12,7 @@ require_once __DIR__ . '/../config/helpers.php';
 
 $pdo = Connection::getConnection();
 
+garantirSessaoValida($pdo);
 exigirCsrf();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'adicionar') {

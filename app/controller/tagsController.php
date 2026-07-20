@@ -20,6 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verificarCsrf()) {
 }
 
 $conexao = Connection::getConnection();
+
+garantirSessaoValida($conexao);
+
 $acao    = $_POST['acao'] ?? '';
 
 if ($acao === 'criar') {

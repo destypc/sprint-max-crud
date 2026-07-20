@@ -13,6 +13,7 @@ require_once __DIR__ . '/../config/helpers.php';
 $pdo = Connection::getConnection();
 $id_usuario = (int) $_SESSION['user']['id'];
 
+garantirSessaoValida($pdo);
 exigirCsrf();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'marcar_lidas') {

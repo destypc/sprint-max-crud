@@ -63,6 +63,49 @@ function exigirCsrf(): void
     }
 }
 
+/**
+ * Revalida a sessão contra o banco: se o usuário logado foi EXCLUÍDO ou
+ * DESATIVADO pelo admin, encerra a sessão na hora e manda para o login.
+ * Deve ser chamada no topo de cada página/controller autenticado, antes de
+ * qualquer saída (HTML). Não faz nada se ninguém estiver logado.
+ */
+function garantirSessaoValida(PDO $pdo): void
+{
+    if (empty($_SESSION['user']['id'])) {
+        return; // Não logado — o controle de login de cada página trata disso.
+    }
+
+    $id = (int) $_SESSION['user']['id'];
+
+    try {
+        $stmt = $pdo->prepare("SELECT status FROM usuarios WHERE id = ?");
+        $stmt->execute([$id]);
+        $status = $stmt->fetchColumn(); // false se não existir; 'ativo'/'inativo' caso exista
+    } catch (PDOException $e) {
+        // Banco sem a coluna status: valida apenas a existência do usuário.
+        try {
+            $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE id = ?");
+            $stmt->execute([$id]);
+            $status = ($stmt->fetchColumn() === false) ? false : 'ativo';
+        } catch (PDOException $e2) {
+            return; // Falha de conexão: não desloga por precaução.
+        }
+    }
+
+    // Conta excluída (sumiu do banco) ou desativada → encerra a sessão.
+    if ($status === false || $status === 'inativo') {
+        $_SESSION = [];
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_destroy();
+        }
+        $motivo = ($status === 'inativo')
+            ? 'Sua conta foi desativada. Contate o administrador.'
+            : 'Sua conta foi encerrada.';
+        header('Location: /auth/login.php?erro=' . urlencode($motivo));
+        exit;
+    }
+}
+
 function registrarLog(PDO $conexao, string $acao, string $descricao, ?int $usuario_id = null): void
 {
     try {

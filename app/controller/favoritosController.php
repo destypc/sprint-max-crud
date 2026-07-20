@@ -13,6 +13,7 @@ require_once __DIR__ . '/../config/helpers.php';
 $pdo = Connection::getConnection();
 $id_usuario = (int) $_SESSION['user']['id'];
 
+garantirSessaoValida($pdo);
 exigirCsrf();
 
 // Favoritos são exclusivos de usuários comuns — o admin não participa do recurso.

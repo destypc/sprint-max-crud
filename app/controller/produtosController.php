@@ -13,6 +13,7 @@ require_once __DIR__ . '/../../app/config/helpers.php';
 
 $conexao = Connection::getConnection();
 
+garantirSessaoValida($conexao);
 exigirCsrf();
 
 // Alternar visibilidade do produto (botão olho na tabela)

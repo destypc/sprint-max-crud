@@ -8,8 +8,11 @@ if (empty($_SESSION['user'])) {
 }
 
 require_once __DIR__ . '/../config/conexao.php';
+require_once __DIR__ . '/../config/helpers.php';
 
 $pdo = Connection::getConnection();
+
+garantirSessaoValida($pdo);
 
 $usuario_logado = $_SESSION['user'];
 $current_page   = 'home';

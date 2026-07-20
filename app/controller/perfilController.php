@@ -12,6 +12,7 @@ require_once __DIR__ . '/../config/helpers.php';
 
 $pdo = Connection::getConnection();
 
+garantirSessaoValida($pdo);
 exigirCsrf();
 
 $id_usuario = (int) $_SESSION['user']['id'];
