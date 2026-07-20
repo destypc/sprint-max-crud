@@ -95,9 +95,16 @@
                                             <button class="btn-icon" aria-label="Visualizar usuário" title="Visualizar" onclick='openViewModal(<?= $uJson ?>)'>
                                                 <i class="fa-solid fa-eye"></i>
                                             </button>
+                                            <?php $ehLinhaSuper = strcasecmp($u['email'] ?? '', SUPER_ADMIN_EMAIL) === 0; ?>
+                                            <?php if ($ehLinhaSuper && !ehSuperAdmin()): ?>
+                                            <button class="btn-icon edit" title="Apenas o administrador principal pode editar esta conta" disabled style="opacity:.3;cursor:not-allowed">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </button>
+                                            <?php else: ?>
                                             <button class="btn-icon edit" aria-label="Editar usuário" title="Editar" onclick='openDrawer(<?= $uJson ?>)'>
                                                 <i class="fa-solid fa-pen"></i>
                                             </button>
+                                            <?php endif; ?>
                                             <?php if ($isSelf): ?>
                                             <button class="btn-icon del" title="Não pode excluir a si mesmo" disabled style="opacity:.3;cursor:not-allowed">
                                                 <i class="fa-solid fa-trash"></i>

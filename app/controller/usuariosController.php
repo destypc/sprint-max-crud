@@ -95,6 +95,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'editar'
         exit;
     }
 
+    // A conta do administrador principal só pode ser editada por ele mesmo.
+    $emailAlvoStmt = $conexao->prepare("SELECT email FROM usuarios WHERE id = :id");
+    $emailAlvoStmt->execute([':id' => $id]);
+    $emailAlvo = $emailAlvoStmt->fetchColumn();
+    if ($emailAlvo !== false && strcasecmp($emailAlvo, SUPER_ADMIN_EMAIL) === 0 && !ehSuperAdmin()) {
+        $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => 'Apenas o administrador principal pode editar a própria conta.'];
+        header('Location: /pages/usuarios.php');
+        exit;
+    }
+
     $checagemEmail = validarEmail($email);
     if (!$checagemEmail['valido']) {
         $_SESSION['flash'] = ['tipo' => 'erro', 'msg' => $checagemEmail['mensagem']];
