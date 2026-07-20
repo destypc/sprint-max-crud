@@ -37,12 +37,29 @@ function verificarCsrf(): bool
 /**
  * Bloqueia a requisição se for POST sem token CSRF válido.
  * Chame no topo dos controllers que processam formulários.
+ * Em vez de uma página 403 seca, redireciona de volta com um aviso amigável
+ * (cobre o caso de sessão expirada / página desatualizada por cache).
  */
 function exigirCsrf(): void
 {
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verificarCsrf()) {
-        http_response_code(403);
-        exit('Requisição inválida ou sessão expirada. Recarregue a página e tente novamente.');
+        $_SESSION['flash'] = [
+            'type'    => 'error',
+            'message' => 'Sua sessão expirou ou a página estava desatualizada. Recarregue a página (Ctrl+F5) e tente novamente.',
+        ];
+        // Volta para a página de origem, usando só o caminho interno do
+        // referer (nunca a URL completa) para evitar open redirect.
+        $destino = '/pages/home.php';
+        $ref = $_SERVER['HTTP_REFERER'] ?? '';
+        if (is_string($ref) && $ref !== '') {
+            $caminho = parse_url($ref, PHP_URL_PATH);
+            if (is_string($caminho) && isset($caminho[0]) && $caminho[0] === '/') {
+                $query   = parse_url($ref, PHP_URL_QUERY);
+                $destino = $caminho . ($query ? '?' . $query : '');
+            }
+        }
+        header('Location: ' . $destino);
+        exit;
     }
 }
 

@@ -12,8 +12,9 @@ RUN apt-get update \
 # Permite o Composer rodar como root no build sem desabilitar plugins.
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Habilita o mod_rewrite (o .htaccess depende dele) e permite override do .htaccess.
-RUN a2enmod rewrite \
+# Habilita mod_rewrite (o .htaccess depende dele) e mod_headers (no-cache das
+# páginas), e permite override do .htaccess.
+RUN a2enmod rewrite headers \
     && sed -ri 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 
 # O Apache no Railway/containers deve escutar na porta fornecida via $PORT.

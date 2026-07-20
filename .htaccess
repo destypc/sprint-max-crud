@@ -1,4 +1,14 @@
 Options -Indexes
+
+# Não deixa o navegador cachear as páginas PHP (HTML). Garante que o token
+# CSRF e os dados venham sempre atualizados após cada deploy, evitando erros
+# de "sessão expirada" por HTML velho em cache.
+<IfModule mod_headers.c>
+    <FilesMatch "\.php$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    </FilesMatch>
+</IfModule>
+
 RewriteEngine On
 
 # Serve arquivos e pastas reais diretamente (CSS, JS, imagens)
